@@ -342,9 +342,9 @@ body.horror.d4 #ghost{opacity:.55}
 #end.calm .acts .hot{display:none}
 #end .l3{margin-top:30px;font-family:var(--f-m);font-size:.72rem;letter-spacing:.04em;color:#9A7076;line-height:1.8;text-shadow:0 2px 8px #000}
 #end .l3 b{color:#D9B4B8;font-weight:500}
-.nag{display:none;text-align:center;padding-top:3vh;font-family:var(--f-m);font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:#FF4358;text-shadow:0 0 18px #FF001F}
+.nag{display:none;position:fixed;left:0;right:0;bottom:9vh;z-index:40;pointer-events:none;text-align:center;font-family:var(--f-m);font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:#FF4358;text-shadow:0 0 18px #FF001F}
 .nag span{display:block;margin-top:10px;font-size:1.3rem;letter-spacing:0;animation:nagj .9s ease-in-out infinite}
-body.horror .nag{display:block;animation:nagp 1.6s ease-in-out infinite}
+body.horror.nagging .nag{display:block;animation:nagp 1.6s ease-in-out infinite}
 @keyframes nagj{50%{transform:translateY(8px)}}
 @keyframes nagp{50%{opacity:.45}}
 body.pull main{animation:lurch .3s steps(2,end) 3}
@@ -537,7 +537,8 @@ body.hit .tint{animation:redflash .5s ease-out}
     </div>
   </div>
 </section>
-<div id="tail" style="height:70vh"><div class="nag" id="nag" aria-hidden="true">keep scrolling<span>&darr;</span></div></div>
+<div id="tail" style="height:70vh"></div>
+<div class="nag" id="nag" aria-hidden="true">keep scrolling<span>&darr;</span></div>
 </main>
 
 <footer>
@@ -957,7 +958,10 @@ function frame(){
     // The last section is given its moment, with "keep scrolling" under it.
     // Scrolling on past it (into the tail), reaching the bottom, or simply
     // staying on it for a while, and the page takes over from there.
-    if (!pulling && !$('#end').classList.contains('on') && maxReached > .45) {
+    var endOn = $('#end').classList.contains('on');
+    body.classList.toggle('nagging', !endOn && (pulling || (maxReached > .45
+      && $('#final').getBoundingClientRect().bottom < innerHeight - 20)));
+    if (!pulling && !endOn && maxReached > .45) {
       var fr = $('#final').getBoundingClientRect(), tail = $('#tail').getBoundingClientRect().top;
       var seen = fr.top < innerHeight * .35;
       if (seen && !finalSeen) finalSeen = Date.now();
