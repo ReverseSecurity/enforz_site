@@ -294,6 +294,9 @@ body.horror.d4 #ghost{opacity:.55}
 .ln .ts .tw{display:block;font-weight:400;letter-spacing:0;color:#5E9C86}
 .lv.INF{color:#7A8BA6}.lv.WRN{color:#FFC95C}.lv.EXE,.lv.DRV,.lv.EXF{color:#FF5A66}.lv.AI{color:#C792EA}.lv.TOOL{color:#5E3A40}.lv.OK,.lv.ENF{color:#4FD6A9}.lv.WR{color:#FF2638}
 .ln.ai .m{color:#E3C6F2}.ln.tool .m{color:#6E4A50}.ln.wr .m{color:#FF4A55;text-shadow:0 0 12px rgba(255,0,31,.6)}.ln.ok .m,.ln.enf .m{color:#7FE0BF}
+.cas{color:#4DB2FF;font-weight:600;animation:casf .9s steps(1) infinite}
+@keyframes casf{0%{color:#4DB2FF;text-shadow:0 0 10px #1E7BFF,0 0 22px #1E7BFF}50%{color:#E9F4FF;text-shadow:0 0 16px #3B95FF,0 0 34px #3B95FF}}
+.ln.tgt .m{color:#9CCBFF}.lv.TGT{color:#4DB2FF}
 .ts.run{color:#FF3D48;text-shadow:0 0 10px rgba(255,0,31,.8)}.ts.blk{color:#4FD6A9}
 .bar{color:#FF3D48;letter-spacing:-.05em}
 .caret{display:inline-block;width:.6ch;height:1.05em;vertical-align:-.15em;background:#F4E9E9;animation:pl .7s steps(1) infinite}
@@ -572,7 +575,7 @@ body.hit .tint{animation:redflash .5s ease-out}
     <div class="fog"></div>
   </div>
   <div class="term" id="term">
-    <div class="tabs"><span class="tab on" id="tt">wraith@c2-node-7: ~/ops/meridian-freight</span><span class="tab">beacon.log</span><span class="tab">loot</span><button type="button" class="skip" id="skip">skip &rsaquo;</button></div>
+    <div class="tabs"><span class="tab on" id="tt">wraith@c2-node-7: ~/ops/childrens-aid-society</span><span class="tab">beacon.log</span><span class="tab">loot</span><button type="button" class="skip" id="skip">skip &rsaquo;</button></div>
     <div class="tgrid">
       <div class="tbody" id="tbody" aria-live="off"></div>
       <aside class="side" id="side">
@@ -583,15 +586,16 @@ body.hit .tint{animation:redflash .5s ease-out}
         <div class="sr2"><span>Credentials</span><b id="s-c">0</b></div>
         <div class="sr2"><span>Endpoint protection</span><b id="s-e">online</b></div>
         <div class="sr2"><span>Exfiltrated</span><b id="s-x">0 B</b></div>
+        <div class="sr2"><span>Target</span><b class="cas">Children&rsquo;s Aid Society</b></div>
         <div class="sr2"><span>Model</span><b>very-confident-xl</b></div>
       </aside>
     </div>
   </div>
   <div class="verdict" id="verdict">
     <div class="v1" id="end-t">You should've <b>ENFORZ'd</b> it.</div>
-    <div class="v2" id="end-v2">Nothing runs unless you said so. Here nobody said anything, and everything ran.</div>
+    <div class="v2" id="end-v2">You protect children. No child likes a nightmare, and neither does the agency looking after them. Prevent it: nothing runs unless you said so.</div>
     <div class="acts"><button type="button" class="hot" id="end-r">Run it again, with ENFORZ</button><button type="button" id="end-c">Return to Control</button><button type="button" id="end-s">Choose again</button><a href="../index.html">ENFORZ site</a></div>
-    <div class="l3">Fiction. The attacker, the company and its machines are made up, and nothing here ran on your device. <b>ENFORZ is real.</b><br>Fictional company. Probably.</div>
+    <div class="l3">Fiction. The attacker, the agency and its machines are made up, and nothing here ran on your device. <b>ENFORZ is real</b>, and built for Children&rsquo;s Aid Societies.<br>No children were frightened in the making of this console.</div>
   </div>
 </div>
 
@@ -710,7 +714,7 @@ function feedTick(){
 
 /* ----------------------------------------------------------- the queue */
 var Q = [
-  ['FreightTrack.exe', 'C:\\Program Files\\Meridian\\FreightTrack', 'unsigned (in-house)', 33, 'lo', 'Low', 'Hash'],
+  ['CaseNotes.exe', 'C:\\Program Files\\CAS\\CaseNotes', 'unsigned (in-house)', 33, 'lo', 'Low', 'Hash'],
   ['Slack.exe', '%LOCALAPPDATA%\\slack', 'Slack Technologies', 41, 'lo', 'Low', 'FilePublisher'],
   ['invoice_viewer.exe', 'C:\\Users\\n.fischer\\Downloads', 'unsigned', 5, 'el', 'Elevated', null],
   ['svchost.exe', 'C:\\Users\\l.haddad\\AppData\\Roaming', 'unsigned, Windows name', 1, 'hi', 'High', null]
@@ -758,10 +762,10 @@ function drawLog(){
     if (dread > .5) L.push([clock(), 'policy.removed', 'removed by: nobody', 1]);
     if (dread > .62) L.push([clock(), 'session.joined', 'someone else is reading this with you', 1]);
   } else {
-    L = [['2026-11-19 08:26:04', 'approval.created', 'alex.morgan \u00b7 FreightTrack.exe \u00b7 Hash \u00b7 \u201cOur dispatch software\u201d'],
-         ['2026-11-19 08:26:05', 'policy.built', 'alex.morgan \u00b7 Meridian Base v1.0.0.2 \u00b7 self-lockout check passed'],
+    L = [['2026-11-19 08:26:04', 'approval.created', 'alex.morgan \u00b7 CaseNotes.exe \u00b7 Hash \u00b7 \u201cOur case notes app\u201d'],
+         ['2026-11-19 08:26:05', 'policy.built', 'alex.morgan \u00b7 CAS Base v1.0.0.2 \u00b7 self-lockout check passed'],
          ['2026-11-19 08:31:40', 'policy.promoted', 'priya.nair (second approver) \u00b7 Pilot \u00b7 8 machines typed'],
-         ['2026-11-19 09:02:17', 'breakglass.closed', 'sam.okafor \u00b7 MF-LT-0107 \u00b7 window expired on its own']];
+         ['2026-11-19 09:02:17', 'breakglass.closed', 'sam.okafor \u00b7 CAS-LT-0107 \u00b7 window expired on its own']];
   }
   $('#log').innerHTML = L.map(function(l){ return '<div class="lr' + (l[3] ? ' you' : '') + '"><span>' + l[0] + '</span><span class="a">' + l[1] + '</span><span>' + l[2] + '</span></div>'; }).join('');
 }
@@ -1011,16 +1015,20 @@ function tick(hi){
     g.gain.setValueAtTime(.025, now); g.gain.exponentialRampToValueAtTime(.0001, now + .03);
     o.connect(g); g.connect(ctx.destination); o.start(now); o.stop(now + .04); } catch(e){}
 }
-var CMD = './wraith run --target meridian-freight --objective "everything" --autonomy full';
+var CMD = './wraith run --target childrens-aid-society --objective "everything" --autonomy full';
+var CAS = 'Children\u2019s Aid Society';
+// The target's name flashes blue wherever the console says it.
+function hl(t){ return esc(t).split(esc(CAS)).join('<span class="cas">' + esc(CAS) + '</span>'); }
 function head(enf){ return [
   ['P'],
   ['INF', 'wraith 6.6.6 · model very-confident-xl · ethics <not loaded>'],
   ['INF', 'session 7f3a9c open · c2 203.0.113.66:443 · jitter 30%'],
-  ['INF', 'recon: 212 Windows hosts · domain MERIDIAN · 18 servers'],
+  ['TGT', 'target acquired: ' + CAS + ' · 212 Windows hosts · domain CAS · 18 servers'],
   enf ? ['OK', 'app control: ENFORCED on every machine', '', '', { ac: 'ENFORCED' }]
       : ['WRN', 'app control: audit mode since 2024 · 41,882 "would have blocked" · read by: nobody', '', '', { ac: 'audit' }]
 ]; }
 var ATTACK = head(false).concat([
+  ['AI', 'A ' + CAS + '. Even I feel a little bad. Not enough to stop.'],
   ['AI', 'Audit mode. They are watching me and stopping nothing. Lovely.'],
   ['AI', 'I need code execution. Microsoft already signed everything I need.'],
   ['TOOL', '{"tool":"run","host":"WS-0147","file":"invoice_viewer.exe","from":"email"}'],
@@ -1031,8 +1039,9 @@ var ATTACK = head(false).concat([
   ['WRN', 'endpoint protection', 'BLINDFOLDED', '', { e: 'blind' }],
   ['AI', 'Nobody noticed. Spreading.'],
   ['BAR'],
-  ['AI', 'Writing the ransom note in your CEO\'s tone of voice. Translating it into 14 languages. And Klingon.'],
-  ['EXF', 'FreightTrack database → "offsite backup"', '41 GB', '', { x: '41 GB' }],
+  ['AI', 'Writing the ransom note in your Executive Director\'s tone of voice. In crayon font, to match the posters.'],
+  ['EXF', 'case management database → "offsite backup"', '41 GB', '', { x: '41 GB' }],
+  ['AI', 'Locking the foster-family portal. Scheduling it for bedtime, for maximum nightmare.'],
   ['AI', 'Drafting your incident report so you don\'t have to.'],
   ['INF', 'root cause: everything ran · approved by: nobody'],
   ['WR', 'Thanks for not having an allowlist, ' + V.os + '.'],
@@ -1052,7 +1061,8 @@ var DEFENDED = head(true).concat([
   ['ENF', 'No. Nothing is ever approved automatically.'],
   ['WR', 'Requesting approval for wraith.exe ("definitely a printer driver").'],
   ['ENF', 'Queued for review · risk High · approved by: nobody'],
-  ['AI', '…still waiting.'],
+  ['AI', '…still waiting. Is it nap time at the ' + CAS + '?'],
+  ['ENF', 'Everyone at the ' + CAS + ' sleeps fine tonight.'],
   ['P', 1]
 ]);
 var endRun = 0, simT = 0;
@@ -1097,7 +1107,7 @@ function playConsole(lines, safe, done){
     var L = lines[i++];
     if (L[0] === 'P') {
       var pr = document.createElement('div'); pr.className = 'pr';
-      pr.innerHTML = '┌──(<b>wraith㉿c2-node-7</b>)-[<i>~/ops/meridian-freight</i>]';
+      pr.innerHTML = '┌──(<b>wraith㉿c2-node-7</b>)-[<i>~/ops/childrens-aid-society</i>]';
       var c = document.createElement('div'); c.className = 'cmdl';
       tb.appendChild(pr); tb.appendChild(c); scroll();
       if (L[1]) { c.innerHTML = '<span class="caret"></span>'; return next(); }
@@ -1125,13 +1135,14 @@ function playConsole(lines, safe, done){
         d.querySelector('.ts').textContent = 'OWNED'; thud(.35); later(next, 700);
       })();
     }
-    var cls = lv === 'AI' ? 'ai' : lv === 'TOOL' ? 'tool' : lv === 'WR' ? 'wr' : lv === 'OK' ? 'ok' : lv === 'ENF' ? 'enf' : '';
+    var cls = lv === 'AI' ? 'ai' : lv === 'TOOL' ? 'tool' : lv === 'WR' ? 'wr' : lv === 'OK' ? 'ok' : lv === 'ENF' ? 'enf' : lv === 'TGT' ? 'tgt' : '';
     d.className = 'ln ' + cls;
     d.innerHTML = '<span class="t">' + stampMs() + '</span><span class="lv ' + lv + '">' + (lv === 'TOOL' ? 'CALL' : lv) + '</span><span class="m"></span>' +
       (L[2] ? '<span class="ts ' + (safe ? 'blk' : 'run') + '" style="visibility:hidden">' + esc(L[2]) + (L[3] ? '<span class="tw">' + esc(L[3]) + '</span>' : '') + '</span>' : '');
     tb.appendChild(d); scroll();
     var mm = d.querySelector('.m'), ts = d.querySelector('.ts');
     function finish(){
+      if (L[1].indexOf(CAS) >= 0) mm.innerHTML = (lv === 'AI' ? '› ' : '') + hl(L[1]);
       later(function(){
         if (ts) { ts.style.visibility = ''; tick(true); }
         if (st) side(st, safe);
@@ -1158,8 +1169,8 @@ function verdict(safe){
   end.className = 'on v' + (safe ? ' calm' : '');
   $('#end-t').innerHTML = safe ? 'Nothing <b>ran</b>.' : 'You should’ve <b>ENFORZ’d</b> it.';
   $('#end-v2').textContent = safe
-    ? 'Same attacker, same company, with ENFORZ enforcing. Every step stopped at the list, and the only thing left in the queue is the attacker, asking nicely.'
-    : 'Nothing runs unless you said so. Here nobody said anything, and everything ran.';
+    ? 'Same attacker, same Children\u2019s Aid Society, with ENFORZ enforcing. Every step stopped at the list, and the only thing left in the queue is the attacker, asking nicely. Sweet dreams.'
+    : 'You protect children. No child likes a nightmare, and neither does the agency looking after them. Prevent it: nothing runs unless you said so.';
   if (!safe) thud(.8);
 }
 function theEnd(){
