@@ -586,7 +586,7 @@ body.hit .tint{animation:redflash .5s ease-out}
         <div class="sr2"><span>Credentials</span><b id="s-c">0</b></div>
         <div class="sr2"><span>Endpoint protection</span><b id="s-e">online</b></div>
         <div class="sr2"><span>Exfiltrated</span><b id="s-x">0 B</b></div>
-        <div class="sr2"><span>Target</span><b class="cas">Children&rsquo;s Aid Society</b></div>
+        <div class="sr2"><span>Target</span><b>Children&rsquo;s Aid Society</b></div>
         <div class="sr2"><span>Model</span><b>very-confident-xl</b></div>
       </aside>
     </div>
@@ -1017,7 +1017,7 @@ function tick(hi){
 }
 var CMD = './wraith run --target childrens-aid-society --objective "everything" --autonomy full';
 var CAS = 'Children\u2019s Aid Society';
-// The target's name flashes blue wherever the console says it.
+// The target's name flashes blue where the attacker picks it.
 function hl(t){ return esc(t).split(esc(CAS)).join('<span class="cas">' + esc(CAS) + '</span>'); }
 function head(enf){ return [
   ['P'],
@@ -1142,7 +1142,8 @@ function playConsole(lines, safe, done){
     tb.appendChild(d); scroll();
     var mm = d.querySelector('.m'), ts = d.querySelector('.ts');
     function finish(){
-      if (L[1].indexOf(CAS) >= 0) mm.innerHTML = (lv === 'AI' ? '› ' : '') + hl(L[1]);
+      // Flashes once only: on the line where the attacker picks its target.
+      if (lv === 'TGT') mm.innerHTML = hl(L[1]);
       later(function(){
         if (ts) { ts.style.visibility = ''; tick(true); }
         if (st) side(st, safe);
