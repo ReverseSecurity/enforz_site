@@ -207,6 +207,9 @@ body.horror .hdr{border-bottom-color:color-mix(in srgb,var(--line2) calc(100% - 
 body.horror .hero{background:radial-gradient(ellipse at 74% 38%,rgba(107,12,27,calc(var(--hot)*.95)) 0%,rgba(33,7,13,calc(var(--hot)*.9)) 38%,transparent 74%)}
 body.horror .hero::before{content:"";position:absolute;width:900px;height:900px;right:-320px;top:-280px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,16,44,calc(var(--hot)*.26)) 0%,rgba(160,0,29,calc(var(--hot)*.14)) 35%,transparent 70%);animation:orb 3.2s ease-in-out infinite}
 @keyframes orb{50%{transform:scale(1.06);opacity:.75}}
+html:has(body.held){overflow:hidden}
+body.held .hero h1{animation:held 1.1s ease-in-out infinite alternate}
+@keyframes held{from{opacity:1}to{opacity:.82}}
 body.horror .hero h1{text-shadow:0 0 calc(var(--hot)*14px) rgba(255,25,60,calc(var(--hot)*.9)),0 0 calc(var(--hot)*44px) rgba(224,0,43,calc(var(--hot)*.5))}
 body.horror .head h2,body.horror .final h2{text-shadow:0 0 18px rgba(255,20,43,calc(var(--hot)*.35))}
 body.horror .soft{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 48%,var(--bg) 100%)}
@@ -839,10 +842,55 @@ function setMode(m, fromChoice){
   if (m === 'horror') {
     startAudio();
     clearTimeout(window._turn);
-    window._turn = setTimeout(function(){ if (mode === 'horror') { turn($('#h1')); turn($('.hero .k')); turn($('.hero .lede')); $$('.hero .cta [data-p], .fh [data-p]').forEach(turn); flicker(); } }, reduce ? 0 : 4200);
+    heroTurned = false; held = false; readDone = false; heldAt = Date.now();
+    window._turn = setTimeout(turnHero, reduce ? 0 : 4200);
   } else { stopAudio(); }
 }
 $$('.mode button').forEach(function(b){ b.addEventListener('click', function(){ setMode(b.getAttribute('data-mode')); }); });
+
+/* ------------------------------------- the first line turns, and holds you */
+// In the other reality the headline starts to change the moment the reader
+// moves, and the page will not scroll until it has finished and had a moment
+// to be read. Then it lets go.
+var heroTurned = false, held = false, readDone = false, heldAt = 0;
+function turnHero(){
+  clearTimeout(window._turn);
+  if (mode !== 'horror' || heroTurned) return;
+  heroTurned = true;
+  turn($('#h1')); turn($('.hero .k')); turn($('.hero .lede'));
+  $$('.hero .cta [data-p], .fh [data-p]').forEach(turn); flicker();
+  watchRead();
+}
+function watchRead(){
+  var t0 = Date.now(), doneAt = 0;
+  (function chk(){
+    if (mode !== 'horror') { letGo(); return; }
+    var h = $('#h1');
+    if (!doneAt && h.getAttribute('data-shown') === 'horror' && !h.classList.contains('typing')) doneAt = Date.now();
+    if ((doneAt && Date.now() - doneAt > (reduce ? 600 : 1900)) || Date.now() - t0 > 9000) { readDone = true; letGo(); return; }
+    setTimeout(chk, 100);
+  })();
+}
+function letGo(){
+  if (!held) return;
+  held = false; body.classList.toggle('held', false);
+}
+function inHorrorPage(){ return mode === 'horror' && $('#splash').style.display === 'none' && !$('#end').className; }
+function moved(e){
+  if (!inHorrorPage() || readDone) return;
+  // The click that chose this reality is not a move.
+  if (e.type === 'pointermove' && Date.now() - heldAt < 500) return;
+  turnHero();
+  var scrolls = e.type === 'wheel' || e.type === 'touchmove'
+    || (e.type === 'keydown' && /^(ArrowDown|ArrowUp|PageDown|PageUp|End|Home| |Spacebar)$/.test(e.key));
+  if (!scrolls) return;
+  if (!held) { held = true; body.classList.add('held'); thud(.25); }
+  if (e.cancelable) e.preventDefault();
+  if (scrollY > 0) window.scrollTo(0, 0);
+}
+['wheel', 'touchmove', 'touchstart', 'keydown', 'pointermove'].forEach(function(t){
+  window.addEventListener(t, moved, { passive: false });
+});
 $('#swap').addEventListener('click', function(){ setMode(mode === 'horror' ? 'control' : 'horror'); window.scrollTo(0, 0); });
 
 function turn(el){ if (el && mode === 'horror') setCopy(el, 'horror', true); }
@@ -868,7 +916,11 @@ function onScroll(){
   var max = document.documentElement.scrollHeight - innerHeight;
   target = Math.max(0, Math.min(1, scrollY / Math.max(1, max)));
 }
-window.addEventListener('scroll', function(){ lastMove = Date.now(); onScroll(); }, { passive: true });
+window.addEventListener('scroll', function(){
+  // A scrollbar drag cannot be cancelled: put the page back while it holds.
+  if (held && scrollY > 0) { window.scrollTo(0, 0); return; }
+  lastMove = Date.now(); onScroll();
+}, { passive: true });
 var lastMove = Date.now(), pulling = false, finalSeen = 0;
 function pull(){
   pulling = true; flicker(); thud(.5); body.classList.add('pull');
