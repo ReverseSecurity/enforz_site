@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>ENFORZ Experience</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Choose your experience: ENFORZ as it ships, or the same company in the reality where nobody installed it.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap">
+<style>
+/* One page, two realities. Every section exists once, with its CONTROL copy in
+   data-p and its OTHER REALITY copy in data-h. The horror is driven by one number,
+   --dread (0..1), which follows the reader's scroll and falls again when they
+   scroll back up. Nothing here makes a network request about the reader. */
+:root{
+  --bg:#080B13;--bg2:#0C111C;--card:#121926;--card2:#18212F;--line:#242F45;--line2:#1A2232;
+  --fg:#F0F3F8;--dim:#A6B2C6;--faint:#6D7B92;--amber:#9D8CFF;--cyan:#4DD0E1;--mint:#4FD6A9;--crit:#FF7A6B;--warn:#FFC95C;
+  --blood:#B3121B;--a-dim:rgba(157,140,255,.15);--c-dim:rgba(77,208,225,.13);--m-dim:rgba(79,214,169,.13);--x-dim:rgba(255,122,107,.13);
+  --f-h:'Familjen Grotesk','Helvetica Neue',Arial,sans-serif;--f-b:'Figtree','Helvetica Neue',Arial,sans-serif;
+  --f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;--f-s:'Cormorant Garamond',Georgia,serif;
+  --r:16px;--rs:10px;--dread:0;color-scheme:dark
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-b);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:var(--f-h);font-weight:600;letter-spacing:-.025em;margin:0}
+p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:8px}
+.wrap{width:min(1200px,100% - 32px);margin-inline:auto}
+.k{font-family:var(--f-m);font-size:.72rem;letter-spacing:.17em;text-transform:uppercase;color:var(--amber)}
+.grad{background:linear-gradient(96deg,var(--amber),var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------------------------------------------------------------- splash */
+#splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#05070D;overflow:auto;padding:28px 16px}
+#splash::before{content:"";position:fixed;inset:0;background:radial-gradient(900px 600px at 30% 30%,rgba(157,140,255,.10),transparent 60%),radial-gradient(800px 600px at 75% 75%,rgba(179,18,27,.10),transparent 62%);pointer-events:none}
+.sp{position:relative;width:min(1080px,100%)}
+.sp-logo{width:min(300px,62vw);height:auto;display:block}
+.boot{margin-top:22px;font-family:var(--f-m);font-size:.78rem;line-height:1.75;color:var(--faint);min-height:7.2em;white-space:pre-wrap}
+.boot b{color:var(--dim);font-weight:500}
+.boot .r{color:#E0525A}
+.sp h1{margin-top:18px;font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.05}
+.sp .lead{margin-top:12px;color:var(--dim);max-width:56ch;line-height:1.55}
+.doors{margin-top:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.door{position:relative;text-align:left;cursor:pointer;border-radius:20px;padding:26px 26px 24px;border:1px solid var(--line);background:linear-gradient(180deg,#111827,#0B101B);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;min-height:250px;display:flex;flex-direction:column}
+.door:hover,.door:focus-visible{transform:translateY(-4px)}
+.door .tag{font-family:var(--f-m);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase}
+.door h2{margin-top:14px;font-size:clamp(1.5rem,2.6vw,2rem);line-height:1.1}
+.door p{margin-top:10px;color:var(--dim);font-size:.94rem;line-height:1.55;max-width:44ch}
+.door .go{margin-top:auto;padding-top:22px;font-family:var(--f-m);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.door.c{border-color:rgba(157,140,255,.35)}
+.door.c .tag,.door.c .go{color:var(--amber)}
+.door.c:hover{border-color:var(--amber);box-shadow:0 30px 70px -40px rgba(157,140,255,.6)}
+.door.h{border-color:rgba(179,18,27,.45);background:linear-gradient(180deg,#140b0e,#090507)}
+.door.h .tag,.door.h .go{color:#E0525A}
+.door.h h2{font-family:var(--f-s);font-weight:600;font-size:clamp(1.8rem,3vw,2.4rem);letter-spacing:-.01em}
+.door.h:hover{border-color:#E0525A;box-shadow:0 30px 80px -40px rgba(179,18,27,.75)}
+.door.h::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);opacity:0;transition:opacity .3s;pointer-events:none}
+.door.h:hover::after{opacity:1;animation:scan 1.4s steps(6) infinite}
+.door.h:hover h2{animation:jit .35s steps(2) 2}
+@keyframes scan{to{background-position:0 18px}}
+@keyframes jit{50%{transform:translate(1px,-1px);text-shadow:-2px 0 rgba(224,82,90,.7),2px 0 rgba(77,208,225,.35)}}
+.fine{margin-top:22px;font-family:var(--f-m);font-size:.7rem;color:var(--faint);line-height:1.7}
+.fine a{color:var(--dim)}
+
+/* ---------------------------------------------------------------- header */
+.hdr{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg2) 86%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line2)}
+.hin{display:flex;align-items:center;gap:14px;padding-block:11px}
+.brand img{height:28px;width:auto;display:block;transition:filter .6s}
+nav.nv{margin-left:auto;display:flex;gap:3px}
+nav.nv a{font-family:var(--f-m);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-decoration:none;padding:8px 11px;border-radius:999px;transition:color .2s}
+nav.nv a:hover{color:var(--fg)}
+.mode{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--card);flex:none}
+.mode button{border:0;background:none;cursor:pointer;font-family:var(--f-m);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:6px 10px;border-radius:999px}
+.mode button[aria-pressed="true"]{background:var(--a-dim);color:var(--amber)}
+body.horror .mode button[aria-pressed="true"]{background:rgba(179,18,27,.22);color:#F08088}
+.snd{display:none;width:36px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;place-items:center;flex:none}
+.snd svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+body.horror .snd{display:grid}
+@media(max-width:1180px){nav.nv{display:none}.mode{margin-left:auto}}
+@media(max-width:520px){.hin{gap:8px}.brand img{height:21px}.mode button{padding:6px 8px;font-size:.58rem;letter-spacing:.06em}.snd{width:32px}}
+nav.nv a{white-space:nowrap}
+
+/* --------------------------------------------------------------- sections */
+.band{padding-block:clamp(64px,8vw,104px);position:relative}
+.soft{background:var(--bg2);border-block:1px solid var(--line2)}
+.head{max-width:62ch}
+.head h2{margin-top:12px;font-size:clamp(1.8rem,3.6vw,2.7rem);line-height:1.1}
+.head .sub{margin-top:14px;color:var(--dim);font-size:1rem;line-height:1.6;max-width:56ch}
+.hero{padding-block:clamp(56px,8vw,96px) clamp(48px,6vw,80px);overflow:hidden}
+.hero .aur{position:absolute;inset:-20% -10% auto;height:120%;background:radial-gradient(700px 420px at 20% 20%,rgba(157,140,255,.16),transparent 60%),radial-gradient(600px 400px at 80% 30%,rgba(77,208,225,.10),transparent 60%);pointer-events:none;transition:opacity 1s}
+.hin2{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,4vw,56px);align-items:center}
+@media(max-width:900px){.hin2{grid-template-columns:1fr}}
+.hero h1{margin-top:16px;font-size:clamp(2.4rem,5.4vw,4.3rem);line-height:1.02}
+.hero .lede{margin-top:18px;color:var(--dim);font-size:clamp(1rem,1.35vw,1.14rem);line-height:1.55;max-width:48ch}
+.cta{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+.b{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:12px 18px;font-weight:600;font-size:.92rem;text-decoration:none;cursor:pointer;border:1px solid var(--line);background:var(--card)}
+.b1{background:var(--amber);border-color:var(--amber);color:#0B0820}
+.feed{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:0 30px 80px -40px rgba(0,0,0,.9)}
+.fh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line2);font-family:var(--f-m);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.fh .dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 4px var(--m-dim);animation:pl 2s infinite}
+@keyframes pl{50%{opacity:.4}}
+.fh .e{margin-left:auto;color:var(--faint)}
+.fr{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--line2);transition:background .4s}
+.fr:first-child{border-top:0}
+.fr .w{font-size:.9rem;line-height:1.4}
+.fr .s{display:block;margin-top:3px;font-family:var(--f-m);font-size:.7rem;color:var(--faint)}
+.sv{font-family:var(--f-m);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:4px 9px;border:1px solid}
+.sv.a{color:var(--amber);border-color:rgba(157,140,255,.4)}
+.sv.c{color:var(--crit);border-color:rgba(255,122,107,.4)}
+.sv.m{color:var(--mint);border-color:rgba(79,214,169,.4)}
+.fr.new{animation:flash 1.2s}
+@keyframes flash{from{background:rgba(224,82,90,.18)}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--bg2);padding:22px 20px}
+.st .n{font-family:var(--f-h);font-size:clamp(1.9rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.03em}
+.st .l{margin-top:4px;color:var(--dim);font-size:.86rem}
+.tiles{margin-top:clamp(26px,3.4vw,38px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.ti{background:var(--card2);border:1px solid var(--line2);border-radius:var(--rs);padding:18px 18px 20px;transition:transform .2s,border-color .2s}
+.ti:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--amber) 42%,var(--line))}
+.ti h3{font-size:1.02rem;line-height:1.3}
+.ti p{margin-top:9px;color:var(--dim);font-size:.9rem;line-height:1.55}
+.ti .n{font-family:var(--f-m);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+
+/* the loop */
+.loop{margin-top:34px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px;counter-reset:s}
+@media(max-width:900px){.loop{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.loop{grid-template-columns:1fr}}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:18px;position:relative}
+.step::before{counter-increment:s;content:"0" counter(s);font-family:var(--f-m);font-size:.7rem;color:var(--faint)}
+.step b{display:block;margin-top:8px;font-family:var(--f-h);font-size:1.15rem}
+.step p{margin-top:8px;color:var(--dim);font-size:.86rem;line-height:1.5}
+
+/* the queue */
+.q{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.qh,.qr{display:grid;grid-template-columns:minmax(0,2.4fr) minmax(0,1.3fr) .7fr .8fr minmax(150px,1fr);gap:14px;align-items:center;padding:13px 18px}
+.qh{font-family:var(--f-m);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);background:var(--card2);border-bottom:1px solid var(--line2)}
+.qr{border-top:1px solid var(--line2);font-size:.88rem}
+.qr:first-of-type{border-top:0}
+.qr .f b{display:block;font-weight:600}
+.qr .f span,.qr .pb{font-family:var(--f-m);font-size:.7rem;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.risk{font-family:var(--f-m);font-size:.66rem;border-radius:999px;padding:3px 8px;justify-self:start}
+.risk.lo{color:var(--mint);background:var(--m-dim)}.risk.el{color:var(--warn);background:rgba(255,201,92,.13)}.risk.hi{color:var(--crit);background:var(--x-dim)}
+.qa{display:flex;gap:6px;justify-self:end}
+.qa button{border:1px solid var(--line);background:var(--card2);border-radius:8px;padding:6px 10px;font-size:.78rem;cursor:pointer}
+.qa button.ok{border-color:rgba(157,140,255,.5);color:var(--amber)}
+.qr.done .qa{opacity:.5}
+.qnote{padding:12px 18px;border-top:1px solid var(--line2);font-family:var(--f-m);font-size:.72rem;color:var(--faint);min-height:42px}
+@media(max-width:820px){.qh{display:none}.qr{grid-template-columns:1fr auto;row-gap:8px}.qr .f{grid-column:1/-1}.qr .pb,.qr .m{display:none}}
+
+/* gates */
+.gates{margin-top:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:8px}
+.g{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--line2);border-radius:10px;background:var(--card);font-size:.88rem}
+.g i{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:.7rem;font-weight:700;background:var(--m-dim);color:var(--mint);transition:background .3s,color .3s}
+.g.x i{background:rgba(179,18,27,.25);color:#F08088}
+.g.x span{text-decoration:line-through;text-decoration-color:rgba(224,82,90,.7);color:var(--faint)}
+
+/* audit log */
+.log{margin-top:30px;border:1px solid var(--line);border-radius:var(--r);background:#0A0E17;font-family:var(--f-m);font-size:.78rem;overflow:hidden}
+.log .lr{display:grid;grid-template-columns:150px 170px 1fr;gap:14px;padding:10px 16px;border-top:1px solid var(--line2);color:var(--dim)}
+.log .lr:first-child{border-top:0}
+.log .lr .a{color:var(--cyan)}
+.log .lr.you .a{color:#F08088}
+@media(max-width:700px){.log .lr{grid-template-columns:1fr}}
+
+/* about + final */
+.about{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:start}
+@media(max-width:860px){.about{grid-template-columns:1fr}}
+.why{border-left:3px solid var(--amber);padding-left:20px}
+.why p{font-family:var(--f-h);font-size:clamp(1.15rem,2vw,1.5rem);font-weight:600;line-height:1.32;letter-spacing:-.02em}
+.why p+p{margin-top:14px;font-family:var(--f-b);font-weight:400;font-size:.95rem;line-height:1.6;color:var(--dim);letter-spacing:0}
+.final{text-align:center}
+.final h2{font-size:clamp(2rem,4.6vw,3.6rem);line-height:1.05;max-width:20ch;margin:14px auto 0}
+.final .lede{margin:18px auto 0;color:var(--dim);max-width:56ch;line-height:1.6}
+.final .cta{justify-content:center}
+footer{padding-block:34px;border-top:1px solid var(--line2);font-family:var(--f-m);font-size:.72rem;color:var(--faint)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+footer a{color:var(--dim)}
+
+/* ---------------------------------------------------- the other reality */
+.fx{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:0;transition:opacity .6s}
+body.horror .fx{opacity:1}
+.vig{background:radial-gradient(ellipse at center,transparent calc(62% - var(--dread)*30%),rgba(0,0,0,calc(.35 + var(--dread)*.55)) 100%)}
+.tint{background:rgba(120,6,14,calc(var(--dread)*.22));mix-blend-mode:multiply}
+.grain{opacity:0}
+body.horror .grain{opacity:calc(.04 + var(--dread)*.14);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:grain .5s steps(4) infinite}
+@keyframes grain{25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(2%,2%)}}
+body.horror{--amber:color-mix(in srgb,#9D8CFF calc(100% - var(--dread)*100%),#E0525A);--cyan:color-mix(in srgb,#4DD0E1 calc(100% - var(--dread)*85%),#B3121B)}
+body.horror .hero .aur{opacity:calc(1 - var(--dread)*1.6)}
+body.horror .brand img{filter:grayscale(calc(var(--dread)*1)) sepia(calc(var(--dread)*.6)) hue-rotate(calc(var(--dread)*-50deg)) saturate(calc(1 + var(--dread)*3))}
+body.horror .fh .dot{background:#E0525A;box-shadow:0 0 0 4px rgba(224,82,90,.2)}
+body.horror.d3 h2,body.horror.d3 .hero h1{animation:glitch 6s infinite steps(1)}
+@keyframes glitch{0%,93%,100%{transform:none;text-shadow:none}94%{transform:translate(-2px,1px);text-shadow:2px 0 rgba(224,82,90,.8),-2px 0 rgba(77,208,225,.4)}96%{transform:translate(2px,-1px);text-shadow:-3px 0 rgba(224,82,90,.8)}}
+body.horror.d4 .wrap{animation:shudder 9s infinite}
+@keyframes shudder{0%,97%,100%{transform:none}98%{transform:translateX(-3px)}99%{transform:translateX(2px)}}
+.flick{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:45}
+.flick.on{animation:fl .32s steps(3)}
+@keyframes fl{0%{opacity:.85}40%{opacity:0}70%{opacity:.6}100%{opacity:0}}
+.serif{font-family:var(--f-s)!important;font-weight:600;letter-spacing:-.01em!important}
+.bleed{color:#C8161F!important;-webkit-text-fill-color:#C8161F!important;background:none!important}
+.dread-bar{position:fixed;left:0;top:0;height:2px;background:#C8161F;z-index:60;width:calc(var(--dread)*100%);opacity:0}
+body.horror .dread-bar{opacity:1}
+#ghost{position:fixed;width:18px;height:22px;z-index:70;pointer-events:none;opacity:0;transition:opacity 1.5s;left:0;top:0}
+#ghost svg{width:18px;height:22px;filter:drop-shadow(0 0 6px rgba(200,22,31,.6))}
+body.horror.d4 #ghost{opacity:.55}
+.typing::after{content:"";display:inline-block;width:.5ch;height:1em;vertical-align:-.12em;background:currentColor;margin-left:2px;animation:pl .7s infinite}
+
+/* the end */
+#end{position:fixed;inset:0;z-index:90;background:#000;display:none;place-items:center;text-align:center;padding:24px}
+#end.on{display:grid}
+#end .l1{font-family:var(--f-h);font-size:clamp(1.6rem,4vw,3rem);font-weight:600;color:#D9DEE8;letter-spacing:-.02em;min-height:1.3em}
+#end .l2{margin-top:18px;font-family:var(--f-s);font-style:italic;font-size:clamp(2.6rem,8vw,6.4rem);color:#C8161F;line-height:1;opacity:0;transition:opacity 2.4s;text-shadow:0 0 40px rgba(200,22,31,.35)}
+#end .l3{margin-top:34px;font-family:var(--f-m);font-size:.74rem;letter-spacing:.06em;color:#6D7B92;opacity:0;transition:opacity 1.6s;line-height:1.8}
+#end .l3 b{color:#A6B2C6;font-weight:500}
+#end .acts{margin-top:26px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;opacity:0;transition:opacity 1.2s}
+#end .acts button,#end .acts a{border:1px solid #2B3650;background:#0C111C;color:#D9DEE8;border-radius:999px;padding:11px 18px;font-size:.9rem;cursor:pointer;text-decoration:none;font-family:var(--f-b)}
+#end.show2 .l2,#end.show3 .l3,#end.show3 .acts{opacity:1}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+
+<div id="splash" role="dialog" aria-modal="true" aria-labelledby="sp-h">
+  <div class="sp">
+    <img class="sp-logo" src="../brand/logo-on-dark.webp" alt="ENFORZ" width="1585" height="300">
+    <div class="boot" id="boot" aria-hidden="true"></div>
+    <h1 id="sp-h">Every system has a choice.</h1>
+    <p class="lead">Two versions of the same company, section for section. In one, nothing runs unless someone said so. In the other, nobody installed ENFORZ.</p>
+    <div class="doors">
+      <button class="door c" type="button" data-go="control">
+        <span class="tag">Experience one &middot; Control</span>
+        <h2>Nothing runs unless you said so.</h2>
+        <p>ENFORZ as it ships: application control for Windows, built from what your machines really run, with a person behind every decision.</p>
+        <span class="go">Enter &rarr;</span>
+      </button>
+      <button class="door h" type="button" data-go="horror">
+        <span class="tag">Experience two &middot; The other reality</span>
+        <h2>Everything runs. Nobody said so.</h2>
+        <p>The same page, for the company that decided allowlisting was too much work. Best with sound. It gets worse the further you scroll. Scroll back up if you need to.</p>
+        <span class="go">Enter, if you must &rarr;</span>
+      </button>
+    </div>
+    <p class="fine">Fiction, built by HCFS. Anything this page appears to know about you is read by your own browser and never leaves it. &middot; <a href="../index.html">Back to the ENFORZ site</a></p>
+  </div>
+</div>
+
+<div class="dread-bar" aria-hidden="true"></div>
+<div class="fx vig" aria-hidden="true"></div>
+<div class="fx tint" aria-hidden="true"></div>
+<div class="fx grain" aria-hidden="true"></div>
+<div class="flick" id="flick" aria-hidden="true"></div>
+<div id="ghost" aria-hidden="true"><svg viewBox="0 0 18 22"><path d="M1 1 L1 17 L5.5 13 L8.5 20 L11 19 L8 12 L14 12 Z" fill="#0a0a0a" stroke="#C8161F" stroke-width="1.2"/></svg></div>
+
+<header class="hdr">
+  <div class="wrap hin">
+    <a class="brand" href="#top" aria-label="ENFORZ"><img src="../brand/logo-on-dark.webp" alt="ENFORZ" width="1585" height="300"></a>
+    <nav class="nv" aria-label="Sections">
+      <a href="#problem" data-p="The problem" data-h="The mistake" data-h2="Your mistake">The problem</a>
+      <a href="#loop" data-p="The loop" data-h="The spiral" data-h2="No end">The loop</a>
+      <a href="#queue" data-p="Approvals" data-h="Approvals" data-h2="Nobody approves">Approvals</a>
+      <a href="#safety" data-p="Safety" data-h="Safety?" data-h2="Not safe">Safety</a>
+      <a href="#security" data-p="Security" data-h="Security" data-h2="Not secure">Security</a>
+      <a href="#about" data-p="About" data-h="Who let it in" data-h2="Who let you in">About</a>
+    </nav>
+    <div class="mode" role="group" aria-label="Experience">
+      <button type="button" data-mode="control" aria-pressed="true">Control</button>
+      <button type="button" data-mode="horror" aria-pressed="false">Other reality</button>
+    </div>
+    <button class="snd" id="snd" type="button" aria-pressed="true" aria-label="Mute sound"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="snd-w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+  </div>
+</header>
+
+<main id="top">
+<section class="band hero">
+  <div class="aur" aria-hidden="true"></div>
+  <div class="wrap hin2">
+    <div>
+      <span class="k" data-p="ENFORZ &middot; Application control for Windows" data-h="ENFORZ &middot; Application freedom for Windows"></span>
+      <h1 id="h1" data-p="Nothing runs unless &lt;span class=grad&gt;you said so&lt;/span&gt;." data-h="Everything runs. &lt;span class=grad&gt;Nobody said so.&lt;/span&gt;"></h1>
+      <p class="lede" data-p="Antivirus asks whether a program looks bad. Application control asks whether you allowed it. Ransomware you have never seen, a signed tool turned against you, a script from an email: none of it starts, because it was never on the list." data-h="Why make people approve software? Let every attachment open, every unsigned driver load and every script borrow the keys. Think of the meetings nobody has to attend. Keep scrolling. Everyone does."></p>
+      <div class="cta">
+        <a class="b b1" href="#loop" data-p="How it works" data-h="Keep scrolling"></a>
+        <a class="b" href="../features.html" data-p="Every feature" data-h="Every feature (all of them on)"></a>
+      </div>
+    </div>
+    <div class="feed" aria-live="polite">
+      <div class="fh"><span class="dot" aria-hidden="true"></span><span data-p="Waiting on you" data-h="Running without you"></span><span class="e" data-p="Example" data-h="Live"></span></div>
+      <div id="feed"></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="padding-top:0">
+  <div class="wrap">
+    <div class="stats">
+      <div class="st"><div class="n" data-p="41k" data-h="41k"></div><div class="l" data-p="events become 23 decisions" data-h="events. Zero decisions."></div></div>
+      <div class="st"><div class="n" data-p="14" data-h="0"></div><div class="l" data-p="gates before enforcement" data-h="gates. We took them out for speed."></div></div>
+      <div class="st"><div class="n" data-p="6" data-h="1"></div><div class="l" data-p="rule levels to choose from" data-h="rule level: yes"></div></div>
+      <div class="st"><div class="n" data-p="100%" data-h="0%"></div><div class="l" data-p="of rules approved by a person" data-h="of anything approved by a person"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="band soft" id="problem">
+  <div class="wrap">
+    <div class="head">
+      <span class="k" data-p="Why this is hard" data-h="Why we stopped trying"></span>
+      <h2 data-p="Everyone agrees allowlisting works. &lt;span class=grad&gt;Almost nobody runs it.&lt;/span&gt;" data-h="Everyone agrees allowlisting works. &lt;span class=grad&gt;We decided not to find out.&lt;/span&gt;"></h2>
+      <p class="sub" data-p="Not because the idea is wrong. Because the two things standing in the way have never been solved properly: the firehose, and the fear." data-h="The firehose was loud and the fear was real, so we solved both the easy way. We stopped looking."></p>
+    </div>
+    <div class="tiles">
+      <div class="ti"><div class="n" data-p="The firehose" data-h="The firehose"></div><h3 data-p="Forty thousand events, twenty-three decisions" data-h="Forty thousand events, zero readers"></h3><p data-p="Audit mode produces tens of thousands of would-be blocks. ENFORZ folds them into one row per application, with the evidence beside it, so a person can actually decide." data-h="Audit mode produced tens of thousands of would-be blocks. We muted the channel. It is very quiet now. The quiet has been going on for some time."></p></div>
+      <div class="ti"><div class="n" data-p="The fear" data-h="The fear"></div><h3 data-p="Rehearsed before it is real" data-h="Nothing is ever blocked, so nothing is ever wrong"></h3><p data-p="Simulation replays real telemetry against a draft, a soak watches for surprises, and enforcement arrives one ring at a time with a way back." data-h="A bad rule might stop a machine booting. So there are no rules. Nothing has stopped. Something has started, though."></p></div>
+      <div class="ti"><div class="n" data-p="The drift" data-h="The drift"></div><h3 data-p="It stays true after day one" data-h="Day one never ended"></h3><p data-p="Recertification, hygiene and drift detection keep the list honest as software comes and goes." data-h="Software arrives. Software stays. Some of it was not installed by anyone who works here."></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="loop">
+  <div class="wrap">
+    <div class="head">
+      <span class="k" data-p="The loop" data-h="The spiral"></span>
+      <h2 data-p="From forty thousand events to &lt;span class=grad&gt;a policy you trust&lt;/span&gt;" data-h="From &ldquo;probably fine&rdquo; to &lt;span class=grad&gt;&ldquo;who approved this?&rdquo;&lt;/span&gt;"></h2>
+    </div>
+    <div class="loop">
+      <div class="step"><b data-p="Watch" data-h="Run"></b><p data-p="Agents report every would-be block, joined to its signer, without blocking anything." data-h="Let everything execute, including final_final_v3_REAL.exe."></p></div>
+      <div class="step"><b data-p="Collapse" data-h="Trust"></b><p data-p="Events fold into one decision per application, with machines, paths and risk signals." data-h="Someone signed it once. That makes it a friend."></p></div>
+      <div class="step"><b data-p="Decide" data-h="Forget"></b><p data-p="A person approves at the narrowest level that works. The AI drafts; it never decides." data-h="Nobody reads the queue, so nobody remembers what is in it."></p></div>
+      <div class="step"><b data-p="Rehearse" data-h="Spread"></b><p data-p="Simulate against real telemetry, then soak in audit on a pilot ring." data-h="It reached one machine on Tuesday. It reached the rest on Tuesday too."></p></div>
+      <div class="step"><b data-p="Enforce" data-h="Explain"></b><p data-p="One ring at a time, behind fourteen gates that fail closed, with break-glass ready." data-h="Write the incident report. Leave the &ldquo;approved by&rdquo; field blank. It was always blank."></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band soft" id="queue">
+  <div class="wrap">
+    <div class="head">
+      <span class="k" data-p="The approval queue" data-h="The approval queue (archived)"></span>
+      <h2 data-p="One row per decision. &lt;span class=grad&gt;Nothing approved automatically.&lt;/span&gt;" data-h="One row per program. &lt;span class=grad&gt;Everything approved automatically.&lt;/span&gt;"></h2>
+      <p class="sub" data-p="Try it. Approving here records a person and a reason, at the narrowest level that will still work. Rows flagged High must be kept blocked or investigated first." data-h="Try it. The buttons still work. They just do not change anything any more."></p>
+    </div>
+    <div class="q" role="table" aria-label="Approval queue">
+      <div class="qh" role="row"><span>Application / file</span><span>Publisher</span><span>Machines</span><span>Risk</span><span style="justify-self:end">Decision</span></div>
+      <div id="qrows"></div>
+      <div class="qnote" id="qnote" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="safety">
+  <div class="wrap">
+    <div class="head">
+      <span class="k" data-p="Safety" data-h="Safety"></span>
+      <h2 data-p="&ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&rdquo;" data-h="&ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&rdquo; It already has."></h2>
+      <p class="sub" data-p="Only if every one of these fails at once, and each of them fails closed. These are the checks between a draft and enforcement." data-h="These are the checks between a draft and enforcement. Watch them closely. Ours are being switched off one at a time while you read."></p>
+    </div>
+    <div class="gates" id="gates"></div>
+  </div>
+</section>
+
+<section class="band soft" id="security">
+  <div class="wrap">
+    <div class="head">
+      <span class="k" data-p="Security" data-h="Security"></span>
+      <h2 data-p="It decides what runs. &lt;span class=grad&gt;So it is built like it.&lt;/span&gt;" data-h="It decides what runs. &lt;span class=grad&gt;So does everyone else now.&lt;/span&gt;"></h2>
+    </div>
+    <div class="tiles">
+      <div class="ti"><div class="n" data-p="Keys" data-h="Keys"></div><h3 data-p="Every key has one job" data-h="One key opens everything"></h3><p data-p="Agents trust only the public key compiled into them. Policy signing, code signing, release and BitLocker sealing keys are separate, and the sensitive ones are sealed under passphrases nobody stores." data-h="It is on a sticky note under the monitor in the server room. Someone took a photo of it in 2023 for the onboarding deck."></p></div>
+      <div class="ti"><div class="n" data-p="Sign-in" data-h="Sign-in"></div><h3 data-p="Passkeys, SSO, and a way in when SSO is down" data-h="Whoever asks politely"></h3><p data-p="Passkeys first, authenticator codes as a fallback, OIDC single sign-on, lockouts after ten failures, and four roles from Viewer to TenantAdmin." data-h="The admin password is the company name and the year. We change the year every January. Usually."></p></div>
+      <div class="ti"><div class="n" data-p="Record" data-h="Record"></div><h3 data-p="An audit log nothing can edit, shipped to your SIEM" data-h="The logs are rotated hourly, to keep things tidy"></h3><p data-p="Every approval, build, promotion and sign-in, with who and why, sent as CEF, LEEF or JSON over syslog with TLS." data-h="There is a log of tonight. You are in it. Look below."></p></div>
+      <div class="ti"><div class="n" data-p="Appliance" data-h="Appliance"></div><h3 data-p="Hardened before it reaches you" data-h="Exposed before it reached us"></h3><p data-p="SSH closed by default and key-only, fail2ban, a deny-by-default firewall, automatic security patches and signed updates." data-h="Port 22 is open to the internet. It has been very popular. We have had visitors from countries we have not heard of."></p></div>
+    </div>
+    <div class="log" id="log" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="band" id="about">
+  <div class="wrap about">
+    <div class="head">
+      <span class="k" data-p="Who builds it" data-h="Who let it in"></span>
+      <h2 data-p="Built by HCFS, a non-profit &lt;span class=grad&gt;for&lt;/span&gt; non-profits" data-h="Built by nobody. &lt;span class=grad&gt;Maintained by no one.&lt;/span&gt;"></h2>
+      <p class="sub" data-p="Application control is normally sold at an enterprise price to the organisations least likely to be targeted. ENFORZ exists to put it within reach of the ones who cannot buy it." data-h="It was free. The bill came later, in the form of a weekend, a ransom note and a very long call with the insurer."></p>
+    </div>
+    <div class="why">
+      <p data-p="It is free because a more secure future cannot be sold only to those who can afford it." data-h="It was free because nobody wanted to be responsible for it."></p>
+      <p data-p="No licence, no subscription, no telemetry sent to us, and no feature held back. Your hardware, your data, your decisions." data-h="Your hardware. Your data. Their decisions."></p>
+    </div>
+  </div>
+</section>
+
+<section class="band soft final" id="final">
+  <div class="wrap">
+    <span class="k" data-p="ENFORZ" data-h="ENFORZ"></span>
+    <h2 data-p="The attack you have never seen &lt;span class=grad&gt;still does not run&lt;/span&gt;" data-h="The attack you have never seen &lt;span class=grad&gt;is already running&lt;/span&gt;"></h2>
+    <p class="lede" data-p="Learn what your estate really runs, collapse it into decisions a person can make, rehearse the policy against what already happened, and enforce it one ring at a time with a way back. Not detection. Permission." data-h="No approvals. No rehearsal. No way back. Keep going. There is a little more page left, and then there is not."></p>
+    <div class="cta">
+      <a class="b b1" href="../index.html" data-p="Visit the ENFORZ site" data-h="Leave"></a>
+      <button class="b" type="button" id="swap" data-p="See the other reality" data-h="Go back to Control"></button>
+    </div>
+  </div>
+</section>
+<div id="tail" style="height:60vh"></div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span data-p="ENFORZ &middot; Trust. Control. Enforce." data-h="ENFORZ &middot; Trust nothing. Control nothing. Too late."></span>
+    <span data-p="Built by HCFS, a non-profit for non-profits." data-h="Interactive fiction. No real system was touched. Probably."></span>
+    <span><a href="../index.html">ENFORZ site</a> &middot; <a href="../security.html">Security</a> &middot; <a href="#" id="restart">Choose again</a></span>
+  </div>
+</footer>
+
+<div id="end" role="dialog" aria-modal="true" aria-labelledby="end-1">
+  <div>
+    <div class="l1" id="end-1"></div>
+    <div class="l2" id="end-2">it was already running.</div>
+    <div class="l3">This was fiction. <b>ENFORZ is real</b>, and in that reality nothing you did not approve would have started.<br>Fictional company. Probably.</div>
+    <div class="acts"><button type="button" id="end-c">Return to Control</button><button type="button" id="end-s">Choose again</button><a href="../index.html">ENFORZ site</a></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var body = document.body, mode = 'control', dread = 0, target = 0, maxReached = 0;
+var $ = function(s, r){ return (r || document).querySelector(s); };
+var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+/* ------------------------------------------------ what the browser says */
+// Read locally, shown back to the reader, sent nowhere.
+function viewer(){
+  var ua = navigator.userAgent || '', os = 'an unknown machine';
+  if (/Windows/.test(ua)) os = 'a Windows machine';
+  else if (/iPhone|iPad/.test(ua)) os = 'an iPhone or iPad';
+  else if (/Android/.test(ua)) os = 'an Android phone';
+  else if (/Mac OS X/.test(ua)) os = 'a Mac';
+  else if (/Linux/.test(ua)) os = 'a Linux machine';
+  var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch(e){}
+  return { os: os, tz: tz, scr: screen.width + '\u00d7' + screen.height,
+           host: /Windows/.test(ua) ? 'DESKTOP-' + (Math.random().toString(36).slice(2, 9)).toUpperCase() : 'this-device' };
+}
+var V = viewer(), T0 = new Date();
+function clock(d){ d = d || new Date(); return d.toTimeString().slice(0, 8); }
+function stamp(off){ var d = new Date(T0.getTime() + (off || 0) * 1000); return d.toISOString().slice(0, 10) + ' ' + clock(d); }
+
+/* ---------------------------------------------------------- the splash */
+var boot = $('#boot');
+var bootLines = [
+  '<b>enforz</b> experience 1.0.12 \u00b7 initialising',
+  'viewer: ' + V.os + (V.tz ? ' \u00b7 ' + V.tz : '') + ' \u00b7 ' + V.scr,
+  'policy loaded on this device: <span class="r">none</span>',
+  'two realities available. choose one.'
+];
+(function typeBoot(i){
+  if (i >= bootLines.length) return;
+  boot.innerHTML += (i ? '\n' : '') + bootLines[i];
+  setTimeout(function(){ typeBoot(i + 1); }, reduce ? 0 : 420);
+})(0);
+
+$$('.door').forEach(function(d){
+  d.addEventListener('click', function(){ enter(d.getAttribute('data-go')); });
+});
+function enter(m){
+  $('#splash').style.display = 'none';
+  try { history.replaceState(null, '', '#' + (m === 'horror' ? 'other' : 'control')); } catch(e){}
+  setMode(m, true);
+  window.scrollTo(0, 0);
+}
+$('#restart').addEventListener('click', function(e){
+  e.preventDefault(); stopAudio(); $('#end').className = '';
+  $('#splash').style.display = 'grid'; try { history.replaceState(null, '', location.pathname); } catch(e2){}
+});
+
+/* ----------------------------------------------------------- the copy */
+var copyEls = $$('[data-p]');
+function setCopy(el, which, typed){
+  var html = el.getAttribute(which === 'horror' ? 'data-h' : 'data-p');
+  if (el.getAttribute('data-shown') === which) return;
+  el.setAttribute('data-shown', which);
+  if (!typed || reduce) { el.innerHTML = html; return; }
+  typeInto(el, html);
+}
+// Erase what is there, then type the new text. Markup in the new copy (the
+// gradient span) is applied once typing finishes.
+function typeInto(el, html){
+  var tmp = document.createElement('div'); tmp.innerHTML = html;
+  var plain = tmp.textContent, cur = el.textContent, i = cur.length, j = 0;
+  var tok = (el._tok || 0) + 1; el._tok = tok;
+  el.classList.add('typing');
+  (function erase(){
+    if (el._tok !== tok) return;
+    if (i > 0) { i = Math.max(0, i - 3); el.textContent = cur.slice(0, i); return setTimeout(erase, 8); }
+    (function type(){
+      if (el._tok !== tok) return;
+      if (j < plain.length) { j++; el.textContent = plain.slice(0, j);
+        var ch = plain[j - 1]; return setTimeout(type, ch === '.' || ch === '?' ? 160 : 18 + Math.random() * 22); }
+      el.innerHTML = html; el.classList.remove('typing');
+    })();
+  })();
+}
+function allCopy(which){ copyEls.forEach(function(el){ el._tok = (el._tok || 0) + 1; el.classList.remove('typing'); setCopy(el, which, false); }); }
+
+/* ------------------------------------------------------------ the feed */
+var FEED_P = [
+  ['41,882 block events collapsed into 23 decisions', 'Approvals', 'a', 'Action'],
+  ['An unsigned tool is running from a folder users can write to', 'Suspicious blocks', 'c', 'Urgent'],
+  ['A loaded driver matches the vulnerable driver list', 'Vulnerabilities', 'c', 'Urgent'],
+  ['Simulation: this draft would stop 6 machines working', 'Simulation', 'a', 'Review'],
+  ['The AI drafted answers for 312 apps. 9 groups are ready for you', 'AI assistant', 'm', 'Review'],
+  ['Pilot ring soaked 14 days with no new blocks', 'Rollout', 'm', 'Ready']
+];
+var FEED_H = [
+  ['invoice_viewer.exe started on 5 machines', 'approved by: nobody', 'c', 'Running'],
+  ['svchost.exe started from a user\u2019s AppData folder', 'approved by: nobody', 'c', 'Running'],
+  ['A driver nobody recognises loaded at boot', 'approved by: nobody', 'c', 'Running'],
+  ['The backups were encrypted. Not by us.', 'approved by: nobody', 'c', 'Running'],
+  ['A new machine joined: ' + V.os, 'approved by: nobody', 'c', 'Running'],
+  ['A process is reading this page with you', 'approved by: nobody', 'c', 'Running']
+];
+var feed = $('#feed'), feedTimer = null, feedN = 0;
+function row(r, isNew){
+  return '<div class="fr' + (isNew ? ' new' : '') + '"><span><span class="w">' + r[0] + '</span><span class="s">' + (mode === 'horror' ? r[1] : 'Signal from ' + r[1]) + '</span></span><span class="sv ' + r[2] + '">' + r[3] + '</span></div>';
+}
+function drawFeed(){
+  var src = mode === 'horror' ? FEED_H : FEED_P, n = mode === 'horror' ? Math.min(src.length, 2 + Math.floor(dread * 8) + feedN) : src.length;
+  feed.innerHTML = src.slice(0, Math.max(2, n)).map(function(r, i){ return row(r, mode === 'horror' && i === n - 1 && feedN > 0); }).join('');
+}
+function feedTick(){
+  if (mode === 'horror' && feedN < FEED_H.length) { feedN++; drawFeed(); }
+  feedTimer = setTimeout(feedTick, 2600 + Math.random() * 2400);
+}
+
+/* ----------------------------------------------------------- the queue */
+var Q = [
+  ['FreightTrack.exe', 'C:\\Program Files\\Meridian\\FreightTrack', 'unsigned (in-house)', 33, 'lo', 'Low', 'Hash'],
+  ['Slack.exe', '%LOCALAPPDATA%\\slack', 'Slack Technologies', 41, 'lo', 'Low', 'FilePublisher'],
+  ['invoice_viewer.exe', 'C:\\Users\\n.fischer\\Downloads', 'unsigned', 5, 'el', 'Elevated', null],
+  ['svchost.exe', 'C:\\Users\\l.haddad\\AppData\\Roaming', 'unsigned, Windows name', 1, 'hi', 'High', null]
+];
+function drawQueue(){
+  var rows = Q.slice();
+  if (mode === 'horror' && dread > .35) rows.push([V.host.toLowerCase() + '.exe', 'C:\\Users\\you\\Downloads \u00b7 first seen ' + clock(T0), 'unsigned', 1, 'hi', 'High', null]);
+  $('#qrows').innerHTML = rows.map(function(r, i){
+    var acts = mode === 'horror'
+      ? '<button type="button" data-q="' + i + '">Allowed</button>'
+      : (r[6] ? '<button type="button" class="ok" data-q="' + i + '">Approve \u00b7 ' + r[6] + '</button>' : '<button type="button" data-q="' + i + '">Keep blocked</button>');
+    return '<div class="qr" role="row"><span class="f"><b>' + r[0] + '</b><span>' + r[1] + '</span></span><span class="pb">' + r[2] + '</span><span class="m">' + r[3] + '</span><span class="risk ' + r[4] + '">' + (mode === 'horror' ? 'Ignored' : r[5]) + '</span><span class="qa">' + acts + '</span></div>';
+  }).join('');
+  $('#qnote').textContent = mode === 'horror' ? 'Last decision by a person: never.' : 'Each approval is one person, one reason, one rule level. Nothing here is approved automatically.';
+}
+$('#qrows').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-q]'); if (!b) return;
+  var r = b.closest('.qr'), name = r.querySelector('b').textContent;
+  if (mode === 'horror') {
+    $('#qnote').textContent = 'There is nothing to approve. ' + name + ' is already running.';
+    flicker(); return;
+  }
+  r.classList.add('done');
+  $('#qnote').textContent = b.classList.contains('ok')
+    ? 'Approved by you at ' + clock() + ': ' + name + ', ' + b.textContent.split('\u00b7')[1].trim() + '. Recorded in the audit log. It reaches machines with the next build.'
+    : 'Kept blocked by you at ' + clock() + ': ' + name + '. It stays in the queue history with your reason.';
+});
+
+/* ----------------------------------------------------------- the gates */
+var GATES = ['Simulation run against these exact rules', 'Simulation newer than the last change', 'Everything it would block decided', 'Audit soak complete for this ring', 'Machine count typed by a person', 'Self-lockout check: the agent signer is trusted', 'Agent binary Authenticode-signed', 'Machines report the agent healthy under audit', 'Windows decided what the simulation predicted', 'A second approver who is not you', 'A signed-in policy administrator of this organisation', 'Recovery menu locked into the policy', 'Compiled policy read back and verified', 'Every waiver written down and attributed'];
+function drawGates(){
+  var off = mode === 'horror' ? Math.round(Math.min(1, Math.max(0, (dread - .3) / .5)) * GATES.length) : 0;
+  $('#gates').innerHTML = GATES.map(function(g, i){
+    var x = i < off; return '<div class="g' + (x ? ' x' : '') + '"><i>' + (x ? '\u2715' : '\u2713') + '</i><span>' + g + '</span></div>';
+  }).join('');
+}
+
+/* ------------------------------------------------------- the audit log */
+function drawLog(){
+  var L;
+  if (mode === 'horror') {
+    L = [[stamp(0), 'page.opened', 'you, from ' + V.os, 1],
+         [stamp(4), 'reality.chosen', 'you chose this one', 1],
+         [stamp(22), 'warning.ignored', 'you kept scrolling', 1]];
+    if (dread > .5) L.push([clock(), 'policy.removed', 'removed by: nobody', 1]);
+    if (dread > .62) L.push([clock(), 'session.joined', 'someone else is reading this with you', 1]);
+  } else {
+    L = [['2026-11-19 08:26:04', 'approval.created', 'alex.morgan \u00b7 FreightTrack.exe \u00b7 Hash \u00b7 \u201cOur dispatch software\u201d'],
+         ['2026-11-19 08:26:05', 'policy.built', 'alex.morgan \u00b7 Meridian Base v1.0.0.2 \u00b7 self-lockout check passed'],
+         ['2026-11-19 08:31:40', 'policy.promoted', 'priya.nair (second approver) \u00b7 Pilot \u00b7 8 machines typed'],
+         ['2026-11-19 09:02:17', 'breakglass.closed', 'sam.okafor \u00b7 MF-LT-0107 \u00b7 window expired on its own']];
+  }
+  $('#log').innerHTML = L.map(function(l){ return '<div class="lr' + (l[3] ? ' you' : '') + '"><span>' + l[0] + '</span><span class="a">' + l[1] + '</span><span>' + l[2] + '</span></div>'; }).join('');
+}
+
+/* ---------------------------------------------------------------- audio */
+// The music from the first prototype: a detuned drone with a slow LFO, a bed of
+// filtered noise and a heartbeat. Here it follows the dread.
+var A = null, audioOn = true, hbTimer = null;
+function startAudio(){
+  if (!audioOn || mode !== 'horror') return;
+  var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+  try {
+    if (!A) {
+      var ctx = new AC(), master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+      var dA = ctx.createOscillator(), dB = ctx.createOscillator(), dG = ctx.createGain();
+      dA.type = 'sawtooth'; dA.frequency.value = 48; dB.type = 'sine'; dB.frequency.value = 51.7;
+      var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 380;
+      dG.gain.value = .13; dA.connect(lp); dB.connect(lp); lp.connect(dG); dG.connect(master);
+      var lfo = ctx.createOscillator(), lfoG = ctx.createGain(); lfo.frequency.value = .17; lfoG.gain.value = .045; lfo.connect(lfoG); lfoG.connect(dG.gain);
+      var nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = nb.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * .22;
+      var nz = ctx.createBufferSource(); nz.buffer = nb; nz.loop = true;
+      var nf = ctx.createBiquadFilter(); nf.type = 'lowpass'; nf.frequency.value = 620; nf.Q.value = .7;
+      var nG = ctx.createGain(); nG.gain.value = .09; nz.connect(nf); nf.connect(nG); nG.connect(master);
+      dA.start(); dB.start(); lfo.start(); nz.start();
+      A = { ctx: ctx, master: master, lp: lp, nf: nf, nG: nG };
+    }
+    A.ctx.resume();
+    A.master.gain.cancelScheduledValues(A.ctx.currentTime);
+    A.master.gain.setTargetAtTime(.2, A.ctx.currentTime, .8);
+    heartbeat();
+  } catch(e) { /* sound is optional */ }
+}
+function heartbeat(){
+  clearTimeout(hbTimer);
+  if (!A || !audioOn || mode !== 'horror') return;
+  var ctx = A.ctx, now = ctx.currentTime, loud = 1 + dread * 1.6;
+  [0, .19].forEach(function(delay, k){
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(k ? 43 : 52, now + delay);
+    o.frequency.exponentialRampToValueAtTime(28, now + delay + .22);
+    g.gain.setValueAtTime(.0001, now + delay);
+    g.gain.exponentialRampToValueAtTime((k ? .045 : .075) * loud, now + delay + .025);
+    g.gain.exponentialRampToValueAtTime(.0001, now + delay + .28);
+    o.connect(g); g.connect(A.master); o.start(now + delay); o.stop(now + delay + .3);
+  });
+  hbTimer = setTimeout(heartbeat, (3600 - dread * 2500) + Math.random() * 900);
+}
+function audioFollow(){
+  if (!A) return;
+  var t = A.ctx.currentTime;
+  A.lp.frequency.setTargetAtTime(380 + dread * 1100, t, .5);
+  A.nf.frequency.setTargetAtTime(620 + dread * 1800, t, .5);
+  A.nG.gain.setTargetAtTime(.09 + dread * .1, t, .5);
+  if (mode === 'horror' && audioOn && !$('#end').classList.contains('on')) A.master.gain.setTargetAtTime(.18 + dread * .14, t, .6);
+}
+function stopAudio(){
+  clearTimeout(hbTimer);
+  if (A) { try { A.master.gain.cancelScheduledValues(A.ctx.currentTime); A.master.gain.setTargetAtTime(0, A.ctx.currentTime, .15); } catch(e){} }
+}
+function thud(){
+  if (!A || !audioOn) return;
+  var ctx = A.ctx, now = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(70, now); o.frequency.exponentialRampToValueAtTime(22, now + 1.6);
+  g.gain.setValueAtTime(.0001, now); g.gain.exponentialRampToValueAtTime(.6, now + .03); g.gain.exponentialRampToValueAtTime(.0001, now + 2.2);
+  o.connect(g); g.connect(ctx.destination); o.start(now); o.stop(now + 2.3);
+}
+$('#snd').addEventListener('click', function(){
+  audioOn = !audioOn; this.setAttribute('aria-pressed', String(audioOn));
+  this.setAttribute('aria-label', audioOn ? 'Mute sound' : 'Turn sound on');
+  $('#snd-w').style.display = audioOn ? '' : 'none';
+  if (audioOn) startAudio(); else stopAudio();
+});
+
+/* ------------------------------------------------------------- the mode */
+function setMode(m, fromChoice){
+  mode = m;
+  body.classList.toggle('horror', m === 'horror');
+  $$('.mode button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-mode') === m)); });
+  dread = target = maxReached = 0; feedN = 0; applyDread(true);
+  // The other reality opens looking exactly like Control. It turns when the
+  // reader starts to scroll, or after a few seconds of looking at it.
+  allCopy('control');
+  $$('.serif,.bleed').forEach(function(el){ el.classList.remove('serif', 'bleed'); });
+  drawFeed(); drawQueue(); drawGates(); drawLog(); navCopy();
+  if (m === 'horror') {
+    startAudio();
+    clearTimeout(window._turn);
+    window._turn = setTimeout(function(){ if (mode === 'horror') { turn($('#h1')); turn($('.hero .k')); turn($('.hero .lede')); $$('.hero .cta [data-p], .fh [data-p]').forEach(turn); flicker(); } }, reduce ? 0 : 4200);
+  } else { stopAudio(); }
+}
+$$('.mode button').forEach(function(b){ b.addEventListener('click', function(){ setMode(b.getAttribute('data-mode')); }); });
+$('#swap').addEventListener('click', function(){ setMode(mode === 'horror' ? 'control' : 'horror'); window.scrollTo(0, 0); });
+
+function turn(el){ if (el && mode === 'horror') setCopy(el, 'horror', true); }
+function navCopy(){
+  $$('nav.nv a').forEach(function(a){
+    var t = mode !== 'horror' ? a.getAttribute('data-p') : (dread > .55 ? a.getAttribute('data-h2') : dread > .2 ? a.getAttribute('data-h') : a.getAttribute('data-p'));
+    if (a.textContent !== t) a.textContent = t;
+  });
+}
+
+/* ----------------------------------------------- dread follows the scroll */
+var io = new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if (!e.isIntersecting || mode !== 'horror') return;
+    $$('[data-p]', e.target).forEach(function(el, i){ setTimeout(function(){ turn(el); }, i * 140); });
+    if (e.target.id === 'about') { $$('#about h2').forEach(function(h){ h.classList.add('serif'); }); }
+  });
+}, { rootMargin: '-25% 0px -35% 0px' });
+$$('main > section').forEach(function(s, i){ if (i > 0) io.observe(s); });
+
+function onScroll(){
+  var max = document.documentElement.scrollHeight - innerHeight;
+  target = Math.max(0, Math.min(1, scrollY / Math.max(1, max)));
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+var lastD = -1;
+function applyDread(force){
+  document.documentElement.style.setProperty('--dread', dread.toFixed(3));
+  body.classList.toggle('d3', mode === 'horror' && dread > .45);
+  body.classList.toggle('d4', mode === 'horror' && dread > .7);
+  if (force || Math.abs(dread - lastD) > .02) {
+    lastD = dread; navCopy();
+    if (mode === 'horror') { drawGates(); drawLog(); if (dread > .35 !== !!$('#qrows').getAttribute('data-you')) { $('#qrows').setAttribute('data-you', dread > .35 ? '1' : ''); drawQueue(); } }
+    audioFollow();
+  }
+}
+function frame(){
+  var k = target < dread ? .04 : .08;            // falls more slowly than it rises
+  dread += (target - dread) * k;
+  if (Math.abs(target - dread) < .0005) dread = target;
+  if (mode === 'horror') {
+    maxReached = Math.max(maxReached, dread);
+    applyDread(false);
+    var atBottom = scrollY + innerHeight >= document.documentElement.scrollHeight - 24;
+    if (atBottom && dread > .9 && !$('#end').classList.contains('on')) theEnd();
+    // Back near the top, the page recovers: the copy returns to Control.
+    if (maxReached > .2 && dread < .04) { maxReached = 0; allCopy('control'); $$('.serif').forEach(function(el){ el.classList.remove('serif'); }); feedN = 0; drawFeed(); drawQueue(); }
+    if (!reduce && dread > .3 && Math.random() < dread * .004) flicker();
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+function flicker(){ if (reduce) return; var f = $('#flick'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
+
+/* the cursor that is not yours */
+var gx = innerWidth / 2, gy = innerHeight / 2, mx = gx, my = gy, ghost = $('#ghost');
+window.addEventListener('pointermove', function(e){ mx = e.clientX; my = e.clientY; }, { passive: true });
+(function chase(){
+  gx += (mx - 60 - gx) * .035; gy += (my + 40 - gy) * .035;
+  ghost.style.transform = 'translate(' + gx.toFixed(1) + 'px,' + gy.toFixed(1) + 'px)';
+  requestAnimationFrame(chase);
+})();
+
+/* -------------------------------------------------------------- the end */
+function theEnd(){
+  var end = $('#end'); end.className = 'on'; thud();
+  if (A) { try { A.master.gain.cancelScheduledValues(A.ctx.currentTime); A.master.gain.setTargetAtTime(0, A.ctx.currentTime, .05); } catch(e){} }
+  clearTimeout(hbTimer);
+  var l1 = $('#end-1'), s1 = 'Nothing runs unless you said so.', s2 = 'You said so.';
+  l1.textContent = '';
+  var i = 0;
+  (function type(){
+    if (i <= s1.length) { l1.textContent = s1.slice(0, i++); return setTimeout(type, reduce ? 0 : 55); }
+    setTimeout(function(){
+      var j = s1.length;
+      (function erase(){
+        if (j > 0) { j -= 1; l1.textContent = s1.slice(0, j); return setTimeout(erase, reduce ? 0 : 22); }
+        var k = 0;
+        (function type2(){
+          if (k <= s2.length) { l1.textContent = s2.slice(0, k++); return setTimeout(type2, reduce ? 0 : 90); }
+          setTimeout(function(){ end.classList.add('show2'); }, 900);
+          setTimeout(function(){ end.classList.add('show3'); }, 3600);
+        })();
+      })();
+    }, reduce ? 0 : 1400);
+  })();
+}
+$('#end-c').addEventListener('click', function(){ $('#end').className = ''; setMode('control'); window.scrollTo(0, 0); });
+$('#end-s').addEventListener('click', function(){ $('#end').className = ''; stopAudio(); setMode('control'); window.scrollTo(0, 0); $('#splash').style.display = 'grid'; });
+
+/* deep links: #control or #other skip the splash; sound then starts at the first click or tap */
+document.addEventListener('pointerdown', function(){ if (mode === 'horror' && audioOn) startAudio(); }, { passive: true });
+allCopy('control'); drawFeed(); drawQueue(); drawGates(); drawLog();
+setTimeout(feedTick, 3000);
+if (location.hash === '#control' || location.hash === '#other') {
+  $('#splash').style.display = 'none'; setMode(location.hash === '#other' ? 'horror' : 'control');
+}
+})();
+</script>
+</html>

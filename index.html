@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
 <title>ENFORZ Platform</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -95,7 +98,7 @@ img.lg-l{display:none}
 .mb[aria-expanded="true"] .bars i:nth-child(1){transform:translateY(6px) rotate(45deg)}
 .mb[aria-expanded="true"] .bars i:nth-child(2){opacity:0}
 .mb[aria-expanded="true"] .bars i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-@media(max-width:1010px){
+@media(max-width:1180px){
   .mb{display:flex}
   .hdr nav+.tgl{margin-left:6px}
   .hdr nav{position:absolute;left:0;right:0;top:100%;margin:0;z-index:54;
@@ -420,6 +423,8 @@ body.on .d{display:block}
       <a href="#assist">AI</a>
       <a href="#safe">Safety</a>
       <a href="#mods">Modules</a>
+      <a href="features.html">Features</a>
+      <a href="security.html">Security</a>
       <a href="#about">Why free</a>
     </nav>
     <button class="mb" id="mb" type="button" aria-expanded="false" aria-controls="nav" aria-label="Sections"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
@@ -448,6 +453,8 @@ body.on .d{display:block}
         <span class="ch">Audit first, always</span>
         <span class="ch">CVE tracking per machine</span>
         <span class="ch">Suspicious files flagged</span>
+        <span class="ch">Passkeys and SSO</span>
+        <span class="ch">Recovery keys sealed</span>
       </div>
     </div>
     <div>
@@ -482,7 +489,7 @@ body.on .d{display:block}
     <div class="head">
       <span class="k">Product tour</span>
       <h2>The console, end to end</h2>
-      <p class="sub">A complete walkthrough of the working product: forty thousand block events arriving and collapsing into decisions, the AI assistant drafting the answers, the result becoming a policy the AI has reviewed, and reaching a first machine under enforcement. The organisation shown is fictitious, so the recording can be shared without restriction.</p>
+      <p class="sub">Three minutes of the current release, recorded in one take: signing in with a second factor, the overview and guided rollout, the approval queue, the AI assistant's draft plan and policy review, suspicious activity and vulnerabilities, a policy traced back to the approvals behind it, the fleet, sealed BitLocker keys, the audit log, single sign-on and the SIEM connector. It ends on the appliance itself, driven from its own console over SSH. The organisation shown is fictitious, so the recording can be shared without restriction.</p>
     </div>
     <div class="gal">
       <video class="galvid" controls preload="none" poster="tour/poster.webp" playsinline>
@@ -494,7 +501,27 @@ body.on .d{display:block}
   </div>
 </section>
 
-<section class="band soft sect" id="why">
+<section class="band soft sect" id="new">
+  <div class="wrap">
+    <div class="head">
+      <span class="k">What's new &middot; release 1.0.12 &middot; agent 1.0.177</span>
+      <h2>Two weeks of work, <span class="grad">all of it shipping</span></h2>
+      <p class="sub">Everything below is in the current appliance and agent. The <a href="features.html" style="color:var(--cyan)">full feature list</a> covers the rest, and <a href="security.html" style="color:var(--cyan)">Security</a> explains how the platform protects itself.</p>
+    </div>
+    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Passkeys and authenticator codes</span></div><p class="tx">Every local account proves a second factor before anything else loads. Passkeys are preferred, authenticator codes are the fallback, and an administrator can require passkeys only.</p><div class="d">WebAuthn passkeys or TOTP. The TOTP secret is sealed at rest, a used code is refused if replayed, failures lock the account, and the QR code is drawn on the appliance, never by an outside service. SSO sign-ins follow the identity provider's own rules.</div></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">BitLocker escrow and sealed keys</span></div><p class="tx">Every machine's BitLocker state and whether its current recovery key can actually be recovered, from AD, from Entra ID, or from a copy sealed to a key only you can open.</p><div class="d">Escrow is checked by protector ID with metadata-only rights: the console never reads a key from AD or Entra. The agent seals each recovery key to an RSA-4096 public key compiled into it; the private half is wrapped under a passphrase that is never stored.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">SIEM connector</span></div><p class="tx">The console's own audit log, and alerts if you choose, sent to your SIEM as CEF, LEEF or JSON over syslog.</p><div class="d">RFC 5424 syslog over TLS (RFC 5425, the default), TCP or UDP, with a severity mapping per event type.</div></div>
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Firmware protection, opt-in</span></div><p class="tx">An enforced policy can be CI-signed and kept in the EFI partition, so not even a local administrator can remove it. Off unless the build, the machine and a person typing the signing password all say yes.</p><div class="d">Its own signing key, separate from the key agents trust. Never an unsigned policy in EFI, and a signed one comes off only through the signed removal sequence. Recommended only after enforcement has run well for a while.</div></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg></span><span class="nm">Emergency delivery</span></div><p class="tx">If the appliance itself is down, each machine can still fetch its own current assignment from a cloud store you own, and break-glass still works.</p><div class="d">Each file is signed by the appliance before upload and verified by the agent against the key compiled into it. An unreachable appliance pauses telemetry. It never relaxes enforcement.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span class="nm">Block notices people understand</span></div><p class="tx">When something is blocked, the person in front of the machine sees why, in your words, with a way to ask for it.</p><div class="d">A corner pop-up, a Windows notification or both, shown in the user's session by the agent. Title, text and how long it stays are yours to set; Canary rings first.</div></div>
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">PDQ, Intune or Action1</span></div><p class="tx">The tool you already use installs the agent, updates it, pushes urgent policy and carries break-glass, with the same gates in front of every route.</p><div class="d">One deployment tool per organisation. Rapid push sends a supplemental, or tells machines to fetch their own assignment. Scripts handle machines in Constrained Language Mode.</div></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cert"/></svg></span><span class="nm">Signed updates and OS patches</span></div><p class="tx">Appliance updates arrive as signed bundles and are verified before anything changes, with a one-step way back. Debian security patches install automatically.</p><div class="d">Release keys sign every bundle; a separate rotation key is kept offline. Both updates and patches run from the appliance console, menu U.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="band sect" id="why">
   <div class="wrap">
     <div class="head">
       <span class="k">Why this is hard</span>
@@ -632,6 +659,22 @@ body.on .d{display:block}
   </div>
 </section>
 
+<section class="band sect" id="mcp">
+  <div class="wrap">
+    <div class="head">
+      <span class="k">On the roadmap &middot; not built yet</span>
+      <h2>Your own AI tools, <span class="grad">reading the console</span></h2>
+      <p class="sub">We plan an MCP server for ENFORZ: the Model Context Protocol, the open standard AI assistants use to reach other systems. Claude, Copilot or your own agent could then answer "why was this blocked on the finance laptops?" from the real data. It is a plan, described here so you can tell us what you need from it. Nothing below exists in the product today.</p>
+    </div>
+    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></span><span class="nm">Read, explain, find</span></div><p class="tx">Tools to search the queue, machines, policies, raw events, vulnerabilities and the audit log, and to explain what a policy allows and why.</p></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Drafts, never decisions</span></div><p class="tx">An assistant could draft a proposal or a request. Approving, building and enforcing stay in the console, signed in, by a person, through every gate.</p></div>
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Scoped and audited</span></div><p class="tx">Per-person tokens limited to one organisation and to read access, revocable at any time, and every call written to the audit log like any other action.</p></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Off until you turn it on</span></div><p class="tx">Like the built-in assistant: nothing listens until an administrator enables it, and it would sit on the management network, never on the agents' side.</p></div>
+    </div>
+  </div>
+</section>
+
 <section class="band ln sect" id="safe">
   <div class="wrap">
     <div class="head">
@@ -703,7 +746,8 @@ body.on .d{display:block}
       <button class="fc" type="button" aria-pressed="false" data-f="rev">Review</button>
       <button class="fc" type="button" aria-pressed="false" data-f="pol">Policy</button>
       <button class="fc" type="button" aria-pressed="false" data-f="fleet">Fleet</button>
-      <span class="cnt" id="cnt">Showing all 15</span>
+      <button class="fc" type="button" aria-pressed="false" data-f="sys">System</button>
+      <span class="cnt" id="cnt">Showing all 24</span>
     </div>
     <div class="grid" id="gr">
       <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Review queue</span></div><p class="tx">Thousands of block events folded into a handful of decisions, each with the evidence behind it.</p><p class="subs">Rollout view · Partly covered · Bulk review · Scored triage</p></div>
@@ -721,6 +765,15 @@ body.on .d{display:block}
       <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Break-glass</span></div><p class="tx">A time-limited exception that moves one machine to an audit copy and expires on its own.</p></div>
       <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Enrolment &amp; agents</span></div><p class="tx">Getting the agent onto machines, by your deployment tool or by hand, and keeping it current.</p><p class="subs">Enrolment · Push agent · Agent log · Directory sync</p></div>
       <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">Raw events &amp; audit log</span></div><p class="tx">The underlying record, kept so drafts can be rehearsed and so every action has a name against it.</p></div>
+      <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span class="nm">Application requests</span></div><p class="tx">People ask for blocked software in their own words. A request allows nothing until an approver acts on it.</p><p class="subs">Requests · Recertification · Policy hygiene</p></div>
+      <div class="mc" data-c="pol"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Firmware protection</span></div><p class="tx">Opt-in CI-signed policies kept in the EFI partition, for machines that pass every check.</p><p class="subs">Signing key · Signing test · Removal sequence</p></div>
+      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">BitLocker</span></div><p class="tx">Recovery keys that can actually be recovered: escrow checked in AD and Entra, and copies sealed to your own key.</p></div>
+      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Deployment tools</span></div><p class="tx">PDQ Connect, Microsoft Intune or Action1 install the agent and carry urgent changes. Manual works too.</p><p class="subs">Push agent · Rapid push · Emergency delivery</p></div>
+      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-video"/></svg></span><span class="nm">Block notice</span></div><p class="tx">A clear message on the machine when something is blocked, with your wording and a way to ask.</p></div>
+      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Sign-in and roles</span></div><p class="tx">OIDC single sign-on, passkeys or authenticator codes for local accounts, and four roles from Viewer to TenantAdmin.</p></div>
+      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">SIEM and notifications</span></div><p class="tx">The audit log to your SIEM, and alerts by email, browser push or Teams, including alerts you build yourself.</p><p class="subs">CEF · LEEF · JSON · syslog over TLS</p></div>
+      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Appliance care</span></div><p class="tx">Encrypted backups, restore, signed updates, OS patches, redacted support bundles and a console menu for everything else.</p></div>
+      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><span class="nm">MCP server <i>(planned)</i></span></div><p class="tx">Read access for your own AI tools, scoped and audited. On the roadmap, not in the product yet.</p></div>
     </div>
   </div>
 </section>
@@ -756,6 +809,7 @@ body.on .d{display:block}
     <div class="hon">
       <h3>It arrives as an appliance</h3>
       <p class="sub" style="margin-top:10px">The platform ships as one virtual machine for Hyper-V (VHDX) or VMware (OVA), and cloud images are available too. The operating system underneath is hardened and patched as part of the release, so there is no build for anyone on your side to get right.</p>
+      <p class="sub" style="margin-top:10px">Put it on your management network. Only the agents need to reach it, and a planned second address will let it face them through a small proxy handler while the console stays inside. <a href="security.html" style="color:var(--cyan)">How ENFORZ protects itself &rarr;</a></p>
       <ul class="hl" style="margin-top:18px">
         <li><span class="nn">1</span><span><b>Import the image.</b> One file into Hyper-V or VMware, or start the cloud image. It boots configured.</span></li>
         <li><span class="nn">2</span><span><b>Enrol a pilot ring.</b> A handful of machines you can reimage, in audit mode, blocking nothing.</span></li>
@@ -768,8 +822,8 @@ body.on .d{display:block}
   <div class="wrap">
     <div class="head">
       <span class="k">Who builds it</span>
-      <h2>Built by a non-profit, <span class="grad">for</span> non-profits</h2>
-      <p class="sub">Application control is normally sold as an enterprise product at an enterprise price, to the organisations least likely to be targeted by somebody with time on their hands. ENFORZ exists to put it within reach of the ones who cannot buy it.</p>
+      <h2>Built by HCFS, a non-profit <span class="grad">for</span> non-profits</h2>
+      <p class="sub">ENFORZ is built by HCFS. Application control is normally sold as an enterprise product at an enterprise price, to the organisations least likely to be targeted by somebody with time on their hands. ENFORZ exists to put it within reach of the ones who cannot buy it.</p>
     </div>
 
     <div class="why">
@@ -800,6 +854,10 @@ body.on .d{display:block}
     <span class="k">Enforz</span>
     <h2>The attack you have <span class="grad">never seen</span> still does not run</h2>
     <p class="lede">Learn what your estate really runs, collapse it into decisions a person can actually make, rehearse the policy against what already happened, and enforce it one ring at a time with a way back. Not detection. Permission.</p>
+    <div class="cta" style="margin-top:22px;justify-content:center">
+      <a class="b b1" href="features.html">Every feature <svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></a>
+      <a class="b b2" href="enforze_expirence/">Choose your experience</a>
+    </div>
   </div>
 </section>
 
@@ -809,6 +867,7 @@ body.on .d{display:block}
     <p class="nt"><b>ENFORZ</b> builds, reviews and deploys Windows application control policy from what your own machines really run. Telemetry, an approval queue no rule escapes, simulation against real events, and enforcement behind fourteen gates that fail closed. On one server you own, with nothing reported back to us. Flip <b>Detail</b> at the top for the mechanics behind any claim.</p>
     </div>
     <p class="rt">nothing runs unless you said so</p>
+    <p class="nt" style="margin-top:14px">Built by <b>HCFS</b>, a non-profit for non-profits. &middot; <a href="features.html">Features</a> &middot; <a href="security.html">Security</a> &middot; <a href="enforze_expirence/">The experience</a></p>
   </div>
 </footer>
 <script>
@@ -900,11 +959,11 @@ body.on .d{display:block}
     document.addEventListener('keydown',function(e){if(e.key==='Escape')setMenu(false)});
     document.addEventListener('click',function(e){
       if(!nv.contains(e.target)&&!mb.contains(e.target))setMenu(false)},true);
-    window.addEventListener('resize',function(){if(window.innerWidth>1010)setMenu(false)});
+    window.addEventListener('resize',function(){if(window.innerWidth>1180)setMenu(false)});
   }
 
   var links=Array.prototype.slice.call(document.querySelectorAll('#nav a'));
-  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  var secs=links.map(function(a){var h=a.getAttribute('href');return h.charAt(0)==='#'?document.querySelector(h):null});
   if('IntersectionObserver' in window){
     var ob=new IntersectionObserver(function(es){es.forEach(function(e){
       if(!e.isIntersecting)return; var k=secs.indexOf(e.target); if(k<0)return;

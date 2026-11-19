@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>ENFORZ Security</title>
+<meta name="description" content="How ENFORZ protects its keys, sign-in (passkeys, SSO), agents, audit log and SIEM shipping, and the hardened appliance it runs on.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* Layout: big type, short lines, one idea per tile. Everything long hides behind
+   the Detail switch. Dark-first: indigo ground, amber signal, cyan second light. */
+:root {
+  --bg:#080B13; --bg2:#0C111C; --card:#121926; --card2:#18212F;
+  --line:#242F45; --line2:#1A2232;
+  --fg:#F0F3F8; --dim:#A6B2C6; --faint:#6D7B92;
+  --amber:#9D8CFF; --cyan:#4DD0E1; --mint:#4FD6A9; --crit:#FF7A6B; --warn:#FFC95C;
+  --a-dim:rgba(157,140,255,.15); --c-dim:rgba(77,208,225,.13);
+  --m-dim:rgba(79,214,169,.13); --x-dim:rgba(255,122,107,.13); --w-dim:rgba(255,201,92,.13);
+  --sh:0 28px 70px -40px rgba(0,0,0,.9);
+  --f-h:'Familjen Grotesk','Helvetica Neue',Arial,sans-serif;
+  --f-b:'Figtree','Helvetica Neue',Arial,sans-serif;
+  --f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --r:16px; --rs:10px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#F5F8FC; --bg2:#FFFFFF; --card:#FFFFFF; --card2:#EDF2F8;
+  --line:#D6DFEC; --line2:#E6EBF3;
+  --fg:#080D18; --dim:#4A586E; --faint:#6F7D91;
+  --amber:#5B3DD6; --cyan:#116B7A; --mint:#0E7A5C; --crit:#C1332A; --warn:#8A5A00;
+  --a-dim:rgba(91,61,214,.10); --c-dim:rgba(17,107,122,.09);
+  --m-dim:rgba(14,122,92,.09); --x-dim:rgba(193,51,42,.09); --w-dim:rgba(138,90,0,.09);
+  --sh:0 20px 48px -30px rgba(15,25,50,.3);
+  color-scheme: light;
+}}
+:root[data-theme="light"]{
+  --bg:#F5F8FC; --bg2:#FFFFFF; --card:#FFFFFF; --card2:#EDF2F8;
+  --line:#D6DFEC; --line2:#E6EBF3;
+  --fg:#080D18; --dim:#4A586E; --faint:#6F7D91;
+  --amber:#5B3DD6; --cyan:#116B7A; --mint:#0E7A5C; --crit:#C1332A; --warn:#8A5A00;
+  --a-dim:rgba(91,61,214,.10); --c-dim:rgba(17,107,122,.09);
+  --m-dim:rgba(14,122,92,.09); --x-dim:rgba(193,51,42,.09); --w-dim:rgba(138,90,0,.09);
+  --sh:0 20px 48px -30px rgba(15,25,50,.3);
+  color-scheme: light;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:15px}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-b);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg2)}
+.band{width:100%}
+.wrap{max-width:1130px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sect{padding-block:clamp(42px,5.2vw,74px)}
+.soft{background:var(--bg2);border-block:1px solid var(--line2)}
+.ln{border-top:1px solid var(--line2)}
+
+h1,h2,h3,h4{margin:0;font-family:var(--f-h);text-wrap:balance;letter-spacing:-.03em}
+h1{font-size:clamp(2.15rem,5.8vw,3.95rem);font-weight:700;line-height:.98;letter-spacing:-.045em}
+h2{font-size:clamp(1.5rem,3.2vw,2.3rem);font-weight:700;line-height:1.06;letter-spacing:-.038em}
+h3{font-size:clamp(1rem,1.6vw,1.16rem);font-weight:600;line-height:1.25}
+h4{font-size:.98rem;font-weight:600;letter-spacing:-.018em}
+p{margin:0}
+.k{font-family:var(--f-m);font-size:.72rem;letter-spacing:.17em;text-transform:uppercase;color:var(--amber)}
+.lede{font-size:clamp(1rem,1.35vw,1.14rem);line-height:1.5;color:var(--dim);max-width:46ch}
+.sub{font-size:.96rem;line-height:1.55;color:var(--dim);max-width:52ch}
+.grad{background:linear-gradient(96deg,var(--amber),var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--amber)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:8px}
+.head{max-width:60ch}
+.head h2{margin-top:11px}
+.head .sub{margin-top:14px}
+
+/* header */
+section[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 74px)}
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:55;background:color-mix(in srgb,var(--bg2) 86%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line2)}
+.hin{display:flex;align-items:center;gap:12px;padding-block:11px}
+.brand{display:flex;align-items:center;text-decoration:none;flex:none}
+.brand img{height:30px;width:auto}
+.ftr-lg{height:34px;width:auto;margin-bottom:14px}
+img.lg-d{display:block}
+img.lg-l{display:none}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]) img.lg-d{display:none}
+  :root:not([data-theme="dark"]) img.lg-l{display:block}}
+:root[data-theme="light"] img.lg-d{display:none}
+:root[data-theme="light"] img.lg-l{display:block}
+:root[data-theme="dark"] img.lg-d{display:block}
+:root[data-theme="dark"] img.lg-l{display:none}
+.hdr nav{margin-left:auto;display:flex;gap:2px}
+.hdr nav{gap:3px}
+.hdr nav a{font-family:var(--f-m);font-size:.73rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-decoration:none;padding:8px 12px;border-radius:999px;transition:.15s}
+.hdr nav a:hover{color:var(--fg)}
+.hdr nav a.on{color:var(--amber);background:color-mix(in srgb,var(--amber) 12%,transparent)}
+.mb{display:none;flex:none;align-items:center;justify-content:center;width:42px;height:38px;border-radius:11px;
+  background:var(--card);border:1px solid var(--line);cursor:pointer;transition:.15s;margin-left:auto}
+.mb .bars{display:grid;gap:4px}
+.mb .bars i{display:block;width:16px;height:2px;border-radius:2px;background:var(--dim);transition:transform .22s,opacity .18s}
+.mb[aria-expanded="true"]{background:var(--card2);border-color:color-mix(in srgb,var(--amber) 55%,var(--line))}
+.mb[aria-expanded="true"] .bars i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.mb[aria-expanded="true"] .bars i:nth-child(2){opacity:0}
+.mb[aria-expanded="true"] .bars i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+@media(max-width:1180px){
+  .mb{display:flex}
+  .hdr nav+.tgl{margin-left:6px}
+  .hdr nav{position:absolute;left:0;right:0;top:100%;margin:0;z-index:54;
+    display:grid;grid-template-columns:1fr;gap:5px;padding:12px 16px 16px;
+    background:var(--bg2);backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--line2);box-shadow:var(--sh);
+    visibility:hidden;opacity:0;transform:translateY(-8px);
+    transition:opacity .2s,transform .2s,visibility .2s}
+  .hdr nav.open{visibility:visible;opacity:1;transform:none}
+  .hdr nav a{padding:14px 14px;font-size:.8rem;letter-spacing:.09em;border-radius:11px;background:var(--card);border:1px solid var(--line)}
+  .hin{position:relative}
+}
+
+.tgl{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-family:var(--f-b);font-size:.78rem;font-weight:500;color:var(--dim);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 13px 6px 9px;cursor:pointer;transition:.15s;flex:none}
+.hdr nav+.tgl{margin-left:6px}
+.tgl:hover{color:var(--fg)}
+.tgl .sw{width:27px;height:15px;border-radius:999px;background:var(--line);position:relative;flex:none;transition:.2s}
+.tgl .sw::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:var(--faint);transition:.2s}
+.tgl.hint{animation:tglpulse 3.4s ease-in-out infinite}
+@keyframes tglpulse{
+  0%,72%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--amber) 0%,transparent);border-color:var(--line)}
+  80%{box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 16%,transparent);border-color:color-mix(in srgb,var(--amber) 60%,var(--line))}
+  88%{box-shadow:0 0 0 7px color-mix(in srgb,var(--amber) 0%,transparent);border-color:color-mix(in srgb,var(--amber) 35%,var(--line))}}
+.tgl[aria-pressed="true"]{color:var(--fg);border-color:color-mix(in srgb,var(--amber) 55%,var(--line))}
+.tgl[aria-pressed="true"] .sw{background:var(--a-dim)}
+.tgl[aria-pressed="true"] .sw::after{transform:translateX(12px);background:var(--amber)}
+@media(max-width:440px){.tgl .lb{display:none}}
+
+/* detail reveal */
+.d{display:none;margin-top:10px;padding:9px 11px;background:var(--card2);border-radius:8px;border-left:2px solid color-mix(in srgb,var(--amber) 55%,transparent);font-family:var(--f-m);font-size:.72rem;line-height:1.6;color:var(--faint);overflow-wrap:anywhere}
+body.on .d{display:block}
+
+/* icons */
+.ic{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ic-l{width:26px;height:26px}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding-block:clamp(46px,8vw,104px) clamp(40px,6vw,76px)}
+.aur{position:absolute;inset:-30% -10% auto -10%;height:720px;pointer-events:none;opacity:.85;
+  background:
+   radial-gradient(42% 46% at 22% 36%,color-mix(in srgb,var(--amber) 26%,transparent),transparent 70%),
+   radial-gradient(38% 42% at 74% 24%,color-mix(in srgb,var(--cyan) 24%,transparent),transparent 70%),
+   radial-gradient(40% 40% at 54% 66%,color-mix(in srgb,var(--crit) 14%,transparent),transparent 72%);
+  filter:blur(36px);animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{0%{transform:translate3d(-2%,0,0) scale(1)}100%{transform:translate3d(3%,2%,0) scale(1.1)}}
+.hin2{position:relative;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);gap:clamp(30px,5vw,58px);align-items:center}
+@media(max-width:960px){.hin2{grid-template-columns:1fr}}
+.hero h1{margin-top:15px}
+.hero .lede{margin-top:19px}
+.cta{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+.b{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:.9rem;padding:11px 19px;border-radius:999px;border:1px solid transparent;cursor:pointer;font-family:var(--f-b);transition:transform .16s,box-shadow .16s}
+.b:hover{transform:translateY(-2px)}
+.b1{background:linear-gradient(100deg,var(--amber),color-mix(in srgb,var(--amber) 70%,var(--crit)));color:#140A33;box-shadow:0 10px 30px -12px color-mix(in srgb,var(--amber) 60%,transparent)}
+:root[data-theme="light"] .b1,:root:not([data-theme="dark"]) .b1{color:#FFF8EC}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .b1{color:#140A33}}
+:root[data-theme="dark"] .b1{color:#140A33}
+.b2{background:var(--card);border-color:var(--line);color:var(--fg)}
+.chips{margin-top:24px;display:flex;flex-wrap:wrap;gap:7px}
+.ch{font-family:var(--f-m);font-size:.72rem;letter-spacing:.03em;border:1px solid var(--line);color:var(--dim);padding:5px 10px;border-radius:999px;background:color-mix(in srgb,var(--card) 70%,transparent)}
+.chan{margin-top:23px;display:flex;flex-wrap:wrap;gap:7px}
+.cg{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-b);font-size:.79rem;font-weight:600;line-height:1;padding:8px 13px;border-radius:999px;color:var(--fg);border:1px solid color-mix(in srgb,var(--mint) 40%,var(--line));background:color-mix(in srgb,var(--m-dim) 65%,transparent)}
+.cg .ic{width:14px;height:14px;flex:none;color:var(--mint)}
+.cg.out{border-color:color-mix(in srgb,var(--amber) 36%,var(--line));background:color-mix(in srgb,var(--a-dim) 60%,transparent)}
+.cg.out .ic{color:var(--amber)}
+.chn{margin-top:11px;font-size:.785rem;line-height:1.5;color:var(--faint);max-width:46ch}
+.chn b{font-weight:600}.chn .g1{color:var(--mint)}.chn .g2{color:var(--amber)}
+
+/* hero feed */
+.feed{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;min-width:0}
+.fh{display:flex;align-items:center;gap:9px;padding:13px 16px;border-bottom:1px solid var(--line2);background:var(--card2)}
+.fh .t{font-family:var(--f-h);font-weight:600;font-size:.92rem}
+.fh .e{margin-left:auto;font-size:.66rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:999px}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--crit);flex:none;animation:pl 2.4s ease-in-out infinite}
+@keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
+.feed .bdy{max-height:min(52vh,430px);overflow-y:auto;scrollbar-width:thin}
+.fr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:center;padding:12px 16px;transition:background .3s}
+.fr+.fr{border-top:1px solid var(--line2)}
+.fr.live{background:color-mix(in srgb,var(--amber) 7%,transparent)}
+.fr .ii{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--a-dim);color:var(--amber)}
+.fr .w{display:block;font-size:.85rem;font-weight:500;line-height:1.35;min-width:0}
+.fr .s{display:block;margin-top:2px;font-size:.72rem;color:var(--faint);line-height:1.4}
+.fr .s b{color:var(--amber);font-weight:600}
+.sv{font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 8px;border-radius:999px;white-space:nowrap}
+.sv-c{background:var(--x-dim);color:var(--crit)}.sv-h{background:var(--w-dim);color:var(--warn)}
+.sv-a{background:var(--a-dim);color:var(--amber)}.sv-r{background:var(--m-dim);color:var(--mint)}
+
+/* stats */
+.st .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:16px 20px;padding-block:26px}
+.s1 .n{font-family:var(--f-h);font-size:clamp(1.45rem,2.6vw,1.9rem);font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.s1 .l{font-size:.8rem;color:var(--dim);margin-top:1px;line-height:1.35}
+
+/* marquee */
+.mq{overflow:hidden;border-block:1px solid var(--line2);background:var(--bg2);padding-block:13px;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mqt{display:flex;gap:30px;width:max-content;animation:sl 42s linear infinite}
+.mq:hover .mqt{animation-play-state:paused}
+@keyframes sl{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.mqi{font-family:var(--f-h);font-weight:600;font-size:.92rem;color:var(--faint);white-space:nowrap;display:flex;align-items:center;gap:9px}
+.mqi::after{content:"";width:4px;height:4px;border-radius:50%;background:color-mix(in srgb,var(--amber) 70%,transparent)}
+
+/* product tour */
+.gal{margin-top:clamp(22px,3vw,32px)}
+.galvid{width:100%;display:block;border-radius:var(--r);border:1px solid var(--line);background:#000;box-shadow:var(--sh)}
+
+.galnote{margin-top:14px;display:flex;gap:10px;align-items:flex-start;font-size:.8rem;line-height:1.5;color:var(--faint)}
+.galnote .bx{width:24px;height:24px;border-radius:8px;flex:none;display:grid;place-items:center;background:var(--m-dim);color:var(--mint)}
+
+/* stepper */
+.rail{margin-top:calc(clamp(26px,3.6vw,38px) - 5px);display:flex;gap:8px;overflow-x:auto;padding:5px 1px 6px}
+.rail::-webkit-scrollbar{height:4px}.rail::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px}
+.sp{flex:1 1 0;min-width:158px;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:13px 14px;font-family:var(--f-b);transition:.2s;position:relative;overflow:hidden}
+.sp:hover{transform:translateY(-2px)}
+.sp .n{display:flex;align-items:center;gap:8px}
+.sp .n i{font-style:normal;width:21px;height:21px;border-radius:999px;flex:none;display:grid;place-items:center;font-family:var(--f-m);font-size:.66rem;background:var(--card2);color:var(--faint);transition:.2s}
+.sp .w{display:block;font-family:var(--f-m);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.sp .ti{display:block;margin-top:8px;font-weight:600;font-size:.92rem;color:var(--dim);line-height:1.25;transition:.2s}
+.sp[aria-selected="true"]{background:var(--card2);border-color:color-mix(in srgb,var(--amber) 60%,var(--line))}
+.sp[aria-selected="true"] .n i{background:linear-gradient(140deg,var(--amber),var(--cyan));color:#140A33}
+.sp[aria-selected="true"] .ti{color:var(--fg)}
+.sp[aria-selected="true"]::after{content:"";position:absolute;inset:auto 0 0 0;height:2px;background:linear-gradient(90deg,var(--amber),var(--cyan))}
+.pan{margin-top:19px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,32px);box-shadow:var(--sh)}
+.pan .k{color:var(--cyan)}
+.pan h3{margin-top:8px;font-size:clamp(1.08rem,1.9vw,1.38rem);letter-spacing:-.03em}
+.pan .one{margin-top:11px;font-size:.96rem;line-height:1.5;color:var(--dim);max-width:62ch}
+
+/* tiles */
+.tiles{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(224px,1fr));gap:12px}
+.ti{background:var(--card2);border:1px solid var(--line2);border-radius:var(--rs);padding:15px 16px;min-width:0;transition:.2s;position:relative}
+.ti:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--amber) 42%,var(--line))}
+.ti .h{display:flex;align-items:center;gap:9px}
+.ti .h .bx{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--a-dim);color:var(--amber)}
+.ti .nm{font-family:var(--f-h);font-weight:600;font-size:.94rem;line-height:1.3}
+.ti .nm i{font-style:normal;color:var(--amber)}
+.ti .tx{margin-top:9px;font-size:.855rem;line-height:1.5;color:var(--dim)}
+.ti.cy .h .bx,.cy .bx{background:var(--c-dim);color:var(--cyan)}
+.ti.mn .h .bx,.mn .bx{background:var(--m-dim);color:var(--mint)}
+
+/* segmented tabs */
+.segs{margin-top:clamp(24px,3.2vw,34px);display:flex;gap:7px;flex-wrap:wrap}
+.sg{cursor:pointer;font-family:var(--f-b);font-weight:600;font-size:.92rem;background:var(--card);border:1px solid var(--line);color:var(--dim);padding:10px 18px;border-radius:999px;transition:.2s}
+.sg:hover{color:var(--fg)}
+.sg[aria-selected="true"]{background:linear-gradient(100deg,var(--amber),color-mix(in srgb,var(--amber) 72%,var(--crit)));border-color:transparent;color:#140A33}
+:root[data-theme="light"] .sg[aria-selected="true"],:root:not([data-theme="dark"]) .sg[aria-selected="true"]{color:#FFF8EC}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .sg[aria-selected="true"]{color:#140A33}}
+:root[data-theme="dark"] .sg[aria-selected="true"]{color:#140A33}
+.wp{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,32px);box-shadow:var(--sh);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.88fr);gap:clamp(20px,3.4vw,40px)}
+@media(max-width:880px){.wp{grid-template-columns:1fr}}
+.q{display:flex;gap:10px;align-items:flex-start;font-family:var(--f-h);font-size:clamp(1rem,1.6vw,1.2rem);font-weight:600;line-height:1.28;letter-spacing:-.025em}
+.q .m{flex:none;width:25px;height:25px;border-radius:50%;background:var(--a-dim);color:var(--amber);display:grid;place-items:center;font-size:.9rem;margin-top:1px}
+.wp .ans{margin-top:14px;font-size:.94rem;line-height:1.55;color:var(--dim)}
+.wp .ans b{color:var(--fg);font-weight:600}
+.pts{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.pts li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;align-items:start;font-size:.88rem;line-height:1.5;color:var(--dim)}
+.pts .dt{width:21px;height:21px;border-radius:7px;background:var(--m-dim);color:var(--mint);display:grid;place-items:center;flex:none;margin-top:1px}
+.pts b{color:var(--fg);font-weight:600}
+.lbl{font-family:var(--f-m);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;display:block}
+
+/* filter + grid */
+.fl{margin-top:clamp(20px,2.8vw,30px);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.fc{cursor:pointer;font-family:var(--f-b);font-size:.84rem;font-weight:500;background:var(--card);border:1px solid var(--line);color:var(--dim);padding:7px 14px;border-radius:999px;transition:.16s}
+.fc:hover{color:var(--fg)}
+.fc[aria-pressed="true"]{background:var(--card2);border-color:color-mix(in srgb,var(--amber) 62%,var(--line));color:var(--fg)}
+.cnt{font-size:.8rem;color:var(--faint);margin-left:4px}
+.grid{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:12px}
+.mc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:17px 18px;min-width:0;transition:.2s}
+.mc:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--cyan) 45%,var(--line));box-shadow:var(--sh)}
+.mc .h{display:flex;align-items:center;gap:9px}
+.mc .bx{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--c-dim);color:var(--cyan)}
+.mc .nm{font-family:var(--f-h);font-weight:600;font-size:.96rem;line-height:1.3}
+.mc .nm i{font-style:normal;color:var(--amber)}
+.mc .subs{margin-top:8px;padding-top:8px;border-top:1px solid var(--line2);font-family:var(--f-m);font-size:.67rem;line-height:1.5;color:var(--faint);letter-spacing:.01em}
+.mc .tx{margin-top:9px;font-size:.855rem;line-height:1.5;color:var(--dim)}
+
+/* accordion technique tiles */
+.acc{margin-top:20px;display:grid;grid-template-columns:1fr;gap:10px}
+.at{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:0;transition:.2s}
+.at:hover{border-color:color-mix(in srgb,var(--amber) 45%,var(--line))}
+.at button{width:100%;text-align:left;background:none;border:0;cursor:pointer;padding:17px 18px;font-family:var(--f-b);color:inherit;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:center}
+.at .bx{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--a-dim);color:var(--amber)}
+.at .nm{display:block;font-family:var(--f-h);font-weight:600;font-size:.96rem;line-height:1.25;min-width:0}
+.at .sbt{display:block;margin-top:3px;font-size:.76rem;color:var(--faint);line-height:1.35}
+.at .cv{width:18px;height:18px;color:var(--faint);transition:transform .26s cubic-bezier(.4,0,.2,1)}
+.at.open{background:var(--card2);border-color:color-mix(in srgb,var(--amber) 52%,var(--line))}
+.at.open .cv{transform:rotate(135deg);color:var(--amber)}
+.at .nw{min-width:0}
+.at .bdw{display:grid;grid-template-rows:0fr;overflow:hidden;transition:grid-template-rows .3s cubic-bezier(.4,0,.2,1)}
+.at.open .bdw{grid-template-rows:1fr}
+.at .bd{min-height:0;overflow:hidden;padding:0 18px;font-size:.855rem;line-height:1.55;color:var(--dim);box-shadow:inset 0 1px 0 var(--line2);transition:padding .3s cubic-bezier(.4,0,.2,1)}
+.at.open .bd{padding-top:14px;padding-bottom:17px}
+@media(min-width:720px){
+  .at .nw{display:flex;align-items:baseline;gap:8px 16px;flex-wrap:wrap}
+  .at .nm{flex:0 0 auto}
+  .at .sbt{margin-top:0;min-width:0;flex:1 1 auto}
+  .at .bd{padding-left:59px;padding-right:48px}
+}
+.at .bd ul{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.at .bd li{padding-left:14px;position:relative;font-size:.82rem;line-height:1.45}
+.at .bd li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:2px;background:color-mix(in srgb,var(--amber) 70%,transparent)}
+
+/* cascade */
+.flow{margin-top:clamp(22px,3vw,32px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:860px){.flow{grid-template-columns:1fr}}
+.fs{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 19px;min-width:0;position:relative}
+.fs.op{border-style:dashed}
+.fs .hh{display:flex;align-items:center;gap:9px}
+.fs .hh i{font-style:normal;width:26px;height:26px;border-radius:9px;flex:none;display:grid;place-items:center;font-size:.8rem;font-weight:700;background:linear-gradient(140deg,var(--amber),var(--cyan));color:#140A33}
+.fs.op .hh i{background:var(--card2);color:var(--faint)}
+.fs .sz{margin-top:11px;font-family:var(--f-m);font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;color:var(--cyan)}
+.fs .tx{margin-top:8px;font-size:.86rem;line-height:1.5;color:var(--dim)}
+.rule{margin-top:13px;background:var(--card2);border:1px solid var(--line);border-radius:var(--rs);padding:16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:13px;align-items:center}
+.rule .vb{font-family:var(--f-m);font-size:.64rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:5px 10px;border-radius:999px;white-space:nowrap;background:var(--m-dim);color:var(--mint)}
+.rule .tx{font-size:.9rem;line-height:1.5;color:var(--dim)}
+.rule .tx b{color:var(--fg);font-weight:600}
+
+/* sandbox badges */
+.gh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:clamp(24px,3.2vw,34px)}
+.gh h3{font-size:1.08rem}
+.bd2{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 9px;border-radius:999px}
+.bd-i{background:var(--m-dim);color:var(--mint)}.bd-o{background:var(--w-dim);color:var(--warn)}
+.sbx{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(214px,1fr));gap:11px}
+.sb{background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:14px 15px;min-width:0;transition:.2s}
+.sb:hover{transform:translateY(-2px)}
+.sb .nm{font-family:var(--f-h);font-weight:600;font-size:.9rem}
+.sb .tx{margin-top:6px;font-size:.8rem;line-height:1.45;color:var(--dim)}
+.sb .sh{margin-top:8px;font-family:var(--f-m);font-size:.66rem;line-height:1.45;color:var(--faint)}
+
+/* honest */
+.why{margin-top:clamp(26px,3.4vw,36px);border-left:3px solid var(--amber);padding:2px 0 2px clamp(16px,2.2vw,24px);max-width:64ch}
+.why p{font-family:var(--f-h);font-size:clamp(1.12rem,2vw,1.5rem);font-weight:600;line-height:1.32;letter-spacing:-.025em}
+.why p+p{margin-top:13px;font-family:var(--f-b);font-size:.9rem;font-weight:400;line-height:1.6;letter-spacing:0;color:var(--dim)}
+.hon{margin-top:clamp(24px,3.2vw,34px);background:var(--card2);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,30px)}
+.hon h3{font-size:1.1rem}
+.hl{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.hl li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;align-items:start;font-size:.875rem;line-height:1.5;color:var(--dim)}
+.hl li .nn{width:20px;height:20px;border-radius:6px;background:var(--card);border:1px solid var(--line);color:var(--faint);display:grid;place-items:center;font-size:.66rem;font-weight:700;flex:none;margin-top:1px;font-family:var(--f-m)}
+.hl b{color:var(--fg);font-weight:600}
+
+/* close */
+.cl{padding-block:clamp(48px,6.5vw,86px);text-align:center;position:relative;overflow:hidden}
+.cl h2{max-width:22ch;margin-inline:auto}
+.cl .lede{margin:16px auto 0;max-width:50ch}
+.cl .cta{justify-content:center}
+.ftr{border-top:1px solid var(--line2);background:var(--bg2)}
+.ftr .wrap{padding-block:28px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.ftr .nt{font-size:.8rem;color:var(--faint);line-height:1.6;max-width:56ch}
+.ftr .rt{margin-left:auto;font-family:var(--f-m);font-size:.74rem;color:var(--faint)}
+@media(max-width:700px){.ftr .rt{margin-left:0}}
+
+/* Touch targets and legibility on phones: 44px-ish hit areas, no sub-11px type. */
+@media(max-width:820px){
+  .fc{padding:11px 15px;font-size:.86rem}
+  .tgl{padding:10px 14px 10px 11px;font-size:.8rem}
+  .brand{padding:5px 2px}
+  .brand img{height:28px}
+  .sv{font-size:.72rem;padding:5px 9px}
+  .fh .e{font-size:.7rem;padding:4px 9px}
+  .k{font-size:.76rem;letter-spacing:.14em}
+  .ch{font-size:.76rem;padding:7px 12px}
+  .sg{padding:12px 18px}
+  .hdr nav a{padding-block:10px}
+  .sp .w{font-size:.72rem;letter-spacing:.08em}
+  .brand{padding:7px 4px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .b:hover,.ti:hover,.mc:hover,.sp:hover,.sb:hover{transform:none}
+}
+/* Phone legibility. The root font is 15px, so rem-based micro-labels land at
+   9.6-11.1px on a handset. Floored here, at the end of the sheet and with the
+   same specificity as the rules they override, plus 44px touch targets. */
+@media(max-width:820px){
+  .k,.ch{font-size:12px}
+  .at .sbt{font-size:12px}
+  .lbl,.bd2{font-size:11.5px}
+  .rule .vb{font-size:11.5px}
+  .fs .sz{font-size:11.5px}
+  .sb .sh{font-size:11.5px}
+  .mc .subs{font-size:11.5px;line-height:1.5}
+  .hl li .nn{font-size:11.5px;width:22px;height:22px}
+  .ftr .rt{font-size:12.5px}
+  .sp .w{font-size:12px}
+  .fh .e{font-size:11.5px}
+  .sv{font-size:11.5px}
+  .mb{min-width:44px;min-height:44px}
+  .tgl{min-height:44px}
+  .fc{min-height:44px}
+  .hdr nav a{min-height:44px;display:flex;align-items:center}
+}
+
+/* subpages */
+.doc-hero{padding-block:clamp(56px,8vw,96px) clamp(30px,4vw,44px)}
+.doc-hero h1{font-size:clamp(2.1rem,4.6vw,3.6rem)}
+.doc-hero .lede{margin-top:16px;max-width:60ch}
+.toc{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px}
+.toc a{font-family:var(--f-m);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:var(--card)}
+.toc a:hover{color:var(--fg);border-color:color-mix(in srgb,var(--amber) 50%,var(--line))}
+.fx{margin-top:clamp(22px,3vw,30px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:12px}
+.fg{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 8px;min-width:0}
+.fg h3{font-size:1rem;display:flex;align-items:center;gap:10px}
+.fg h3 .bx{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--c-dim);color:var(--cyan)}
+.fg ul{list-style:none;margin:12px 0 0;padding:0}
+.fg li{padding:9px 0;border-top:1px solid var(--line2);font-size:.86rem;line-height:1.5;color:var(--dim)}
+.fg li b{color:var(--fg);font-weight:600}
+.plan{display:inline-block;font-family:var(--f-m);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--warn);background:var(--w-dim);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);border-radius:999px;padding:2px 8px;vertical-align:2px;margin-left:6px}
+.kt{margin-top:clamp(22px,3vw,30px);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--card)}
+.kt .kr{display:grid;grid-template-columns:minmax(150px,1.1fr) 2fr 1.6fr;gap:18px;padding:16px 20px;border-top:1px solid var(--line2);font-size:.86rem;line-height:1.5;color:var(--dim)}
+.kt .kr:first-child{border-top:0}
+.kt .kr.hd{font-family:var(--f-m);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);background:var(--card2)}
+.kt .kr b{color:var(--fg);font-family:var(--f-h);font-weight:600;font-size:.95rem}
+@media(max-width:760px){.kt .kr{grid-template-columns:1fr;gap:6px}.kt .kr.hd{display:none}}
+.hard{margin-top:clamp(22px,3vw,30px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.hard .ti code,.fg code{font-family:var(--f-m);font-size:.78em;color:var(--fg);background:var(--card2);padding:1px 5px;border-radius:5px}
+.net{margin-top:clamp(22px,3vw,30px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:14px}
+.net figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 14px}
+.net figcaption{font-size:.84rem;line-height:1.5;color:var(--dim);margin-top:10px}
+.net figcaption b{color:var(--fg)}
+.net svg{width:100%;height:auto;display:block}
+.net svg text{font-family:var(--f-m);font-size:11px;fill:var(--dim)}
+.net svg .t{fill:var(--fg);font-family:var(--f-h);font-size:13px;font-weight:600}
+.net svg .bxs{fill:var(--card2);stroke:var(--line)}
+.net svg .zone{fill:none;stroke:var(--line);stroke-dasharray:4 4}
+.net svg .ok{stroke:var(--mint);stroke-width:1.6;fill:none}
+.net svg .ag{stroke:var(--cyan);stroke-width:1.6;fill:none}
+.net svg .no{stroke:var(--crit);stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+.net svg .ph{fill:var(--c-dim);stroke:var(--cyan)}
+.net svg .ap{fill:var(--a-dim);stroke:var(--amber)}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="m2.5 6.5 9.5 7 9.5-7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+<symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/><path d="M12 12 19 7"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a7 7 0 0 1-7 7H9l-5 3 1.2-4A7 7 0 0 1 10 5h4a7 7 0 0 1 7 7z"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1 .5-8 5.5 5.5 0 0 1 10.6 1.4A3.6 3.6 0 0 1 17.5 18z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+<symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 17v4h-3"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 3h3l2 5-2.2 1.6a12 12 0 0 0 6.6 6.6L16 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></symbol>
+<symbol id="i-usb" viewBox="0 0 24 24"><path d="M12 21V7"/><path d="m9 10 3-7 3 7z"/><path d="M12 15l4.5-3V9M12 17l-4.5-3v-2"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m16 11 5.5-3v8L16 13z"/></symbol>
+<symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/><path d="M10 10h4v4h-4zM12 3v3.5M12 17.5V21M3 12h3.5M17.5 12H21M6 3.5v1M18 3.5v1"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+<symbol id="i-cert" viewBox="0 0 24 24"><circle cx="12" cy="9.5" r="5.5"/><path d="m8.5 14.5-.5 6 4-2 4 2-.5-6"/></symbol>
+<symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v5l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 17l-5-9V3"/><path d="M7.5 14h9"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.5 2 5 13h6l-1.5 9 8.5-11h-6z"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="8" r="4.5"/><path d="m11.2 11.2 9 9M17 17l2-2M14 14l2-2"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></symbol>
+</defs></svg><header class="hdr">
+  <div class="wrap hin">
+    <a class="brand" href="index.html" aria-label="ENFORZ"><img class="lg lg-d" src="brand/logo-on-dark.webp" alt="ENFORZ" width="1585" height="300"><img class="lg lg-l" src="brand/logo-on-light.webp" alt="" aria-hidden="true" width="1585" height="300"></a>
+        <nav id="nav">
+      <a href="index.html#tour">Watch it</a>
+      <a href="index.html#loop">The loop</a>
+      <a href="index.html#assist">AI</a>
+      <a href="index.html#safe">Safety</a>
+      <a href="features.html">Features</a>
+      <a href="security.html" class="on">Security</a>
+      <a href="index.html#about">Why free</a>
+    </nav>
+    <button class="mb" id="mb" type="button" aria-expanded="false" aria-controls="nav" aria-label="Sections"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
+    <button class="tgl" id="tg" type="button" aria-pressed="false"><span class="sw" aria-hidden="true"></span><span class="lb">Detail</span></button>
+  </div>
+</header>
+<section class="band hero doc-hero">
+  <div class="aur" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="k">Security</span>
+    <h1>It decides what runs. <span class="grad">So it is built like it.</span></h1>
+    <p class="lede">An application control platform is as sensitive as a domain controller: whoever controls it decides what every machine may run. This page explains how ENFORZ protects its keys, its sign-in, its agents, its record and the appliance it runs on, and which parts are still planned.</p>
+    <div class="toc"><a href="#network">Where it sits</a><a href="#keys">Keys</a><a href="#signin">Sign-in</a><a href="#agents">Agents</a><a href="#logs">Logs and SIEM</a><a href="#appliance">Appliance hardening</a><a href="#recovery">Recovery</a><a href="#mcp">MCP</a></div>
+  </div>
+</section>
+<section class="band soft sect" id="network">
+  <div class="wrap">
+    <div class="head"><span class="k">Where it sits</span><h2>On your management network</h2><p class="sub">We recommend the appliance sits on your management network, beside your domain controllers and deployment tools, not on a user network and never directly on the internet.</p></div>
+    <div class="net">
+  <figure><svg viewBox="0 0 520 250" role="img" aria-label="Today: one address on the management network serves both the console and the agents">
+<rect class="zone" x="8" y="8" width="300" height="234" rx="12"/><text x="22" y="30">MANAGEMENT NETWORK</text>
+<rect class="ap" x="96" y="96" width="140" height="60" rx="10"/><text class="t" x="112" y="122">ENFORZ appliance</text><text x="112" y="141">one address</text>
+<rect class="bxs" x="24" y="186" width="120" height="40" rx="8"/><text class="t" x="40" y="211">Administrators</text>
+<path class="ok" d="M84 186 L140 158"/>
+<rect class="zone" x="330" y="8" width="182" height="234" rx="12"/><text x="344" y="30">USER NETWORKS</text>
+<rect class="bxs" x="356" y="60" width="132" height="40" rx="8"/><text class="t" x="372" y="85">PCs and servers</text>
+<rect class="bxs" x="356" y="150" width="132" height="40" rx="8"/><text class="t" x="372" y="175">Laptops on VPN</text>
+<path class="ag" d="M356 80 L236 112"/><path class="ag" d="M356 170 L236 140"/>
+<text x="250" y="232">agents: 9443 mTLS, 9445 enrolment</text>
+</svg><figcaption><b>Today.</b> One address on your management network. Administrators reach the console over HTTPS; agents reach two ports with their own TLS, and nothing else. Firewall the console port to the administrators who need it.</figcaption></figure>
+  <figure><svg viewBox="0 0 520 250" role="img" aria-label="Planned: the console stays on the management address while a small proxy handler on a second address faces the agents">
+<rect class="zone" x="8" y="8" width="226" height="234" rx="12"/><text x="22" y="30">MANAGEMENT NETWORK</text>
+<rect class="ap" x="30" y="70" width="180" height="56" rx="10"/><text class="t" x="44" y="94">Console, SSH, data</text><text x="44" y="113">address 1, inside only</text>
+<rect class="bxs" x="30" y="186" width="120" height="40" rx="8"/><text class="t" x="46" y="211">Administrators</text>
+<path class="ok" d="M90 186 L110 126"/>
+<rect class="ph" x="150" y="140" width="150" height="40" rx="10"/><text class="t" x="164" y="160">Proxy handler</text><text x="164" y="174">address 2</text>
+<path class="ok" d="M190 140 L150 126"/>
+<rect class="zone" x="330" y="8" width="182" height="234" rx="12"/><text x="344" y="30">AGENTS</text>
+<rect class="bxs" x="356" y="60" width="132" height="40" rx="8"/><text class="t" x="372" y="85">PCs and servers</text>
+<rect class="bxs" x="356" y="150" width="132" height="40" rx="8"/><text class="t" x="372" y="175">Laptops anywhere</text>
+<path class="ag" d="M356 80 L300 150"/><path class="ag" d="M356 170 L300 162"/>
+<path class="no" d="M356 92 L212 104"/><text x="250" y="232">agents never reach address 1</text>
+</svg><figcaption><b>Planned <span class="plan">Planned</span></b> A second address carries only a small proxy handler: enrolment, telemetry and assignment fetches, passed through to the services behind it. The console, SSH and the data stay on the first address, which agents and the internet never see.</figcaption></figure>
+</div>
+<div class="hon">
+  <h3>Why two addresses, and what the proxy handler will not do</h3>
+  <p class="sub" style="margin-top:10px">Laptops outside the office still need to report in and fetch their policy. Exposing the whole appliance for that would put the console, SSH and the database one firewall mistake away from the internet. The proxy handler is meant to be small enough to read in full: it knows the agent endpoints and nothing else, terminates nothing it does not have to, and holds no keys that can approve, build or sign. This is design intent we are documenting ahead of building it. Until it ships, keep the appliance on the management network and reach roaming machines through your VPN.</p>
+</div>
+  </div>
+</section>
+<section class="band  sect" id="keys">
+  <div class="wrap">
+    <div class="head"><span class="k">Keys</span><h2>Every key has one job</h2><p class="sub">Each key below does one thing, and none of them can stand in for another. The policy-signing key and the payload-signing key are kept apart by design, and neither leaves the appliance in usable form.</p></div>
+    <div class="kt"><div class="kr hd"><span>Key</span><span>What it does</span><span>How it is kept</span></div>
+<div class="kr"><b>Payload-signing key</b><span>Signs every assignment and policy the appliance sends. One per platform.</span><span>Its public half is compiled into the agent. The agent never accepts a key from configuration, the installer or the TLS connection, so a hijacked server or a rewritten config file cannot impersonate the appliance.</span></div>
+<div class="kr"><b>Agent client certificates</b><span>Identify each machine to the appliance, issued by a per-organisation CA at enrolment.</span><span>Valid for 24 hours and renewed automatically. The organisation comes from the certificate, never from anything the machine writes in a message or a header.</span></div>
+<div class="kr"><b>Agent code-signing</b><span>Authenticode signature on the agent binary.</span><span>Every policy must contain a rule matching this signer or it is not sent. When the signer rotates, the new signer reaches every machine's policy, confirmed by heartbeat, before an agent signed with it ships.</span></div>
+<div class="kr"><b>Policy-signing key (firmware protection)</b><span>CI-signs enforced policies for the EFI partition. Optional.</span><span>Its own key, never the payload key. Sealed under a password a person types each time it is used, with an escrow copy kept offline. Unused until a signing test has been recorded as loaded.</span></div>
+<div class="kr"><b>Release keys</b><span>Sign appliance update bundles.</span><span>The appliance verifies a bundle before changing anything. A second rotation key is kept offline, so a lost signing key can be replaced without trusting anything new.</span></div>
+<div class="kr"><b>BitLocker sealing key</b><span>Seals each machine's recovery key before it leaves the machine.</span><span>RSA-4096, its public half built into the agent. The private half is wrapped with scrypt and AES-GCM under a passphrase that is never stored. Opening one is throttled and recorded.</span></div>
+<div class="kr"><b>Stored credentials</b><span>API keys for PDQ, Intune, Action1, reputation services, mail and the AI provider.</span><span>Sealed at rest with the appliance's own key, used server-side only, and never shown again after they are saved.</span></div>
+<div class="kr"><b>Backups</b><span>Everything on the appliance, in one file.</span><span>Encrypted with a passphrase you choose. The passphrase reaches the backup job in a file readable only by root, which is deleted before the job starts. It is never stored or logged.</span></div>
+</div>
+  </div>
+</section>
+<section class="band soft sect" id="signin">
+  <div class="wrap">
+    <div class="head"><span class="k">Sign-in</span><h2>Passkeys, SSO and a way in when SSO is down</h2></div>
+    <div class="hard">
+<div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Passkeys first</span></div><p class="tx">Every local account proves a second factor before any page loads. Passkeys are preferred because they cannot be phished, authenticator codes are the fallback, and an administrator can require passkeys only.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Codes that cannot be replayed</span></div><p class="tx">The authenticator secret is sealed at rest. A code that was just used is refused, and the QR code is drawn on the appliance, never by an outside service.</p></div>
+<div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg></span><span class="nm">Single sign-on with OIDC</span></div><p class="tx">Entra ID, Okta, Google Workspace, Keycloak or AD FS through OpenID Connect. The identity provider says who someone is; what they may do is set in ENFORZ, and a new person has no access until an administrator grants it.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">A way in when SSO is down</span></div><p class="tx">Local accounts keep working when the identity provider does not, so an outage at the provider cannot lock you out of the system that decides what runs.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">Lockouts and roles</span></div><p class="tx">Ten failed sign-ins lock an account for 15 minutes. Four roles, from Viewer to TenantAdmin, per organisation. Every sign-in and role change is in the audit log.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Recovery that needs the appliance</span></div><p class="tx">A lost second factor is reset by another administrator, or from the appliance itself. There is no email link to intercept.</p></div>
+</div>
+  </div>
+</section>
+<section class="band  sect" id="agents">
+  <div class="wrap">
+    <div class="head"><span class="k">Agents</span><h2>Every machine talks to one server. That server is not a way in.</h2></div>
+    <div class="hard">
+<div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">The front door takes writes only</span></div><p class="tx">The service agents talk to can put messages on a queue and do nothing else. It cannot read the database, make decisions or generate a policy, so its hostile-input boundary is small enough to read in full.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg></span><span class="nm">Assignments from pre-written files</span></div><p class="tx">Machines fetch their assignments from signed files written ahead of time, not from queries against the database. A flood of requests reaches no business logic.</p></div>
+<div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Unreachable pauses telemetry, never enforcement</span></div><p class="tx">If the appliance goes offline, agents keep their policy and spool their events. No code path relaxes enforcement because the appliance cannot be reached, so taking it down cannot switch protection off.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">It cannot lock itself out</span></div><p class="tx">A policy that does not trust the agent's own signer is never sent. Uninstalling takes our policies off first, and is refused while one of ours is enforcing.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cpu"/></svg></span><span class="nm">Counts are evidence, not decisions</span></div><p class="tx">Telemetry is never thinned out to save bandwidth at the cost of counts, because the signals that catch a masquerading binary are built from it.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">No rule without a person</span></div><p class="tx">No path creates an allow rule without a signed-in, audited human: not for trusted publishers, not from reputation services, not from the AI assistant, not for a pilot.</p></div>
+</div>
+  </div>
+</section>
+<section class="band soft sect" id="logs">
+  <div class="wrap">
+    <div class="head"><span class="k">Logs and SIEM</span><h2>Everything on the record, and a copy where you keep yours</h2></div>
+    <div class="hard">
+<div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">An audit log nothing can edit</span></div><p class="tx">Every approval, revocation, build, promotion, waiver, break-glass, sign-in and settings change, with who did it and the reason they gave. Rows cannot be modified or deleted from the product.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg></span><span class="nm">Shipped to your SIEM</span></div><p class="tx">The audit log, and alerts if you choose, as CEF, LEEF 1.0 or JSON inside RFC 5424 syslog. TLS (RFC 5425) is the default; TCP and UDP are there for collectors that need them. Each event type maps to a severity.</p></div>
+<div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span class="nm">AI with a receipt</span></div><p class="tx">The assistant is off until you turn it on, under your own account. Evidence is anonymised before it leaves, and every request is recorded and readable in full.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Support bundles redacted at source</span></div><p class="tx">Logs are collected and redacted on the appliance before anyone downloads them.</p></div>
+</div>
+  </div>
+</section>
+<section class="band  sect" id="appliance">
+  <div class="wrap">
+    <div class="head"><span class="k">Appliance hardening</span><h2>Hardened before it reaches you</h2><p class="sub">The appliance ships as a hardened Debian virtual machine. None of this is a checklist for you to work through after import.</p></div>
+    <div class="hard">
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">SSH is closed by default</span></div><p class="tx">The appliance ships with SSH firewalled off and no key installed. It opens from the console menu with a public key you paste, and the menu offers to close it again when you log out.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Keys only, no root</span></div><p class="tx"><code>PermitRootLogin no</code>, password and keyboard-interactive login off, three attempts, a 30-second grace period, no X11, agent or TCP forwarding. The root account is locked.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">fail2ban</span></div><p class="tx">Four SSH failures in ten minutes ban the address for an hour. Bans and failures can be viewed and cleared from the console menu.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">A firewall that denies by default</span></div><p class="tx">Incoming traffic is refused except the web console (HTTP redirects to HTTPS) and the two agent ports: mutual TLS for telemetry, and server TLS for enrolment.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cpu"/></svg></span><span class="nm">A kernel with fewer secrets</span></div><p class="tx">Restricted kernel logs and pointers, full address-space randomisation, ptrace limited to parent processes, and unprivileged BPF disabled.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Patched without asking</span></div><p class="tx">Debian security updates install automatically every day. The console shows when a new kernel needs a restart, and the restart can be scheduled.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg></span><span class="nm">TLS 1.2 and 1.3 only</span></div><p class="tx">The web console sits behind nginx with modern TLS and per-client rate limits. Cloud-init is disabled once first boot is done.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cert"/></svg></span><span class="nm">Signed updates with a way back</span></div><p class="tx">ENFORZ updates are verified against the release key before anything changes, and the previous version can be restored in one step.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Console lockdown</span></div><p class="tx">Backup, restore, the root shell and SSH can each be locked from the console menu, so a stolen console login cannot reach them.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">A console that cannot approve</span></div><p class="tx">The text console manages the appliance. It has no way to approve software, build a policy or enforce one. Those stay in the web console, behind sign-in, roles and the gates.</p></div>
+</div>
+  </div>
+</section>
+<section class="band soft sect" id="recovery">
+  <div class="wrap">
+    <div class="head"><span class="k">Recovery</span><h2>Every path to enforcement has a way back</h2></div>
+    <div class="hard">
+<div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">The recovery menu stays</span></div><p class="tx">Advanced Boot Options Menu is in every policy template and cannot be switched off, so a machine can always reach Windows recovery.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Break-glass</span></div><p class="tx">One machine back to audit for a limited time, from the console, from your deployment tool, or from the emergency store if the appliance itself is down.</p></div>
+<div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-flask"/></svg></span><span class="nm">Rehearsed before it is real</span></div><p class="tx">Simulation, shadow audit, soak and a Canary ring, so enforcement reaches each machine only after it has been rehearsed against real telemetry.</p></div>
+<div class="ti "><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Firmware protection removed only by the signed sequence</span></div><p class="tx">A CI-signed policy in EFI is never deleted, unloaded or replaced unsigned. It comes off through a signed removal sequence of two restarts, and an unsigned policy is never placed in EFI.</p></div>
+</div>
+  </div>
+</section>
+<section class="band  sect" id="mcp">
+  <div class="wrap">
+    <div class="head"><span class="k">On the roadmap</span><h2>MCP, with the same boundaries <span class="plan">Planned</span></h2><p class="sub">A planned Model Context Protocol server would let your own AI tools read the console. It would follow the rules above: off by default, on the management address only, per-person tokens scoped to one organisation and read access, every call in the audit log, and no path to approve, build or enforce.</p></div>
+    
+  </div>
+</section>
+
+<footer class="band ftr">
+  <div class="wrap">
+    <div><img class="ftr-lg lg lg-d" src="brand/logo-on-dark.webp" alt="ENFORZ" width="1585" height="300"><img class="ftr-lg lg lg-l" src="brand/logo-on-light.webp" alt="" aria-hidden="true" width="1585" height="300">
+    <p class="nt"><b>ENFORZ</b> builds, reviews and deploys Windows application control policy from what your own machines really run. Telemetry, an approval queue no rule escapes, simulation against real events, and enforcement behind fourteen gates that fail closed. On one server you own, with nothing reported back to us. Flip <b>Detail</b> at the top for the mechanics behind any claim.</p>
+    </div>
+    <p class="rt">nothing runs unless you said so</p>
+    <p class="nt" style="margin-top:14px">Built by <b>HCFS</b>, a non-profit for non-profits. &middot; <a href="features.html">Features</a> &middot; <a href="security.html">Security</a> &middot; <a href="enforze_expirence/">The experience</a></p>
+  </div>
+</footer>
+<script>
+(function(){
+  "use strict";
+  // Open at the top. Without this, a reload (or a republish of this page while
+  // someone is reading it) restores their old scroll position mid-document.
+  function top0(){
+    if(location.hash) return;
+    try{window.scrollTo({top:0,left:0,behavior:'instant'})}catch(e){window.scrollTo(0,0)}
+  }
+  try{if('scrollRestoration' in history)history.scrollRestoration='manual'}catch(e){}
+  top0(); window.addEventListener('load',top0);
+
+  var tg=document.getElementById('tg'),K='phishz.detail';
+  function set(on){document.body.classList.toggle('on',on);tg.setAttribute('aria-pressed',on?'true':'false');try{localStorage.setItem(K,on?'1':'0')}catch(e){}}
+  var seen=false;
+  try{seen=localStorage.getItem(K)!==null; if(localStorage.getItem(K)==='1')set(true)}catch(e){}
+  if(!seen)tg.classList.add('hint');
+  tg.addEventListener('click',function(){tg.classList.remove('hint');set(tg.getAttribute('aria-pressed')!=='true')});
+
+  function tabs(sel){
+    var list=document.querySelector(sel); if(!list) return;
+    var t=Array.prototype.slice.call(list.querySelectorAll('[role="tab"]'));
+    function pick(tab){t.forEach(function(x){var on=x===tab;x.setAttribute('aria-selected',on?'true':'false');
+      var p=document.getElementById(x.getAttribute('aria-controls')); if(p)p.hidden=!on;});}
+    t.forEach(function(tab,i){
+      tab.addEventListener('click',function(){pick(tab)});
+      tab.addEventListener('keydown',function(e){
+        var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0; if(!d)return; e.preventDefault();
+        var n=t[(i+d+t.length)%t.length]; pick(n); n.focus();});
+    });
+  }
+  tabs('.rail'); tabs('.segs');
+
+  var fl=document.getElementById('fl'),gr=document.getElementById('gr'),cnt=document.getElementById('cnt');
+  if(fl&&gr&&cnt){
+    var cards=Array.prototype.slice.call(gr.querySelectorAll('.mc'));
+    fl.addEventListener('click',function(e){
+      var b=e.target.closest('.fc'); if(!b)return;
+      var f=b.getAttribute('data-f');
+      Array.prototype.forEach.call(fl.querySelectorAll('.fc'),function(c){c.setAttribute('aria-pressed',c===b?'true':'false')});
+      var n=0; cards.forEach(function(c){var m=f==='all'||c.getAttribute('data-c')===f;c.hidden=!m;if(m)n++;});
+      cnt.textContent=f==='all'?('Showing all '+n):('Showing '+n+' of '+cards.length);
+    });
+  }
+
+  var acc=document.getElementById('acc');
+  if(acc){
+    acc.addEventListener('click',function(e){
+      var b=e.target.closest('button[aria-expanded]'); if(!b)return;
+      var was=b.getAttribute('aria-expanded')==='true';
+      Array.prototype.forEach.call(acc.querySelectorAll('button[aria-expanded]'),function(x){
+        x.setAttribute('aria-expanded','false'); x.parentElement.classList.remove('open');});
+      if(!was){b.setAttribute('aria-expanded','true'); b.parentElement.classList.add('open');}
+    });
+  }
+
+  var rows=Array.prototype.slice.call(document.querySelectorAll('.feed [data-f]'));
+  if(rows.length&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var i=0,timer=setInterval(step,1400),feed=document.querySelector('.feed');
+    var bdy=document.querySelector('.feed .bdy');
+    function step(){
+      rows.forEach(function(r,n){r.classList.toggle('live',n===i)});
+      var cur=rows[i];
+      if(bdy&&cur&&bdy.scrollHeight>bdy.clientHeight+4){
+        var top=0;
+        if(i>0){
+          var cr=cur.getBoundingClientRect(),br=bdy.getBoundingClientRect();
+          top=bdy.scrollTop+(cr.top-br.top)-(br.height-cr.height)/2;
+          top=Math.max(0,Math.min(top,bdy.scrollHeight-bdy.clientHeight));
+        }
+        try{bdy.scrollTo({top:top,behavior:'smooth'})}catch(e){bdy.scrollTop=top}
+      }
+      i=(i+1)%rows.length;
+    }
+    if(feed){feed.addEventListener('mouseenter',function(){clearInterval(timer)});
+      feed.addEventListener('mouseleave',function(){timer=setInterval(step,1400)});}
+  }
+
+  var mb=document.getElementById('mb'),nv=document.getElementById('nav');
+  if(mb&&nv){
+    var setMenu=function(open){
+      nv.classList.toggle('open',open);
+      mb.setAttribute('aria-expanded',open?'true':'false');
+    };
+    mb.addEventListener('click',function(){setMenu(mb.getAttribute('aria-expanded')!=='true')});
+    nv.addEventListener('click',function(e){if(e.target.closest('a'))setMenu(false)});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')setMenu(false)});
+    document.addEventListener('click',function(e){
+      if(!nv.contains(e.target)&&!mb.contains(e.target))setMenu(false)},true);
+    window.addEventListener('resize',function(){if(window.innerWidth>1180)setMenu(false)});
+  }
+
+  var links=Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){var h=a.getAttribute('href');return h.charAt(0)==='#'?document.querySelector(h):null});
+  if('IntersectionObserver' in window){
+    var ob=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(!e.isIntersecting)return; var k=secs.indexOf(e.target); if(k<0)return;
+      links.forEach(function(a,j){a.classList.toggle('on',k===j)});});},{rootMargin:'-45% 0px -50% 0px'});
+    secs.forEach(function(s){if(s)ob.observe(s)});
+  }
+})();
+</script>
