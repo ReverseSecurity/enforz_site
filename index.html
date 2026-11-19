@@ -422,7 +422,6 @@ body.on .d{display:block}
       <a href="#loop">The loop</a>
       <a href="#assist">AI</a>
       <a href="#safe">Safety</a>
-      <a href="#mods">Modules</a>
       <a href="features.html">Features</a>
       <a href="security.html">Security</a>
       <a href="#about">Why free</a>
@@ -598,24 +597,6 @@ body.on .d{display:block}
     </div>
   </div>
 </section>
-<section class="band sect" id="lol">
-  <div class="wrap">
-    <div class="head">
-      <span class="k">The bypass that defeats most allowlists</span>
-      <h2>Windows ships the attacker's <span class="grad">tools already signed</span></h2>
-      <p class="sub">Certutil downloads files. Mshta runs script. Regsvr32, rundll32, msbuild and the debuggers all execute code on someone else's behalf. They are legitimate, Microsoft-signed and already on every machine, so a list built purely from what your fleet runs will allow every one of them, and an attacker who has any of them does not need to bring a binary at all.</p>
-    </div>
-    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">The deny list is part of every build</span></div><p class="tx">Microsoft maintains the list of its own signed binaries that can be used to get around application control. The platform keeps a current copy and merges it into every policy it compiles, so the hole is closed by default rather than by remembering.</p><div class="d">Several hundred deny rules. The copy is fetched and offered as a version; an administrator adopts it and that is recorded. Deny rules only: a list that does not parse, comes back unexpectedly short, or contains anything other than denials is refused outright instead of half applied.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><span class="nm">An imported policy is usually stale here</span></div><p class="tx">Most published base policies carry a copy of this list frozen at whatever was current when the base was written. Anything Microsoft has added since is simply missing, and nothing tells you.</p><div class="d">Because these are denials, adding newer ones tightens an enforced policy. That is treated as a tightening: named at the enforce step, simulated, and accepted by a person rather than slipped in.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">And it argues with you about the rest</span></div><p class="tx">When a decision in your queue involves one of these binaries, the review says so and says why: allowing it can effectively allow anything it goes on to launch. The same applies to a system filename found outside System32, or a program started by Word or Outlook.</p><div class="d">These are reasons to look twice, not automatic denials. The point is that the risky ones stop looking identical to the other four hundred items in the queue.</div></div>
-    </div>
-    <div class="rule" style="margin-top:clamp(20px,2.6vw,28px)">
-      <span class="vb">Why it matters</span>
-      <p class="tx">An allowlist that allows mshta.exe allows everything mshta.exe can be told to run. <b>Allowlisting without this is a lock on a door with the window open,</b> and it is the single most common way an application control rollout turns out to be worth less than it looked.<span class="d">The vulnerable-driver blocklist is handled the same way, for the same reason: a signed driver with a known flaw is how security software gets switched off.</span></p>
-    </div>
-  </div>
-</section>
 
 <section class="band soft sect" id="assist">
   <div class="wrap">
@@ -635,22 +616,6 @@ body.on .d{display:block}
     <div class="rule" style="margin-top:clamp(20px,2.6vw,28px)">
       <span class="vb">Off by default</span>
       <p class="tx">The assistant is the one feature that sends data off the appliance, so it does nothing until a superuser turns it on with the organisation's own key. <b>It runs on Claude, through Anthropic's API or Microsoft Foundry on your Azure account, and data goes only to the provider you choose.</b><span class="d">You choose the model, and can use a cheaper one for drafting plans. Only the anonymised evidence above leaves the appliance. Turn the assistant off and the rest of the platform works exactly as before.</span></p>
-    </div>
-  </div>
-</section>
-
-<section class="band sect" id="mcp">
-  <div class="wrap">
-    <div class="head">
-      <span class="k">MCP server</span>
-      <h2>Your own AI tools, <span class="grad">reading the console</span></h2>
-      <p class="sub">ENFORZ includes an MCP server: the Model Context Protocol, the open standard AI assistants use to reach other systems. Claude, Copilot or your own agent can answer "why was this blocked on the finance laptops?" from the real data, inside the same boundaries as everything else.</p>
-    </div>
-    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></span><span class="nm">Read, explain, find</span></div><p class="tx">Tools to search the queue, machines, policies, raw events, vulnerabilities and the audit log, and to explain what a policy allows and why.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Drafts, never decisions</span></div><p class="tx">An assistant can draft a proposal or a request. Approving, building and enforcing stay in the console, signed in, by a person, through every gate.</p></div>
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Scoped and audited</span></div><p class="tx">Per-person tokens limited to one organisation and to read access, revocable at any time, and every call written to the audit log like any other action.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Off until you turn it on</span></div><p class="tx">Like the built-in assistant: nothing listens until an administrator enables it, and it sits on the management network, never on the agents' side.</p></div>
     </div>
   </div>
 </section>
@@ -679,81 +644,17 @@ body.on .d{display:block}
   </div>
 </section>
 
-<section class="band sect" id="agent">
-  <div class="wrap">
-    <div class="head">
-      <span class="k">On every machine</span>
-      <h2>One small service, and <span class="grad">no open door</span></h2>
-      <p class="sub">A single signed Windows service does the work on the endpoint: it watches what runs, applies the policy that machine was assigned, and holds the break-glass key. It carries its own runtime, so there is nothing to install underneath it.</p>
-    </div>
-    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">It collects, and it tidies up first</span></div><p class="tx">Every launch on the machine is an event, and the signer is recorded in a separate one. The agent matches the two together locally and collapses the repeats, so what reaches the console is readable instead of a transcript.</p><div class="d">Correlating on the endpoint is why forty thousand raw lines arrive as a couple of dozen decisions. The counts are preserved: collapsing never hides how often something ran.</div></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cert"/></svg></span><span class="nm">It only ever dials out</span></div><p class="tx">The agent opens no port and accepts no connection. It reaches out on its own schedule, identifies itself with a certificate it enrolled and renews by itself, and asks whether anything has changed.</p><div class="d">There is no inbound management channel to find, authenticate against or abuse. A machine is known by the certificate it holds, not by a name it puts in a message.</div></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">It applies what it was assigned</span></div><p class="tx">Policies are fetched, checked against a key compiled into the agent itself, and applied. A policy that does not verify is not applied, whatever told it to.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">It holds the break glass</span></div><p class="tx">When somebody has to be let past, the agent takes a signed instruction addressed to that one machine, with an expiry on it, switches that machine to the audit copy of its policy, and puts it back when the window closes.</p><div class="d">A statement issued for a different machine is refused. So is an old one replayed later. The window is in the audit record with who opened it, on what, and for how long.</div></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">It survives the outage, and admits the gap</span></div><p class="tx">Events are spooled to disk and survive a reboot or a server that is down. If the spool fills and the oldest have to go, it says so on the next check-in.</p><div class="d">A declared gap matters because simulation is only as honest as the telemetry behind it. Silently losing events would make a policy look safer than it is.</div></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Losing the server changes nothing</span></div><p class="tx">If the console is unreachable, telemetry pauses and enforcement carries on exactly as it was. The agent never relaxes a policy to get itself out of trouble.</p><div class="d">It has a watchdog, and the watchdog only reports: it names the step the agent stopped in, and never restarts, reverts or loosens anything on its own authority.</div></div>
-    </div>
-  </div>
-</section>
-
 <section class="band soft sect" id="more">
   <div class="wrap">
     <div class="head">
-      <span class="k">While it is watching anyway</span>
-      <h2>An inventory nobody had to collect</h2>
-      <p class="sub">To decide what may run, it already knows every binary, driver and version in the estate. That answers questions no separate tool had to be bought for.</p>
+      <span class="k">Go deeper</span>
+      <h2>The rest is <span class="grad">one click away</span></h2>
+      <p class="sub">This page tells the story. The details live on their own pages, so you can read as much as you need and no more.</p>
     </div>
     <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-radar"/></svg></span><span class="nm">What is out of date, and dangerous</span></div><p class="tx">Known vulnerabilities matched against what is genuinely installed and running, per machine, rather than against a list of product names.</p><div class="d">Three kinds of finding. Windows builds measured against the update that fixes a given issue. Loaded drivers matched against known-vulnerable driver lists. Third-party software matched by version against a curated catalogue with deliberately conservative ranges, and each finding says how it was reached.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">The driver nobody knew was there</span></div><p class="tx">Vulnerable drivers are how attackers switch off your security software. They are also invisible to most inventories, because nothing ever asked.</p></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></span><span class="nm">A second opinion on a hash</span></div><p class="tx">Look up anything you are unsure about and see an outside reputation verdict next to your own evidence before you approve it.</p></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg></span><span class="nm">What is still uncovered</span></div><p class="tx">Which machines have the agent, which are enrolled, which are enforced, which are only in audit, and which are not covered at all.</p></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Push without a separate project</span></div><p class="tx">Where you already use a deployment tool to put software on machines, it can hand the agent over to it rather than making you build a rollout.</p><div class="d">A deliberately small integration with PDQ Connect: list the devices in a group, create a deployment, nothing more. The credential can reach the whole fleet, so the surface is kept to what the feature needs.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Blocks worth looking at</span></div><p class="tx">Not every block matters. The ones that do, where something unsigned ran from a folder a user can write to, are separated from the noise.</p></div>
-    </div>
-  </div>
-</section>
-<section class="band sect" id="mods">
-  <div class="wrap">
-    <div class="head">
-      <span class="k">What's included</span>
-      <h2>One console, from first event to enforced fleet</h2>
-      <p class="sub">Filter by the job you are doing.</p>
-    </div>
-    <div class="fl" id="fl">
-      <button class="fc" type="button" aria-pressed="true" data-f="all">Everything</button>
-      <button class="fc" type="button" aria-pressed="false" data-f="rev">Review</button>
-      <button class="fc" type="button" aria-pressed="false" data-f="pol">Policy</button>
-      <button class="fc" type="button" aria-pressed="false" data-f="fleet">Fleet</button>
-      <button class="fc" type="button" aria-pressed="false" data-f="sys">System</button>
-      <span class="cnt" id="cnt">Showing all 24</span>
-    </div>
-    <div class="grid" id="gr">
-      <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Review queue</span></div><p class="tx">Thousands of block events folded into a handful of decisions, each with the evidence behind it.</p><p class="subs">Rollout view · Partly covered · Bulk review · Scored triage</p></div>
-      <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></span><span class="nm">Inspect a file</span></div><p class="tx">Look anything up by hash or path: where it ran, who signed it, and what the outside world says about it.</p></div>
-      <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-radar"/></svg></span><span class="nm">Suspicious blocks</span></div><p class="tx">The blocks that deserve a human: unsigned binaries, user-writable paths, names imitating Windows.</p></div>
-      <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">Hash reputation</span></div><p class="tx">An outside verdict on a file, alongside where it has been seen across your own machines.</p><p class="subs">CIRCL hashlookup · MalwareBazaar · MetaDefender · VirusTotal</p></div>
-      <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cpu"/></svg></span><span class="nm">Vulnerabilities</span></div><p class="tx">Known-vulnerable Windows builds, drivers and third-party software, per machine, from what is actually running.</p><p class="subs">Windows builds · Loaded drivers · Third-party software · BIOS</p></div>
-      <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span class="nm">AI assistant</span></div><p class="tx">Drafted answers for the whole queue, a guided way through them, and a second reader for every policy. Off until you turn it on, and it never approves anything.</p><p class="subs">Draft plan · Guided review · Policy review · What was sent</p></div>
-      <div class="mc" data-c="pol"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Policies</span></div><p class="tx">Every set of rules is a release with its own row, so you can see what changed, who approved it and where it went.</p><p class="subs">Releases · Explore · Effective policy · Hash diff</p></div>
-      <div class="mc" data-c="pol"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><span class="nm">Application groups</span></div><p class="tx">Rules bundled by the software they describe, so a policy reads like a list of applications rather than certificates.</p></div>
-      <div class="mc" data-c="pol"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Base rules &amp; options</span></div><p class="tx">The starting template and the switches on it, with the recovery path protected from being turned off.</p><p class="subs">Microsoft base · Blocklists · Managed installer · Policy options</p></div>
-      <div class="mc" data-c="pol"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-flask"/></svg></span><span class="nm">Simulation</span></div><p class="tx">Replays a draft against real telemetry and names what would have broken, before anyone feels it.</p></div>
-      <div class="mc" data-c="pol"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Rapid push</span></div><p class="tx">Get a change out quickly when something legitimate is blocked and people cannot work.</p></div>
-      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg></span><span class="nm">Coverage</span></div><p class="tx">Who has the agent, who is enrolled, who is enforced, who is only in audit, and who is nowhere.</p></div>
-      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Break-glass</span></div><p class="tx">A time-limited exception that moves one machine to an audit copy and expires on its own.</p></div>
-      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Enrolment &amp; agents</span></div><p class="tx">Getting the agent onto machines, by your deployment tool or by hand, and keeping it current.</p><p class="subs">Enrolment · Push agent · Agent log · Directory sync</p></div>
-      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">Raw events &amp; audit log</span></div><p class="tx">The underlying record, kept so drafts can be rehearsed and so every action has a name against it.</p></div>
-      <div class="mc" data-c="rev"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span class="nm">Application requests</span></div><p class="tx">People ask for blocked software in their own words. A request allows nothing until an approver acts on it.</p><p class="subs">Requests · Recertification · Policy hygiene</p></div>
-      <div class="mc" data-c="pol"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Firmware protection</span></div><p class="tx">Opt-in CI-signed policies kept in the EFI partition, for machines that pass every check.</p><p class="subs">Signing key · Signing test · Removal sequence</p></div>
-      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">BitLocker</span></div><p class="tx">Recovery keys that can actually be recovered: escrow checked in AD and Entra, and copies sealed to your own key.</p></div>
-      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Deployment tools</span></div><p class="tx">PDQ Connect, Microsoft Intune or Action1 install the agent and carry urgent changes. Manual works too.</p><p class="subs">Push agent · Rapid push · Emergency delivery</p></div>
-      <div class="mc" data-c="fleet"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-video"/></svg></span><span class="nm">Block notice</span></div><p class="tx">A clear message on the machine when something is blocked, with your wording and a way to ask.</p></div>
-      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Sign-in and roles</span></div><p class="tx">OIDC single sign-on, passkeys or authenticator codes for local accounts, and four roles from Viewer to TenantAdmin.</p></div>
-      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">SIEM and notifications</span></div><p class="tx">The audit log to your SIEM, and alerts by email, browser push or Teams, including alerts you build yourself.</p><p class="subs">CEF · LEEF · JSON · syslog over TLS</p></div>
-      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Appliance care</span></div><p class="tx">Encrypted backups, restore, signed updates, OS patches, redacted support bundles and a console menu for everything else.</p></div>
-      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><span class="nm">MCP server</span></div><p class="tx">Read access for your own AI tools through the Model Context Protocol, scoped per person and audited.</p></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Every feature</span></div><p class="tx">The agent, the review queue, policy building, simulation, enforcement, the fleet, BitLocker, the SIEM connector and the appliance, area by area.</p><p class="tx" style="margin-top:12px"><a href="features.html" style="color:var(--cyan)">Features &rarr;</a></p></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">How it protects itself</span></div><p class="tx">Where the appliance sits on your network, every key and its one job, passkeys and SSO, how agents connect, log shipping and the hardened appliance.</p><p class="tx" style="margin-top:12px"><a href="security.html" style="color:var(--cyan)">Security &rarr;</a></p></div>
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></span><span class="nm">MCP server</span></div><p class="tx">Your own AI tools read the console through the Model Context Protocol: read access, per person, audited, off by default. Approving stays with a person in the console.</p><p class="tx" style="margin-top:12px"><a href="security.html#mcp" style="color:var(--cyan)">MCP &rarr;</a></p></div>
     </div>
   </div>
 </section>
@@ -773,31 +674,6 @@ body.on .d{display:block}
   </div>
 </section>
 
-<section class="band soft sect" id="trust">
-  <div class="wrap">
-    <div class="head">
-      <span class="k">Trust</span>
-      <h2>It decides what is allowed to run</h2>
-      <p class="sub">That makes it one of the most sensitive systems you will own, and it is built on that assumption.</p>
-    </div>
-    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">The front door takes writes only</span></div><p class="tx">The component the agents talk to can put messages on a queue and nothing else. It cannot read the database, make decisions or generate a policy.</p><div class="d">Machines identify themselves with a client certificate rather than anything they can claim in a message or a header. The hostile-input boundary is deliberately small enough to read in full.</div></div>
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">One key, compiled in</span></div><p class="tx">Agents verify instructions against a key built into the binary, not one supplied by the server, the installer or the connection.</p></div>
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">Everything attributable</span></div><p class="tx">Every approval, promotion, waiver and break-glass window is recorded against a person, with what was waived and why.</p></div>
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Your data stays yours</span></div><p class="tx">Telemetry, inventory and policy live on your own server. Nothing is shared with us or transmitted to us.</p><div class="d">The optional AI assistant is the one exception, and only when you turn it on. It sends anonymised evidence to the AI provider you choose, under your own account, and records exactly what each request contained.</div></div>
-    </div>
-    <div class="hon">
-      <h3>It arrives as an appliance</h3>
-      <p class="sub" style="margin-top:10px">The platform ships as one virtual machine for Hyper-V (VHDX) or VMware (OVA), and cloud images are available too. The operating system underneath is hardened and patched as part of the release, so there is no build for anyone on your side to get right.</p>
-      <p class="sub" style="margin-top:10px">Put it on your management network. Only the agents need to reach it, and a planned second address will let it face them through a small proxy handler while the console stays inside. <a href="security.html" style="color:var(--cyan)">How ENFORZ protects itself &rarr;</a></p>
-      <ul class="hl" style="margin-top:18px">
-        <li><span class="nn">1</span><span><b>Import the image.</b> One file into Hyper-V or VMware, or start the cloud image. It boots configured.</span></li>
-        <li><span class="nn">2</span><span><b>Enrol a pilot ring.</b> A handful of machines you can reimage, in audit mode, blocking nothing.</span></li>
-        <li><span class="nn">3</span><span><b>Work the queue, then rehearse.</b> Approve, simulate, soak, and promote one ring at a time.</span></li>
-      </ul>
-    </div>
-  </div>
-</section>
 <section class="band sect" id="about">
   <div class="wrap">
     <div class="head">

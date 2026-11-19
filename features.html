@@ -474,7 +474,7 @@ body.on .d{display:block}
     <span class="k">Features &middot; release 1.0.12 &middot; agent 1.0.177</span>
     <h1>Everything ENFORZ does, <span class="grad">in one list</span></h1>
     <p class="lede">The whole product, area by area, in the order you meet it in the console. Everything here ships today, except the one item marked Planned.</p>
-    <div class="toc"><a href="#agent">Agent</a><a href="#review">Review</a><a href="#policy">Policy</a><a href="#fleet">Fleet</a><a href="#record">Record</a><a href="#system">System</a></div>
+    <div class="toc"><a href="#agent">Agent</a><a href="#review">Review</a><a href="#policy">Policy</a><a href="#fleet">Fleet</a><a href="#record">Record</a><a href="#system">System</a><a href="#lol">Built-in tools</a><a href="#how-agent">Agent design</a><a href="#more">Insight</a></div>
   </div>
 </section>
 <section class="band soft sect" id="agent">
@@ -638,6 +638,58 @@ body.on .d{display:block}
 <li><b>Second address for agents <span class="plan">Planned</span>.</b> The console stays on the management network while a small proxy handler on a second address faces the agents, passing only enrolment, telemetry and assignment traffic. See Security.</li>
 </ul></div>
 </div>
+  </div>
+</section>
+<section class="band soft sect" id="lol">
+  <div class="wrap">
+    <div class="head">
+      <span class="k">The bypass that defeats most allowlists</span>
+      <h2>Windows ships the attacker's <span class="grad">tools already signed</span></h2>
+      <p class="sub">Certutil downloads files. Mshta runs script. Regsvr32, rundll32, msbuild and the debuggers all execute code on someone else's behalf. They are legitimate, Microsoft-signed and already on every machine, so a list built purely from what your fleet runs will allow every one of them, and an attacker who has any of them does not need to bring a binary at all.</p>
+    </div>
+    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">The deny list is part of every build</span></div><p class="tx">Microsoft maintains the list of its own signed binaries that can be used to get around application control. The platform keeps a current copy and merges it into every policy it compiles, so the hole is closed by default rather than by remembering.</p><div class="d">Several hundred deny rules. The copy is fetched and offered as a version; an administrator adopts it and that is recorded. Deny rules only: a list that does not parse, comes back unexpectedly short, or contains anything other than denials is refused outright instead of half applied.</div></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><span class="nm">An imported policy is usually stale here</span></div><p class="tx">Most published base policies carry a copy of this list frozen at whatever was current when the base was written. Anything Microsoft has added since is simply missing, and nothing tells you.</p><div class="d">Because these are denials, adding newer ones tightens an enforced policy. That is treated as a tightening: named at the enforce step, simulated, and accepted by a person rather than slipped in.</div></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">And it argues with you about the rest</span></div><p class="tx">When a decision in your queue involves one of these binaries, the review says so and says why: allowing it can effectively allow anything it goes on to launch. The same applies to a system filename found outside System32, or a program started by Word or Outlook.</p><div class="d">These are reasons to look twice, not automatic denials. The point is that the risky ones stop looking identical to the other four hundred items in the queue.</div></div>
+    </div>
+    <div class="rule" style="margin-top:clamp(20px,2.6vw,28px)">
+      <span class="vb">Why it matters</span>
+      <p class="tx">An allowlist that allows mshta.exe allows everything mshta.exe can be told to run. <b>Allowlisting without this is a lock on a door with the window open,</b> and it is the single most common way an application control rollout turns out to be worth less than it looked.<span class="d">The vulnerable-driver blocklist is handled the same way, for the same reason: a signed driver with a known flaw is how security software gets switched off.</span></p>
+    </div>
+  </div>
+</section>
+<section class="band sect" id="how-agent">
+  <div class="wrap">
+    <div class="head">
+      <span class="k">On every machine</span>
+      <h2>One small service, and <span class="grad">no open door</span></h2>
+      <p class="sub">A single signed Windows service does the work on the endpoint: it watches what runs, applies the policy that machine was assigned, and holds the break-glass key. It carries its own runtime, so there is nothing to install underneath it.</p>
+    </div>
+    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">It collects, and it tidies up first</span></div><p class="tx">Every launch on the machine is an event, and the signer is recorded in a separate one. The agent matches the two together locally and collapses the repeats, so what reaches the console is readable instead of a transcript.</p><div class="d">Correlating on the endpoint is why forty thousand raw lines arrive as a couple of dozen decisions. The counts are preserved: collapsing never hides how often something ran.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cert"/></svg></span><span class="nm">It only ever dials out</span></div><p class="tx">The agent opens no port and accepts no connection. It reaches out on its own schedule, identifies itself with a certificate it enrolled and renews by itself, and asks whether anything has changed.</p><div class="d">There is no inbound management channel to find, authenticate against or abuse. A machine is known by the certificate it holds, not by a name it puts in a message.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">It applies what it was assigned</span></div><p class="tx">Policies are fetched, checked against a key compiled into the agent itself, and applied. A policy that does not verify is not applied, whatever told it to.</p></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">It holds the break glass</span></div><p class="tx">When somebody has to be let past, the agent takes a signed instruction addressed to that one machine, with an expiry on it, switches that machine to the audit copy of its policy, and puts it back when the window closes.</p><div class="d">A statement issued for a different machine is refused. So is an old one replayed later. The window is in the audit record with who opened it, on what, and for how long.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">It survives the outage, and admits the gap</span></div><p class="tx">Events are spooled to disk and survive a reboot or a server that is down. If the spool fills and the oldest have to go, it says so on the next check-in.</p><div class="d">A declared gap matters because simulation is only as honest as the telemetry behind it. Silently losing events would make a policy look safer than it is.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Losing the server changes nothing</span></div><p class="tx">If the console is unreachable, telemetry pauses and enforcement carries on exactly as it was. The agent never relaxes a policy to get itself out of trouble.</p><div class="d">It has a watchdog, and the watchdog only reports: it names the step the agent stopped in, and never restarts, reverts or loosens anything on its own authority.</div></div>
+    </div>
+  </div>
+</section>
+<section class="band soft sect" id="more">
+  <div class="wrap">
+    <div class="head">
+      <span class="k">While it is watching anyway</span>
+      <h2>An inventory nobody had to collect</h2>
+      <p class="sub">To decide what may run, it already knows every binary, driver and version in the estate. That answers questions no separate tool had to be bought for.</p>
+    </div>
+    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-radar"/></svg></span><span class="nm">What is out of date, and dangerous</span></div><p class="tx">Known vulnerabilities matched against what is genuinely installed and running, per machine, rather than against a list of product names.</p><div class="d">Three kinds of finding. Windows builds measured against the update that fixes a given issue. Loaded drivers matched against known-vulnerable driver lists. Third-party software matched by version against a curated catalogue with deliberately conservative ranges, and each finding says how it was reached.</div></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">The driver nobody knew was there</span></div><p class="tx">Vulnerable drivers are how attackers switch off your security software. They are also invisible to most inventories, because nothing ever asked.</p></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></span><span class="nm">A second opinion on a hash</span></div><p class="tx">Look up anything you are unsure about and see an outside reputation verdict next to your own evidence before you approve it.</p></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg></span><span class="nm">What is still uncovered</span></div><p class="tx">Which machines have the agent, which are enrolled, which are enforced, which are only in audit, and which are not covered at all.</p></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Push without a separate project</span></div><p class="tx">Where you already use a deployment tool to put software on machines, it can hand the agent over to it rather than making you build a rollout.</p><div class="d">A deliberately small integration with PDQ Connect: list the devices in a group, create a deployment, nothing more. The credential can reach the whole fleet, so the surface is kept to what the feature needs.</div></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Blocks worth looking at</span></div><p class="tx">Not every block matters. The ones that do, where something unsigned ran from a folder a user can write to, are separated from the noise.</p></div>
+    </div>
   </div>
 </section>
 

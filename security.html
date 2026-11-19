@@ -474,7 +474,7 @@ body.on .d{display:block}
     <span class="k">Security</span>
     <h1>It decides what runs. <span class="grad">So it is built like it.</span></h1>
     <p class="lede">An application control platform is as sensitive as a domain controller: whoever controls it decides what every machine may run. This page explains how ENFORZ protects its keys, its sign-in, its agents, its record and the appliance it runs on, and which parts are still planned.</p>
-    <div class="toc"><a href="#network">Where it sits</a><a href="#keys">Keys</a><a href="#signin">Sign-in</a><a href="#agents">Agents</a><a href="#logs">Logs and SIEM</a><a href="#appliance">Appliance hardening</a><a href="#recovery">Recovery</a><a href="#mcp">MCP</a></div>
+    <div class="toc"><a href="#network">Where it sits</a><a href="#keys">Keys</a><a href="#signin">Sign-in</a><a href="#agents">Agents</a><a href="#logs">Logs and SIEM</a><a href="#appliance">Appliance hardening</a><a href="#recovery">Recovery</a><a href="#trust">Design rules</a><a href="#mcp">MCP</a></div>
   </div>
 </section>
 <section class="band soft sect" id="network">
@@ -592,7 +592,32 @@ body.on .d{display:block}
 </div>
   </div>
 </section>
-<section class="band  sect" id="mcp">
+<section class="band sect" id="trust">
+  <div class="wrap">
+    <div class="head">
+      <span class="k">Trust</span>
+      <h2>It decides what is allowed to run</h2>
+      <p class="sub">That makes it one of the most sensitive systems you will own, and it is built on that assumption.</p>
+    </div>
+    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">The front door takes writes only</span></div><p class="tx">The component the agents talk to can put messages on a queue and nothing else. It cannot read the database, make decisions or generate a policy.</p><div class="d">Machines identify themselves with a client certificate rather than anything they can claim in a message or a header. The hostile-input boundary is deliberately small enough to read in full.</div></div>
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">One key, compiled in</span></div><p class="tx">Agents verify instructions against a key built into the binary, not one supplied by the server, the installer or the connection.</p></div>
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">Everything attributable</span></div><p class="tx">Every approval, promotion, waiver and break-glass window is recorded against a person, with what was waived and why.</p></div>
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Your data stays yours</span></div><p class="tx">Telemetry, inventory and policy live on your own server. Nothing is shared with us or transmitted to us.</p><div class="d">The optional AI assistant is the one exception, and only when you turn it on. It sends anonymised evidence to the AI provider you choose, under your own account, and records exactly what each request contained.</div></div>
+    </div>
+    <div class="hon">
+      <h3>It arrives as an appliance</h3>
+      <p class="sub" style="margin-top:10px">The platform ships as one virtual machine for Hyper-V (VHDX) or VMware (OVA), and cloud images are available too. The operating system underneath is hardened and patched as part of the release, so there is no build for anyone on your side to get right.</p>
+      <p class="sub" style="margin-top:10px">Put it on your management network. Only the agents need to reach it, and a planned second address will let it face them through a small proxy handler while the console stays inside.</p>
+      <ul class="hl" style="margin-top:18px">
+        <li><span class="nn">1</span><span><b>Import the image.</b> One file into Hyper-V or VMware, or start the cloud image. It boots configured.</span></li>
+        <li><span class="nn">2</span><span><b>Enrol a pilot ring.</b> A handful of machines you can reimage, in audit mode, blocking nothing.</span></li>
+        <li><span class="nn">3</span><span><b>Work the queue, then rehearse.</b> Approve, simulate, soak, and promote one ring at a time.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+<section class="band soft sect" id="mcp">
   <div class="wrap">
     <div class="head"><span class="k">MCP server</span><h2>MCP, with the same boundaries</h2><p class="sub">The Model Context Protocol server lets your own AI tools read the console. It follows the rules above: off by default, on the management address only, per-person tokens scoped to one organisation and read access, every call in the audit log, and no path to approve, build or enforce.</p></div>
     
