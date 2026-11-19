@@ -339,6 +339,11 @@ body.horror.d4 #ghost{opacity:.55}
 #end.calm .acts .hot{display:none}
 #end .l3{margin-top:30px;font-family:var(--f-m);font-size:.72rem;letter-spacing:.04em;color:#9A7076;line-height:1.8;text-shadow:0 2px 8px #000}
 #end .l3 b{color:#D9B4B8;font-weight:500}
+.nag{display:none;text-align:center;padding-top:3vh;font-family:var(--f-m);font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:#FF4358;text-shadow:0 0 18px #FF001F}
+.nag span{display:block;margin-top:10px;font-size:1.3rem;letter-spacing:0;animation:nagj .9s ease-in-out infinite}
+body.horror .nag{display:block;animation:nagp 1.6s ease-in-out infinite}
+@keyframes nagj{50%{transform:translateY(8px)}}
+@keyframes nagp{50%{opacity:.45}}
 body.pull main{animation:lurch .3s steps(2,end) 3}
 body.hit main{animation:lurch .34s steps(2,end)}
 body.hit .tint{animation:redflash .5s ease-out}
@@ -529,7 +534,7 @@ body.hit .tint{animation:redflash .5s ease-out}
     </div>
   </div>
 </section>
-<div id="tail" style="height:60vh"></div>
+<div id="tail" style="height:70vh"><div class="nag" id="nag" aria-hidden="true">keep scrolling<span>&darr;</span></div></div>
 </main>
 
 <footer>
@@ -820,7 +825,7 @@ $('#snd').addEventListener('click', function(){
 function setMode(m, fromChoice){
   // Either reality starts from the top of the page, never from wherever the
   // reader happened to be.
-  window.scrollTo(0, 0); target = 0; pulling = false; lastMove = Date.now();
+  window.scrollTo(0, 0); target = 0; pulling = false; finalSeen = 0; lastMove = Date.now();
   try { history.replaceState(null, '', '#' + (m === 'horror' ? 'other' : 'control')); } catch(e){}
   mode = m;
   body.classList.toggle('horror', m === 'horror');
@@ -864,7 +869,7 @@ function onScroll(){
   target = Math.max(0, Math.min(1, scrollY / Math.max(1, max)));
 }
 window.addEventListener('scroll', function(){ lastMove = Date.now(); onScroll(); }, { passive: true });
-var lastMove = Date.now(), pulling = false;
+var lastMove = Date.now(), pulling = false, finalSeen = 0;
 function pull(){
   pulling = true; flicker(); thud(.5); body.classList.add('pull');
   var y0 = scrollY, t0 = performance.now(), D = reduce ? 1 : 1700;
@@ -897,9 +902,16 @@ function frame(){
     applyDread(false);
     // Deep enough and the last section in sight: the page takes over and
     // carries the reader the rest of the way.
+    // The last section is given its moment, with "keep scrolling" under it.
+    // Scrolling on past it (into the tail), reaching the bottom, or simply
+    // staying on it for a while, and the page takes over from there.
     if (!pulling && !$('#end').classList.contains('on') && maxReached > .45) {
-      var fin = $('#final').getBoundingClientRect().top;
-      if (fin < innerHeight * .8 || target > .8 || (target > .6 && Date.now() - lastMove > 4000)) pull();
+      var fr = $('#final').getBoundingClientRect(), tail = $('#tail').getBoundingClientRect().top;
+      var seen = fr.top < innerHeight * .35;
+      if (seen && !finalSeen) finalSeen = Date.now();
+      if (!seen) finalSeen = 0;
+      var bottom = scrollY + innerHeight >= document.documentElement.scrollHeight - 40;
+      if (tail < innerHeight * .45 || bottom || (finalSeen && Date.now() - finalSeen > 8000 && Date.now() - lastMove > 3000)) pull();
     }
     // Back near the top, the page recovers: the copy returns to Control.
     if (maxReached > .2 && dread < .04) { $$('[data-hit]').forEach(function(x){ x.removeAttribute('data-hit'); }); maxReached = 0; allCopy('control'); $$('.serif').forEach(function(el){ el.classList.remove('serif'); }); feedN = 0; drawFeed(); drawQueue(); }
