@@ -109,6 +109,48 @@ nav.nv a{white-space:nowrap}
 .sv.a{color:var(--amber);border-color:rgba(157,140,255,.4)}
 .sv.c{color:var(--crit);border-color:rgba(255,122,107,.4)}
 .sv.m{color:var(--mint);border-color:rgba(79,214,169,.4)}
+.sv.h{color:#FFB547;border-color:rgba(255,181,71,.4)}
+/* From the home page: what it controls, the tour video, the rule callout,
+   a tile's link, the line over the audit log. */
+.chan{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chan span{font-family:var(--f-m);font-size:.72rem;letter-spacing:.06em;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:5px 11px;background:var(--card)}
+.chn{margin-top:12px;color:var(--faint);font-size:.82rem;line-height:1.5;max-width:52ch}
+.gal{margin-top:clamp(24px,3.2vw,34px)}
+.galvid{display:block;width:100%;border-radius:var(--r);border:1px solid var(--line2);background:#000;aspect-ratio:16/9}
+/* The other reality: the tour is an old black-and-white set showing the
+   console, through snow, with Mike from Finance. */
+.tv{position:relative}
+.tvoff{display:none;position:absolute;inset:0;border-radius:var(--r);overflow:hidden;background:#000;border:1px solid #2a2a2a}
+body.horror .tvoff{display:block}
+body.horror .tv .galvid{visibility:hidden}
+.tvoff img{position:absolute;inset:-2%;width:104%;height:104%;object-fit:cover;filter:grayscale(1) contrast(1.25) brightness(.42) blur(.4px);animation:tvroll 7s steps(1) infinite,tvjit .18s steps(2) infinite}
+.tvoff .snow{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.42;mix-blend-mode:screen}
+.tvoff .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.38) 0 2px,transparent 2px 4px);box-shadow:inset 0 0 120px 40px rgba(0,0,0,.85)}
+.tvoff .scan::after{content:"";position:absolute;left:0;right:0;height:18%;top:-20%;background:linear-gradient(transparent,rgba(255,255,255,.07),transparent);animation:tvbar 5.5s linear infinite}
+.tvmsg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,1.4vw,16px);text-align:center;padding:0 6%;font-family:var(--f-m);color:#EDEDED;text-shadow:0 0 6px rgba(255,255,255,.45),2px 0 rgba(255,0,40,.35),-2px 0 rgba(0,200,255,.25)}
+.tvmsg::before{content:"";position:absolute;left:8%;right:8%;top:28%;bottom:28%;background:radial-gradient(closest-side,rgba(0,0,0,.88),rgba(0,0,0,.5) 70%,transparent);z-index:-1}
+.tvmsg{z-index:0}
+.tvmsg p{opacity:0;transform:translateY(6px);transition:opacity .9s,transform .9s}
+.tvmsg .t1{font-size:clamp(1rem,2.3vw,1.7rem);letter-spacing:.02em}
+.tvmsg .t2{font-size:clamp(.95rem,2vw,1.45rem);color:#F2F2F2}
+.tvmsg .t3{font-size:clamp(.85rem,1.4vw,1.05rem);letter-spacing:.24em;text-transform:uppercase;color:#E2E2E2;font-weight:600}
+.tvmsg em{font-style:normal;font-weight:700;color:#FF2D45;font-size:1.22em;letter-spacing:.03em;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;display:inline-block;text-shadow:0 0 14px rgba(255,20,50,.8),3px 0 rgba(0,200,255,.35),-3px 0 rgba(255,0,40,.6);animation:tvstress 1.6s steps(1) infinite}
+.tvoff.on .t1{opacity:1;transform:none;transition-delay:.3s}
+.tvoff.on .t2{opacity:1;transform:none;transition-delay:1.9s}
+.tvoff.on .t3{opacity:1;transform:none;transition-delay:4.2s}
+@keyframes tvroll{0%,88%{transform:none}89%{transform:translateY(-3%)}90%{transform:translateY(4%) skewX(-2deg)}91%,100%{transform:none}}
+@keyframes tvjit{0%{translate:0 0}50%{translate:1px -1px}}
+@keyframes tvbar{to{top:110%}}
+@keyframes tvstress{0%,62%{transform:none}64%{transform:translate(-3px,1px) skewX(-8deg)}67%{transform:translate(3px,-1px)}70%{transform:scale(1.06)}73%,100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.tvoff img,.tvoff .scan::after,.tvmsg em{animation:none}}
+.galnote{margin-top:12px;color:var(--faint);font-size:.82rem;line-height:1.5}
+.rule{margin-top:16px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--card);border:1px solid var(--line2);border-left:3px solid var(--amber);border-radius:var(--rs);padding:16px 18px}
+@media(max-width:620px){.rule{grid-template-columns:1fr;gap:8px}}
+.rule .vb{font-family:var(--f-m);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);padding-top:3px;white-space:nowrap}
+.rule p{color:var(--dim);font-size:.92rem;line-height:1.6}
+.ti .lk{margin-top:12px}.ti .lk a{color:var(--cyan);text-decoration:none;font-weight:600}
+.lognote{margin-top:30px;color:var(--dim);font-size:.92rem}
+.lognote+.log{margin-top:12px}
 .fr.new{animation:flash 1.2s}
 @keyframes flash{from{background:rgba(224,82,90,.18)}}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden}
@@ -408,11 +450,11 @@ body.hit .tint{animation:redflash .5s ease-out}
   <div class="wrap hin">
     <a class="brand" href="#top" aria-label="ENFORZ"><img src="../brand/logo-on-dark.webp" alt="ENFORZ" width="1585" height="300"></a>
     <nav class="nv" aria-label="Sections">
-      <a href="#problem" data-p="The problem" data-h="The mistake" data-h2="Your mistake">The problem</a>
-      <a href="#loop" data-p="The loop" data-h="The spiral" data-h2="No end">The loop</a>
-      <a href="#queue" data-p="Approvals" data-h="Approvals" data-h2="Nobody approves">Approvals</a>
-      <a href="#safety" data-p="Safety" data-h="Safety?" data-h2="Not safe">Safety</a>
-      <a href="#security" data-p="Security" data-h="Security" data-h2="Not secure">Security</a>
+      <a href="#tour" data-p="Tour" data-h="Footage" data-h2="Nobody watching">Tour</a>
+      <a href="#why" data-p="Why" data-h="The mistake" data-h2="Your mistake">Why</a>
+      <a href="#loop" data-p="How it works" data-h="The spiral" data-h2="No end">How it works</a>
+      <a href="#assist" data-p="AI" data-h="AI" data-h2="Nobody approves">AI</a>
+      <a href="#safe" data-p="Safety" data-h="Safety?" data-h2="Not safe">Safety</a>
       <a href="#about" data-p="About" data-h="Who let it in" data-h2="Who let you in">About</a>
     </nav>
     <div class="mode" role="group" aria-label="Experience">
@@ -428,13 +470,15 @@ body.hit .tint{animation:redflash .5s ease-out}
   <div class="aur" aria-hidden="true"></div>
   <div class="wrap hin2">
     <div>
-      <span class="k" data-p="ENFORZ &middot; Application control for Windows" data-h="ENFORZ &middot; Application freedom for Windows"></span>
+      <span class="k" data-p="ENFORZ &amp;middot; Trust. Control. Enforce." data-h="ENFORZ &amp;middot; Trust. Control. Neither."></span>
       <h1 id="h1" data-p="Nothing runs unless &lt;span class=grad&gt;you said so&lt;/span&gt;." data-h="Everything runs. &lt;span class=grad&gt;Nobody prevented it.&lt;/span&gt;"></h1>
       <p class="lede" data-p="Antivirus asks whether a program looks bad. Application control asks whether you allowed it. Ransomware you have never seen, a signed tool turned against you, a script from an email: none of it starts, because it was never on the list." data-h="Why make people approve software? Let every attachment open, every unsigned driver load and every script borrow the keys. Think of the meetings nobody has to attend. Keep scrolling. Everyone does."></p>
       <div class="cta">
         <a class="b b1" href="#loop" data-p="How it works" data-h="Keep scrolling"></a>
-        <a class="b" href="../features.html" data-p="Every feature" data-h="Every feature (all of them on)"></a>
+        <a class="b" href="#safe" data-p="Can it brick my fleet?" data-h="It already has"></a>
       </div>
+      <div class="chan" aria-label="What it controls"><span>Executables</span><span>Drivers</span><span>Scripts</span><span>Installers</span><span>DLLs</span></div>
+      <p class="chn" data-p="Windows enforces the list in the kernel. Everything above has to be allowed before it is permitted to load." data-h="Windows would enforce the list in the kernel. There is no list. Everything above is loading anyway."></p>
     </div>
     <div class="feed" aria-live="polite">
       <div class="fh"><span class="dot" aria-hidden="true"></span><span data-p="Waiting on you" data-h="Running without you"></span><span class="e" data-p="Example" data-h="Live"></span></div>
@@ -454,7 +498,36 @@ body.hit .tint{animation:redflash .5s ease-out}
   </div>
 </section>
 
-<section class="band soft" id="problem">
+<section class="band soft" id="tour">
+  <div class="wrap">
+    <div class="head">
+      <span class="k" data-p="Product tour" data-h="Security camera footage"></span>
+      <h2 data-p="The console, end to end" data-h="The console, end to end. &lt;span class=grad&gt;Nobody was watching it.&lt;/span&gt;"></h2>
+      <p class="sub" data-p="Three minutes of the current release, recorded in one take." data-h="Three minutes of the current release. In ours, nobody signs in, so it is a very quiet film."></p>
+    </div>
+    <div class="gal">
+      <div class="tv">
+      <video class="galvid" controls preload="none" poster="../tour/poster.webp" playsinline>
+        <source src="../tour/enforz-walkthrough.webm" type="video/webm">
+        Your browser cannot play this walkthrough.
+      </video>
+      <div class="tvoff" aria-hidden="true">
+        <img src="../tour/poster.webp" alt="">
+        <canvas class="snow" width="200" height="112"></canvas>
+        <div class="scan"></div>
+        <div class="tvmsg">
+          <p class="t1">Wait&hellip; you are not blocking anything.</p>
+          <p class="t2">Mike in Finance is just opening <em>Spreadsheet.exe</em></p>
+          <p class="t3">&hellip; just keep scrolling</p>
+        </div>
+      </div>
+      </div>
+      <p class="galnote" data-p="Every machine name, publisher, person and network detail in this recording is fictitious. No customer environment appears at any point." data-h="Every machine name in this recording is fictitious. The ones running on your network tonight are not."></p>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="why">
   <div class="wrap">
     <div class="head">
       <span class="k" data-p="Why this is hard" data-h="Why we stopped trying"></span>
@@ -462,35 +535,42 @@ body.hit .tint{animation:redflash .5s ease-out}
       <p class="sub" data-p="Not because the idea is wrong. Because the two things standing in the way have never been solved properly: the firehose, and the fear." data-h="The firehose was loud and the fear was real, so we solved both the easy way. We stopped looking."></p>
     </div>
     <div class="tiles">
-      <div class="ti"><div class="n" data-p="The firehose" data-h="The firehose"></div><h3 data-p="Forty thousand events, twenty-three decisions" data-h="Forty thousand events, zero readers"></h3><p data-p="Audit mode produces tens of thousands of would-be blocks. ENFORZ folds them into one row per application, with the evidence beside it, so a person can actually decide." data-h="Audit mode produced tens of thousands of would-be blocks. We muted the channel. It is very quiet now. The quiet has been going on for some time."></p></div>
-      <div class="ti"><div class="n" data-p="The fear" data-h="The fear"></div><h3 data-p="Rehearsed before it is real" data-h="Nothing is ever blocked, so nothing is ever wrong"></h3><p data-p="Simulation replays real telemetry against a draft, a soak watches for surprises, and enforcement arrives one ring at a time with a way back." data-h="A bad rule might stop a machine booting. So there are no rules. Nothing has stopped. Something has started, though."></p></div>
-      <div class="ti"><div class="n" data-p="The drift" data-h="The drift"></div><h3 data-p="It stays true after day one" data-h="Day one never ended"></h3><p data-p="Recertification, hygiene and drift detection keep the list honest as software comes and goes." data-h="Software arrives. Software stays. Some of it was not installed by anyone who works here."></p></div>
+      <div class="ti"><div class="n" data-p="The firehose" data-h="The firehose"></div><p data-p="Switch Windows into audit mode and a few hundred machines will hand you tens of thousands of &amp;ldquo;would have blocked&amp;rdquo; lines in a week. There is no human path from that to a short, durable list of rules." data-h="Audit mode produced tens of thousands of would-be blocks. We muted the channel. It is very quiet now. The quiet has been going on for some time."></p></div>
+      <div class="ti"><div class="n" data-p="The fear" data-h="The fear"></div><p data-p="A mistake here does not file a bug report. It stops a machine booting, and it does it to every machine you sent the policy to, at once, including the one you would have used to fix it." data-h="A bad rule might stop a machine booting. So there are no rules. Nothing has stopped. Something has started, though."></p></div>
+      <div class="ti"><div class="n" data-p="What it is worth" data-h="What it cost"></div><p data-p="Enforced application control stops the entire category: ransomware, living-off-the-land tools, unsigned scripts, anything an attacker drops after a phish. Not because it recognised the threat, but because the threat is not on the list." data-h="Without it, the entire category runs: ransomware, borrowed tools, unsigned scripts, whatever arrived after the phish. Not because it was clever. Because nothing asked."></p></div>
     </div>
+    <div class="rule"><span class="vb" data-p="With ENFORZ" data-h="Without it"></span><p data-p="The same estate goes from first telemetry to a reviewed draft policy in an afternoon, and the first ring enforces in days rather than quarters. The ongoing life of the policy is the same short loop, every time: new software appears as a decision, you approve it, the next build carries it, simulation checks it, and the rings move on their own soak timers." data-h="The same estate goes from first telemetry to first ransom note in an afternoon. The ongoing life of the incident is the same short loop, every time: something new appears, nobody decides, it spreads, and the insurer calls."></p></div>
   </div>
 </section>
 
-<section class="band" id="loop">
+<section class="band soft" id="loop">
   <div class="wrap">
     <div class="head">
-      <span class="k" data-p="The loop" data-h="The spiral"></span>
-      <h2 data-p="From forty thousand events to &lt;span class=grad&gt;a policy you trust&lt;/span&gt;" data-h="From &ldquo;probably fine&rdquo; to &lt;span class=grad&gt;&ldquo;who allowed this?&rdquo;&lt;/span&gt;"></h2>
+      <span class="k" data-p="How it works" data-h="The spiral"></span>
+      <h2 data-p="From forty thousand events to &lt;span class=grad&gt;a policy you trust&lt;/span&gt;" data-h="From &amp;ldquo;probably fine&amp;rdquo; to &lt;span class=grad&gt;&amp;ldquo;who allowed this?&amp;rdquo;&lt;/span&gt;"></h2>
+      <p class="sub" data-p="Five steps. Nothing is enforced until the four before it are done." data-h="Five steps. Nothing is enforced at any of them."></p>
     </div>
     <div class="loop">
-      <div class="step"><b data-p="Watch" data-h="Run"></b><p data-p="Agents report every would-be block, joined to its signer, without blocking anything." data-h="Let everything execute, including final_final_v3_REAL.exe."></p></div>
-      <div class="step"><b data-p="Collapse" data-h="Trust"></b><p data-p="Events fold into one decision per application, with machines, paths and risk signals." data-h="Someone signed it once. That makes it a friend."></p></div>
-      <div class="step"><b data-p="Decide" data-h="Forget"></b><p data-p="A person approves at the narrowest level that works. The AI drafts; it never decides." data-h="Nobody reads the queue, so nobody remembers what is in it."></p></div>
-      <div class="step"><b data-p="Rehearse" data-h="Spread"></b><p data-p="Simulate against real telemetry, then soak in audit on a pilot ring." data-h="It reached one machine on Tuesday. It reached the rest on Tuesday too."></p></div>
-      <div class="step"><b data-p="Enforce" data-h="Explain"></b><p data-p="One ring at a time, behind fourteen gates that fail closed, with break-glass ready." data-h="Write the incident report. Leave the &ldquo;approved by&rdquo; field blank. It was always blank."></p></div>
+      <div class="step"><b data-p="Watch" data-h="Run"></b><p data-p="Learn the estate from the estate. A signed service reports what really runs; nothing is blocked yet." data-h="Let everything execute, including final_final_v3_REAL.exe."></p></div>
+      <div class="step"><b data-p="Collapse" data-h="Trust"></b><p data-p="Forty thousand lines become twenty-three questions, each with its machines, paths and publisher attached." data-h="Someone signed it once. That makes it a friend."></p></div>
+      <div class="step"><b data-p="Decide" data-h="Forget"></b><p data-p="No allow rule is ever created automatically. A person picks how wide to trust, and signs it." data-h="Nobody reads the queue, so nobody remembers what is in it."></p></div>
+      <div class="step"><b data-p="Rehearse" data-h="Spread"></b><p data-p="Replay the draft against what really happened, before anyone feels it." data-h="It reached one machine on Tuesday. It reached the rest on Tuesday too."></p></div>
+      <div class="step"><b data-p="Enforce" data-h="Explain"></b><p data-p="Ring by ring, behind fourteen gates, with break-glass and a way back." data-h="Write the incident report. Leave the &amp;ldquo;approved by&amp;rdquo; field blank. It was always blank."></p></div>
     </div>
   </div>
 </section>
 
-<section class="band soft" id="queue">
+<section class="band" id="assist">
   <div class="wrap">
     <div class="head">
-      <span class="k" data-p="The approval queue" data-h="The approval queue (archived)"></span>
-      <h2 data-p="One row per decision. &lt;span class=grad&gt;Nothing approved automatically.&lt;/span&gt;" data-h="One row per program. &lt;span class=grad&gt;Everything approved automatically.&lt;/span&gt;"></h2>
-      <p class="sub" data-p="Try it. Approving here records a person and a reason, at the narrowest level that will still work. Rows flagged High must be kept blocked or investigated first." data-h="Try it. The buttons still work. They just do not change anything any more."></p>
+      <span class="k" data-p="AI assistant" data-h="AI assistant (unsupervised)"></span>
+      <h2 data-p="AI-assisted decisions, &lt;span class=grad&gt;never AI approval&lt;/span&gt;" data-h="AI-assisted decisions. &lt;span class=grad&gt;AI approval. AI everything.&lt;/span&gt;"></h2>
+      <p class="sub" data-p="The assistant reads the queue and drafts the answers. A person still makes every decision." data-h="The assistant read the queue and approved the answers. A person was on leave."></p>
+    </div>
+    <div class="tiles">
+      <div class="ti"><div class="n" data-p="It drafts, you sign" data-h="It signs, nobody drafts"></div><p data-p="Each app gets a proposed answer: allow it at a stated rule level, keep it blocked, or needs human review, with the risk, the reasoning and what a reviewer should check." data-h="Each app got the same answer: allow it. The reasoning field says &amp;ldquo;seemed fine&amp;rdquo;. It said that four hundred times."></p></div>
+      <div class="ti"><div class="n" data-p="A second reader" data-h="No reader"></div><p data-p="Before a policy goes anywhere, the assistant can review it for trust wider than the evidence supports, stale approvals, rules that do nothing, and a missing recovery option." data-h="Nobody reviewed the policy, because there was no policy. The recovery option was the first thing to go."></p></div>
+      <div class="ti"><div class="n" data-p="You see what was sent" data-h="Everything was sent"></div><p data-p="User names and email addresses are scrubbed and machine names aliased. The exact document each run sent is stored with its SHA-256 hash. Off by default." data-h="User names, email addresses, machine names and the domain admin&amp;rsquo;s password. All of it went somewhere. We are not sure where."></p></div>
     </div>
     <div class="q" role="table" aria-label="Approval queue">
       <div class="qh" role="row"><span>Application / file</span><span>Publisher</span><span>Machines</span><span>Risk</span><span style="justify-self:end">Decision</span></div>
@@ -500,43 +580,57 @@ body.hit .tint{animation:redflash .5s ease-out}
   </div>
 </section>
 
-<section class="band" id="safety">
+<section class="band soft" id="safe">
   <div class="wrap">
     <div class="head">
-      <span class="k" data-p="Safety" data-h="Safety"></span>
-      <h2 data-p="&ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&rdquo;" data-h="&ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&rdquo; It already has."></h2>
-      <p class="sub" data-p="Only if every one of these fails at once, and each of them fails closed. These are the checks between a draft and enforcement." data-h="These are the checks between a draft and enforcement. Watch them closely. Ours are being switched off one at a time while you read."></p>
+      <span class="k" data-p="The honest question" data-h="The honest answer"></span>
+      <h2 data-p="&amp;ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&amp;rdquo;" data-h="&amp;ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&amp;rdquo; It already has."></h2>
+      <p class="sub" data-p="Fourteen checks run before a policy can be enforced. Every one fails closed, and none can be switched off." data-h="These are the checks between a draft and enforcement. Watch them closely. Ours are being switched off one at a time while you read."></p>
     </div>
     <div class="gates" id="gates"></div>
+    <div class="rule"><span class="vb" data-p="The rule" data-h="The rule"></span><p data-p="Enforcement comes last, and everything before it is recoverable. A mistake in steps one to four costs an afternoon. A mistake in step five costs a desk visit per machine." data-h="There was no step five. There were no steps. It still cost a desk visit per machine, and the desks were in four buildings."></p></div>
   </div>
 </section>
 
-<section class="band soft" id="security">
+<section class="band" id="more">
   <div class="wrap">
     <div class="head">
-      <span class="k" data-p="Security" data-h="Security"></span>
-      <h2 data-p="It decides what runs. &lt;span class=grad&gt;So it is built like it.&lt;/span&gt;" data-h="It decides what runs. &lt;span class=grad&gt;So does everyone else now.&lt;/span&gt;"></h2>
+      <span class="k" data-p="Go deeper" data-h="Go deeper (they did)"></span>
+      <h2 data-p="The rest is &lt;span class=grad&gt;one click away&lt;/span&gt;" data-h="The rest is &lt;span class=grad&gt;already inside&lt;/span&gt;"></h2>
+      <p class="sub" data-p="This page tells the story. The details live on their own pages, so you can read as much as you need and no more." data-h="This page tells the story. The details are in a folder called &amp;ldquo;exfil&amp;rdquo;, so you can read as much as they took."></p>
     </div>
     <div class="tiles">
-      <div class="ti"><div class="n" data-p="Keys" data-h="Keys"></div><h3 data-p="Every key has one job" data-h="One key opens everything"></h3><p data-p="Agents trust only the public key compiled into them. Policy signing, code signing, release and BitLocker sealing keys are separate, and the sensitive ones are sealed under passphrases nobody stores." data-h="It is on a sticky note under the monitor in the server room. Someone took a photo of it in 2023 for the onboarding deck."></p></div>
-      <div class="ti"><div class="n" data-p="Sign-in" data-h="Sign-in"></div><h3 data-p="Passkeys, SSO, and a way in when SSO is down" data-h="Whoever asks politely"></h3><p data-p="Passkeys first, authenticator codes as a fallback, OIDC single sign-on, lockouts after ten failures, and four roles from Viewer to TenantAdmin." data-h="The admin password is the company name and the year. We change the year every January. Usually."></p></div>
-      <div class="ti"><div class="n" data-p="Record" data-h="Record"></div><h3 data-p="An audit log nothing can edit, shipped to your SIEM" data-h="The logs are rotated hourly, to keep things tidy"></h3><p data-p="Every approval, build, promotion and sign-in, with who and why, sent as CEF, LEEF or JSON over syslog with TLS." data-h="There is a log of tonight. You are in it. Look below."></p></div>
-      <div class="ti"><div class="n" data-p="Appliance" data-h="Appliance"></div><h3 data-p="Hardened before it reaches you" data-h="Exposed before it reached us"></h3><p data-p="SSH closed by default and key-only, fail2ban, a deny-by-default firewall, automatic security patches and signed updates." data-h="Port 22 is open to the internet. It has been very popular. We have had visitors from countries we have not heard of."></p></div>
+      <div class="ti"><div class="n" data-p="Every feature" data-h="Every feature"></div><p data-p="The agent, the review queue, policy building, simulation, enforcement, the fleet, BitLocker, the SIEM connector and the appliance, area by area." data-h="All of them on. None of them configured. Most of them unattended."></p><p class="lk"><a href="../features.html" data-p="Features &amp;rarr;" data-h="Features (all on) &amp;rarr;"></a></p></div>
+      <div class="ti"><div class="n" data-p="How it protects itself" data-h="How it protected itself"></div><p data-p="Every key and its one job, passkeys and SSO, how agents connect, log shipping to your SIEM and the hardened appliance." data-h="One key for everything, on a sticky note under the monitor. Port 22 open to the internet. It has been very popular."></p><p class="lk"><a href="../security.html" data-p="Security &amp;rarr;" data-h="Security (past tense) &amp;rarr;"></a></p></div>
+      <div class="ti"><div class="n" data-p="MCP server" data-h="MCP server"></div><p data-p="Your own AI tools read the console through the Model Context Protocol: read access, per person, audited, off by default. Approving stays with a person in the console." data-h="Somebody&amp;rsquo;s AI tools read the console. Write access, no person, no audit. It approved itself."></p><p class="lk"><a href="../security.html#mcp" data-p="MCP &amp;rarr;" data-h="MCP (not ours) &amp;rarr;"></a></p></div>
     </div>
+    <p class="lognote" data-p="The audit log, as the console keeps it: every approval, build and promotion, with who and why." data-h="There is a log of tonight. You are in it. Look below."></p>
     <div class="log" id="log" aria-live="polite"></div>
   </div>
 </section>
 
+<section class="band soft" id="sister">
+  <div class="wrap">
+    <div class="head">
+      <span class="k" data-p="Sister product" data-h="Next of kin"></span>
+      <h2 data-p="PHISHZ stops it arriving. &lt;span class=grad&gt;ENFORZ stops it running.&lt;/span&gt;" data-h="Nothing stopped it arriving. &lt;span class=grad&gt;Nothing stopped it running.&lt;/span&gt;"></h2>
+      <p class="sub" data-p="Two halves of the same argument, built by the same people. Each runs on your own hardware, and neither needs the other." data-h="Two halves of the same argument. We lost both halves, on the same afternoon."></p>
+    </div>
+  </div>
+</section>
+
 <section class="band" id="about">
-  <div class="wrap about">
+  <div class="wrap">
     <div class="head">
       <span class="k" data-p="Who builds it" data-h="Who let it in"></span>
       <h2 data-p="Built by HCFS, a non-profit &lt;span class=grad&gt;for&lt;/span&gt; non-profits" data-h="Built by nobody. &lt;span class=grad&gt;Maintained by no one.&lt;/span&gt;"></h2>
-      <p class="sub" data-p="Application control is normally sold at an enterprise price to the organisations least likely to be targeted. ENFORZ exists to put it within reach of the ones who cannot buy it." data-h="It was free. The bill came later, in the form of a weekend, a ransom note and a very long call with the insurer."></p>
+      <p class="sub" data-p="Application control is normally sold as an enterprise product at an enterprise price, to the organisations least likely to be targeted by somebody with time on their hands. ENFORZ exists to put it within reach of the ones who cannot buy it." data-h="It was free. The bill came later, in the form of a weekend, a ransom note and a very long call with the insurer."></p>
     </div>
-    <div class="why">
-      <p data-p="It is free because a more secure future cannot be sold only to those who can afford it." data-h="It was free because nobody wanted to be responsible for it."></p>
-      <p data-p="No licence, no subscription, no telemetry sent to us, and no feature held back. Your hardware, your data, your decisions." data-h="Your hardware. Your data. Their decisions."></p>
+    <div class="tiles">
+      <div class="ti"><div class="n" data-p="100% yours" data-h="100% theirs"></div><p data-p="The installation, the hardware and everything inside it are yours. Nothing is shared with us or transmitted to us: not an event, not a machine name, not a count." data-h="The installation, the hardware and everything inside it are theirs now. Everything was transmitted. Nothing was shared with you."></p></div>
+      <div class="ti"><div class="n" data-p="Free to run" data-h="Free to run"></div><p data-p="No licence, no subscription, no per-machine charge, and no edition where the gates that keep you safe cost extra. Your cost is the server it runs on." data-h="Anything runs. No licence needed, no approval needed, no person needed. Your cost is everything else."></p></div>
+      <div class="ti"><div class="n" data-p="Written to be read" data-h="Written to be ignored"></div><p data-p="The rules that must never be broken are written down in plain language, with the reason each one exists. The safety gates are a single file you can read in one sitting." data-h="There was a document with the rules in it. Nobody opened it. It was encrypted on Tuesday anyway."></p></div>
+      <div class="ti"><div class="n" data-p="Nothing to sell you" data-h="Nothing left to sell"></div><p data-p="No telemetry, no usage reporting, no upsell path. Nobody profits from knowing what runs on your machines." data-h="Somebody profits from knowing what runs on your machines. It is not you, and it is not us."></p></div>
     </div>
   </div>
 </section>
@@ -545,7 +639,7 @@ body.hit .tint{animation:redflash .5s ease-out}
   <div class="wrap">
     <span class="k" data-p="ENFORZ" data-h="ENFORZ"></span>
     <h2 data-p="The attack you have never seen &lt;span class=grad&gt;still does not run&lt;/span&gt;" data-h="The attack you have never seen &lt;span class=grad&gt;is already running&lt;/span&gt;"></h2>
-    <p class="lede" data-p="Learn what your estate really runs, collapse it into decisions a person can make, rehearse the policy against what already happened, and enforce it one ring at a time with a way back. Not detection. Permission." data-h="No approvals. No rehearsal. No way back. Keep going. There is a little more page left, and then there is not."></p>
+    <p class="lede" data-p="Learn what your estate really runs, collapse it into decisions a person can actually make, rehearse the policy against what already happened, and enforce it one ring at a time with a way back. Not detection. Permission." data-h="No approvals. No rehearsal. No way back. Keep going. There is a little more page left, and then there is not."></p>
     <div class="cta">
       <a class="b b1" href="../index.html" data-p="Visit the ENFORZ site" data-h="Leave"></a>
       <button class="b" type="button" id="swap" data-p="See the other reality" data-h="Go back to Control"></button>
@@ -692,17 +786,23 @@ function allCopy(which){ copyEls.forEach(function(el){ el._tok = (el._tok || 0) 
 
 /* ------------------------------------------------------------ the feed */
 var FEED_P = [
-  ['41,882 block events collapsed into 23 decisions', 'Approvals', 'a', 'Action'],
+  ['41,882 block events collapsed into 23 decisions', 'Review queue', 'a', 'Action'],
   ['An unsigned tool is running from a folder users can write to', 'Suspicious blocks', 'c', 'Urgent'],
-  ['A loaded driver matches the vulnerable driver list', 'Vulnerabilities', 'c', 'Urgent'],
-  ['Simulation: this draft would stop 6 machines working', 'Simulation', 'a', 'Review'],
-  ['The AI drafted answers for 312 apps. 9 groups are ready for you', 'AI assistant', 'm', 'Review'],
-  ['Pilot ring soaked 14 days with no new blocks', 'Rollout', 'm', 'Ready']
+  ['A loaded driver matches a known-vulnerable list', 'Vulnerabilities', 'c', 'Urgent'],
+  ['Simulation says this draft would stop 6 machines working', 'Simulation', 'h', 'High'],
+  ['A machine is running a policy nobody deployed', 'Drift', 'h', 'High'],
+  ['The assistant drafted answers for 312 apps: 9 groups are ready for your decision', 'AI assistant', 'm', 'Review'],
+  ['A binary nobody recognises was seen on four machines at once', 'Hash reputation', 'm', 'Review'],
+  ['A break-glass window is open and expires in 42 minutes', 'Break-glass', 'a', 'Action'],
+  ['Pilot ring has soaked for 14 days with no new blocks', 'Rollout', 'm', 'Review']
 ];
 var FEED_H = [
   ['invoice_viewer.exe started on 5 machines', 'approved by: nobody', 'c', 'Running'],
   ['svchost.exe started from a user\u2019s AppData folder', 'approved by: nobody', 'c', 'Running'],
   ['A driver nobody recognises loaded at boot', 'approved by: nobody', 'c', 'Running'],
+  ['The simulation was skipped. It would only have worried people.', 'approved by: nobody', 'c', 'Running'],
+  ['A machine is running a policy. Not ours.', 'approved by: nobody', 'c', 'Running'],
+  ['The assistant approved 312 apps. It did not ask.', 'approved by: nobody', 'c', 'Running'],
   ['The backups were encrypted. Not by us.', 'approved by: nobody', 'c', 'Running'],
   ['A new machine joined: ' + V.os, 'approved by: nobody', 'c', 'Running'],
   ['A process is reading this page with you', 'approved by: nobody', 'c', 'Running']
@@ -719,6 +819,28 @@ function feedTick(){
   if (mode === 'horror' && feedN < FEED_H.length) { feedN++; drawFeed(); }
   feedTimer = setTimeout(feedTick, 2600 + Math.random() * 2400);
 }
+
+/* ------------------------------------------------- the tour, on an old set */
+(function(){
+  var box = $('.tvoff'), c = box && box.querySelector('.snow'); if (!c) return;
+  var x = c.getContext('2d'), img = x.createImageData(c.width, c.height), d = img.data, seen = false, last = 0;
+  function draw(t){
+    if (!seen || mode !== 'horror') return;
+    if (t - last > 42) {                       // about 24 frames a second
+      last = t;
+      for (var i = 0; i < d.length; i += 4) { var v = Math.random() * 255 | 0; d[i] = d[i+1] = d[i+2] = v; d[i+3] = 255; }
+      x.putImageData(img, 0, 0);
+    }
+    if (!reduce) requestAnimationFrame(draw);
+  }
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      seen = e.isIntersecting && mode === 'horror';
+      box.classList.toggle('on', seen || box.classList.contains('on') && mode === 'horror');
+      if (seen) requestAnimationFrame(draw);
+    });
+  }, {threshold: .35}).observe(box);
+})();
 
 /* ----------------------------------------------------------- the queue */
 var Q = [
@@ -863,6 +985,7 @@ function setMode(m, fromChoice){
   allCopy('control');
   $$('.serif,.bleed').forEach(function(el){ el.classList.remove('serif', 'bleed'); });
   drawFeed(); drawQueue(); drawGates(); drawLog(); navCopy();
+  var tvb = $('.tvoff'); if (tvb) tvb.classList.remove('on');
   if (m === 'horror') {
     startAudio();
     clearTimeout(window._turn);
@@ -895,7 +1018,7 @@ function watchRead(){
     if (h1.getAttribute('data-shown') === 'horror' && !h1.classList.contains('typing')
         && lede.getAttribute('data-shown') !== 'horror') {
       h1At = Date.now();
-      turn(lede); $$('.hero .cta [data-p], .fh [data-p]').forEach(turn);
+      turn(lede); $$('.hero .cta [data-p], .fh [data-p], .hero .chn').forEach(turn);
       // The headline is in: tell them to go on.
       if (scrollY < innerHeight * .3) body.classList.add('cueing');
     }
