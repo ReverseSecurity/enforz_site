@@ -669,7 +669,7 @@ function typeInto(el, html){
   var plain = tmp.textContent, cur = el.textContent, i = cur.length, j = 0;
   // The first page is read, not skimmed: the headline at reading pace, the
   // paragraph under it a little quicker. Everything else as before.
-  var slow = el.id === 'h1', mid = !slow && !!(el.closest && el.closest('.hero'));
+  var slow = el.id === 'h1', mid = !slow && !!(el.closest && (el.closest('.hero') || el.closest('h2')));
   var tok = (el._tok || 0) + 1; el._tok = tok;
   el.classList.add('typing');
   (function erase(){
@@ -869,8 +869,8 @@ $$('.mode button').forEach(function(b){ b.addEventListener('click', function(){ 
 
 /* ------------------------------------- the first line turns, and holds you */
 // In the other reality the headline starts to change the moment the reader
-// moves, and the page will not scroll until it has finished and had a moment
-// to be read. Then it lets go.
+// moves: the headline first, at reading pace, then the paragraph under it.
+// The page always scrolls.
 var heroTurned = false, held = false, readDone = false, heldAt = 0;
 function turnHero(){
   clearTimeout(window._turn);
@@ -905,15 +905,9 @@ function moved(e){
   // The click that chose this reality is not a move.
   if (e.type === 'pointermove' && Date.now() - heldAt < 500) return;
   turnHero();
-  var scrolls = e.type === 'wheel' || e.type === 'touchmove'
-    || (e.type === 'keydown' && /^(ArrowDown|ArrowUp|PageDown|PageUp|End|Home| |Spacebar)$/.test(e.key));
-  if (!scrolls) return;
-  if (!held) { held = true; body.classList.add('held'); thud(.25); }
-  if (e.cancelable) e.preventDefault();
-  if (scrollY > 0) window.scrollTo(0, 0);
 }
 ['wheel', 'touchmove', 'touchstart', 'keydown', 'pointermove'].forEach(function(t){
-  window.addEventListener(t, moved, { passive: false });
+  window.addEventListener(t, moved, { passive: true });
 });
 $('#swap').addEventListener('click', function(){ setMode(mode === 'horror' ? 'control' : 'horror'); window.scrollTo(0, 0); });
 
@@ -929,12 +923,17 @@ function navCopy(){
 var io = new IntersectionObserver(function(es){
   es.forEach(function(e){
     if (!e.isIntersecting || mode !== 'horror') return;
-    $$('[data-p]', e.target).forEach(function(el, i){ setTimeout(function(){ turn(el); }, i * 140); });
     if (dread > .12 && !e.target.getAttribute('data-hit')) { e.target.setAttribute('data-hit', '1'); hit(); }
     if (e.target.id === 'about') { $$('#about h2').forEach(function(h){ h.classList.add('serif'); }); }
   });
 }, { rootMargin: '-25% 0px -35% 0px' });
 $$('main > section').forEach(function(s, i){ if (i > 0) io.observe(s); });
+// A line changes when it reaches eye height (40% down the screen), so the page turns
+// as they scroll, at the pace they scroll.
+var lineIo = new IntersectionObserver(function(es){
+  es.forEach(function(e){ if (e.isIntersecting && mode === 'horror') turn(e.target); });
+}, { rootMargin: '0px 0px -60% 0px' });
+$$('main > section').forEach(function(s, i){ if (i > 0) $$('[data-p]', s).forEach(function(el){ lineIo.observe(el); }); });
 
 function onScroll(){
   var max = document.documentElement.scrollHeight - innerHeight;
