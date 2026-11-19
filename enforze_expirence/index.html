@@ -510,6 +510,7 @@ body.hit .tint{animation:redflash .5s ease-out}
 <script>
 (function(){
 "use strict";
+try { history.scrollRestoration = 'manual'; } catch(e){}
 var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var body = document.body, mode = 'control', dread = 0, target = 0, maxReached = 0;
 var $ = function(s, r){ return (r || document).querySelector(s); };
@@ -749,6 +750,10 @@ $('#snd').addEventListener('click', function(){
 
 /* ------------------------------------------------------------- the mode */
 function setMode(m, fromChoice){
+  // Either reality starts from the top of the page, never from wherever the
+  // reader happened to be.
+  window.scrollTo(0, 0); target = 0;
+  try { history.replaceState(null, '', '#' + (m === 'horror' ? 'other' : 'control')); } catch(e){}
   mode = m;
   body.classList.toggle('horror', m === 'horror');
   $$('.mode button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-mode') === m)); });
