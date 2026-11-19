@@ -181,7 +181,7 @@ footer a{color:var(--dim)}
 /* ---------------------------------------------------- the other reality */
 .fx{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:0;transition:opacity .6s}
 body.horror .fx{opacity:1}
-.vig{background:radial-gradient(ellipse at center,transparent calc(62% - var(--dread)*30%),rgba(0,0,0,calc(.35 + var(--dread)*.55)) 100%)}
+.vig{background:radial-gradient(ellipse at center,transparent calc(58% - var(--dread)*32%),rgba(40,0,6,calc(.45 + var(--dread)*.5)) 100%)}
 .tint{background:rgba(120,6,14,calc(var(--dread)*.22));mix-blend-mode:multiply}
 .grain{opacity:0}
 body.horror .grain{opacity:calc(.04 + var(--dread)*.14);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:grain .5s steps(4) infinite}
@@ -222,8 +222,12 @@ body.horror footer{background:#030102;color:#C68A92}
 body.horror .hero .aur{opacity:calc(1 - var(--dread)*1.6)}
 body.horror .brand img{filter:grayscale(calc(var(--dread)*1)) sepia(calc(var(--dread)*.6)) hue-rotate(calc(var(--dread)*-50deg)) saturate(calc(1 + var(--dread)*3))}
 body.horror .fh .dot{background:#E0525A;box-shadow:0 0 0 4px rgba(224,82,90,.2)}
-body.horror.d3 h2,body.horror.d3 .hero h1{animation:glitch 6s infinite steps(1)}
-@keyframes glitch{0%,93%,100%{transform:none;text-shadow:none}94%{transform:translate(-2px,1px);text-shadow:2px 0 rgba(224,82,90,.8),-2px 0 rgba(77,208,225,.4)}96%{transform:translate(2px,-1px);text-shadow:-3px 0 rgba(224,82,90,.8)}}
+body.horror.d3 h2,body.horror.d3 .hero h1{animation:glitch 3.4s infinite steps(1)}
+body.horror .head h2{position:relative}
+body.horror.d3 .head h2{text-shadow:calc(var(--dread)*3px) 0 rgba(255,0,40,.55),calc(var(--dread)*-3px) 0 rgba(0,229,255,.22),0 0 18px rgba(255,20,43,.35)}
+body.horror.d4 .tint{animation:breathe 2.2s ease-in-out infinite}
+@keyframes breathe{50%{background-color:rgba(150,8,20,.30)}}
+@keyframes glitch{0%,90%,100%{transform:none}91%{transform:translate(-4px,1px) skewX(-4deg);text-shadow:4px 0 rgba(255,30,50,.9),-4px 0 rgba(0,229,255,.45);clip-path:inset(0 0 45% 0)}93%{transform:translate(4px,-2px);text-shadow:-5px 0 rgba(255,30,50,.9)}95%{transform:translate(-2px,0);clip-path:inset(55% 0 0 0)}}
 body.horror.d4 .wrap{animation:shudder 9s infinite}
 @keyframes shudder{0%,97%,100%{transform:none}98%{transform:translateX(-3px)}99%{transform:translateX(2px)}}
 .flick{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:45}
@@ -238,16 +242,61 @@ body.horror .dread-bar{opacity:1}
 body.horror.d4 #ghost{opacity:.55}
 .typing::after{content:"";display:inline-block;width:.5ch;height:1em;vertical-align:-.12em;background:currentColor;margin-left:2px;animation:pl .7s infinite}
 
-/* the end */
-#end{position:fixed;inset:0;z-index:90;background:#000;display:none;place-items:center;text-align:center;padding:24px}
+/* the end: an AI attacker's console, then the verdict */
+#end{position:fixed;inset:0;z-index:90;background:radial-gradient(ellipse at center,#22030a 0%,#080204 58%,#020102 100%);display:none;place-items:center;padding:clamp(10px,3vw,32px);overflow:auto}
 #end.on{display:grid}
-#end .l1{font-family:var(--f-h);font-size:clamp(1.6rem,4vw,3rem);font-weight:600;color:#D9DEE8;letter-spacing:-.02em;min-height:1.3em}
-#end .l2{margin-top:18px;font-family:var(--f-s);font-style:italic;font-size:clamp(2.6rem,8vw,6.4rem);color:#C8161F;line-height:1;opacity:0;transition:opacity 2.4s;text-shadow:0 0 40px rgba(200,22,31,.35)}
-#end .l3{margin-top:34px;font-family:var(--f-m);font-size:.74rem;letter-spacing:.06em;color:#6D7B92;opacity:0;transition:opacity 1.6s;line-height:1.8}
-#end .l3 b{color:#A6B2C6;font-weight:500}
-#end .acts{margin-top:26px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;opacity:0;transition:opacity 1.2s}
-#end .acts button,#end .acts a{border:1px solid #2B3650;background:#0C111C;color:#D9DEE8;border-radius:999px;padding:11px 18px;font-size:.9rem;cursor:pointer;text-decoration:none;font-family:var(--f-b)}
-#end.show2 .l2,#end.show3 .l3,#end.show3 .acts{opacity:1}
+#end::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,24,48,.06) 4px);animation:scanm 7s linear infinite}
+@keyframes scanm{to{background-position:0 120px}}
+.term{position:relative;width:min(1000px,100%);height:min(82vh,660px);display:flex;flex-direction:column;background:#050203;border:1px solid #FF263F;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,38,63,.33),0 0 40px rgba(255,0,31,.35),0 0 120px rgba(141,0,27,.45),inset 0 0 40px rgba(255,0,27,.08);transform-origin:center}
+.term.safe{border-color:#3FAE8C;box-shadow:0 0 0 1px rgba(79,214,169,.25),0 0 40px rgba(79,214,169,.18),inset 0 0 40px rgba(79,214,169,.05)}
+.tbar{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid #3A0E16;background:#0E0407;font-family:var(--f-m);font-size:.72rem;color:#9C6970}
+.term.safe .tbar{border-bottom-color:#16352B;background:#06100C;color:#6FA894}
+.tbar i{width:10px;height:10px;border-radius:50%;background:#3A0E16}
+.tbar i:first-child{background:#C8161F}
+.tbar .tt{margin-left:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbar .skip{margin-left:auto;border:1px solid #3A0E16;background:none;color:#9C6970;border-radius:6px;padding:3px 9px;font-family:var(--f-m);font-size:.68rem;cursor:pointer}
+.tbody{flex:1;overflow:auto;padding:16px 18px 20px;font-family:var(--f-m);font-size:clamp(.7rem,1.35vw,.84rem);line-height:1.75;color:#D9B4B8}
+.tl{display:flex;gap:12px;align-items:baseline}
+.tl .tg{flex:none;width:8.2ch;color:#7A4A50}
+.tl .tx{min-width:0;flex:1;overflow-wrap:anywhere}
+.tl .ts{flex:none;margin-left:auto;font-weight:500;letter-spacing:.06em}
+.tl.cmd .tx{color:#F4E9E9}.tl.cmd .tg{color:#FF3D48}
+.tl.llm .tx{color:#FFD9DD}.tl.llm .tg{color:#E0283A}
+.tl.think .tx{color:#C99AA0;font-style:italic}
+.tl.wr .tx{color:#FF4A55;text-shadow:0 0 12px rgba(255,0,31,.6)}
+.tl.ok .tx,.tl.ok .tg{color:#6FD8B4}
+.ts.run{color:#FF3D48;text-shadow:0 0 10px rgba(255,0,31,.8)}
+.ts.blk{color:#4FD6A9}
+.ts .tw{display:block;text-align:right;color:#5E9C86;font-weight:400;letter-spacing:0}
+.bar{color:#FF3D48;letter-spacing:-.05em}
+.term.safe .tl .tg{color:#3F6E5E}.term.safe .tl.cmd .tg{color:#4FD6A9}
+@media(max-width:640px){.tl{flex-wrap:wrap;column-gap:10px}.tl .tg{width:7ch}.tl .tx{flex:1 1 calc(100% - 7ch - 10px)}.tl .ts{margin-left:calc(7ch + 10px);flex-basis:100%}.ts .tw{display:inline;margin-left:10px;text-align:left}.tbar .skip{white-space:nowrap}.tbar .tt{min-width:0}}
+.caret{display:inline-block;width:.6ch;height:1.05em;vertical-align:-.15em;background:currentColor;animation:pl .7s steps(1) infinite}
+.term.jolt{animation:jolt .45s steps(3)}
+@keyframes jolt{25%{transform:translate(-6px,3px) skewX(-1deg);filter:hue-rotate(-20deg) saturate(2)}60%{transform:translate(5px,-2px)}}
+.term.off{animation:tvoff .9s ease-in forwards}
+@keyframes tvoff{0%{filter:brightness(1)}35%{transform:scale(1,.012);filter:brightness(3)}70%{transform:scale(.4,.012);filter:brightness(4)}100%{transform:scale(0,0);opacity:0}}
+.verdict{display:none;text-align:center;max-width:900px}
+#end.v .term{display:none}
+#end.v .verdict{display:block;animation:vin 1.2s ease-out both}
+@keyframes vin{from{opacity:0;transform:scale(1.06);filter:blur(6px)}}
+.v1{font-family:var(--f-s);font-style:italic;font-weight:600;font-size:clamp(2.6rem,8.4vw,6.6rem);line-height:1;color:#F4E9E9;text-shadow:0 0 30px rgba(200,22,31,.45);animation:vfl 5s steps(1) infinite}
+.v1 b{font-family:var(--f-h);font-style:normal;font-weight:700;letter-spacing:-.03em;color:#FF2638;text-shadow:0 0 12px #FF193C,0 0 46px rgba(224,0,43,.7),3px 0 rgba(0,229,255,.25),-3px 0 rgba(255,0,40,.6)}
+#end.calm .v1{animation:none;color:#E6FFF3;text-shadow:0 0 26px rgba(79,214,169,.35)}
+#end.calm .v1 b{color:#4FD6A9;text-shadow:0 0 18px rgba(79,214,169,.6)}
+@keyframes vfl{0%,90%,100%{transform:none}91%{transform:translate(-3px,1px)}93%{transform:translate(3px,-1px);opacity:.8}}
+.v2{margin:22px auto 0;max-width:60ch;color:#D9B4B8;font-size:clamp(.98rem,1.6vw,1.15rem);line-height:1.6}
+#end.calm .v2{color:#BFD9CF}
+#end .acts{margin-top:28px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#end .acts button,#end .acts a{border:1px solid #5A1A24;background:#12050A;color:#F4E9E9;border-radius:999px;padding:11px 18px;font-size:.92rem;cursor:pointer;text-decoration:none;font-family:var(--f-b)}
+#end .acts .hot{background:#F21E39;border-color:#FF5265;color:#fff;font-weight:600;box-shadow:0 0 24px rgba(255,23,59,.55)}
+#end.calm .acts .hot{display:none}
+#end .l3{margin-top:30px;font-family:var(--f-m);font-size:.72rem;letter-spacing:.04em;color:#8A6268;line-height:1.8}
+#end .l3 b{color:#D9B4B8;font-weight:500}
+body.hit main{animation:lurch .34s steps(2,end)}
+body.hit .tint{animation:redflash .5s ease-out}
+@keyframes lurch{50%{transform:translate(-4px,2px) skewX(-.6deg)}}
+@keyframes redflash{0%{background-color:rgba(200,10,25,.45)}}
 
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -444,12 +493,16 @@ body.horror.d4 #ghost{opacity:.55}
   </div>
 </footer>
 
-<div id="end" role="dialog" aria-modal="true" aria-labelledby="end-1">
-  <div>
-    <div class="l1" id="end-1"></div>
-    <div class="l2" id="end-2">it was already running.</div>
-    <div class="l3">This was fiction. <b>ENFORZ is real</b>, and in that reality nothing you did not approve would have started.<br>Fictional company. Probably.</div>
-    <div class="acts"><button type="button" id="end-c">Return to Control</button><button type="button" id="end-s">Choose again</button><a href="../index.html">ENFORZ site</a></div>
+<div id="end" role="dialog" aria-modal="true" aria-labelledby="end-t">
+  <div class="term" id="term">
+    <div class="tbar"><i></i><i></i><i></i><span class="tt" id="tt">wraith@meridian-ws-0147 &middot; ~</span><button type="button" class="skip" id="skip">skip &rsaquo;</button></div>
+    <div class="tbody" id="tbody" aria-live="off"></div>
+  </div>
+  <div class="verdict" id="verdict">
+    <div class="v1" id="end-t">You should've <b>ENFORZ'd</b> it.</div>
+    <div class="v2" id="end-v2">Nothing runs unless you said so. Here nobody said anything, and everything ran.</div>
+    <div class="acts"><button type="button" class="hot" id="end-r">Run it again, with ENFORZ</button><button type="button" id="end-c">Return to Control</button><button type="button" id="end-s">Choose again</button><a href="../index.html">ENFORZ site</a></div>
+    <div class="l3">Fiction. The attacker, the company and its machines are made up, and nothing here ran on your device. <b>ENFORZ is real.</b><br>Fictional company. Probably.</div>
   </div>
 </div>
 
@@ -679,11 +732,11 @@ function stopAudio(){
   clearTimeout(hbTimer);
   if (A) { try { A.master.gain.cancelScheduledValues(A.ctx.currentTime); A.master.gain.setTargetAtTime(0, A.ctx.currentTime, .15); } catch(e){} }
 }
-function thud(){
+function thud(v){
   if (!A || !audioOn) return;
   var ctx = A.ctx, now = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
   o.type = 'sine'; o.frequency.setValueAtTime(70, now); o.frequency.exponentialRampToValueAtTime(22, now + 1.6);
-  g.gain.setValueAtTime(.0001, now); g.gain.exponentialRampToValueAtTime(.6, now + .03); g.gain.exponentialRampToValueAtTime(.0001, now + 2.2);
+  g.gain.setValueAtTime(.0001, now); g.gain.exponentialRampToValueAtTime(v || .6, now + .03); g.gain.exponentialRampToValueAtTime(.0001, now + 2.2);
   o.connect(g); g.connect(ctx.destination); o.start(now); o.stop(now + 2.3);
 }
 $('#snd').addEventListener('click', function(){
@@ -726,6 +779,7 @@ var io = new IntersectionObserver(function(es){
   es.forEach(function(e){
     if (!e.isIntersecting || mode !== 'horror') return;
     $$('[data-p]', e.target).forEach(function(el, i){ setTimeout(function(){ turn(el); }, i * 140); });
+    if (dread > .12 && !e.target.getAttribute('data-hit')) { e.target.setAttribute('data-hit', '1'); hit(); }
     if (e.target.id === 'about') { $$('#about h2').forEach(function(h){ h.classList.add('serif'); }); }
   });
 }, { rootMargin: '-25% 0px -35% 0px' });
@@ -758,13 +812,14 @@ function frame(){
     var atBottom = scrollY + innerHeight >= document.documentElement.scrollHeight - 24;
     if (atBottom && dread > .9 && !$('#end').classList.contains('on')) theEnd();
     // Back near the top, the page recovers: the copy returns to Control.
-    if (maxReached > .2 && dread < .04) { maxReached = 0; allCopy('control'); $$('.serif').forEach(function(el){ el.classList.remove('serif'); }); feedN = 0; drawFeed(); drawQueue(); }
-    if (!reduce && dread > .3 && Math.random() < dread * .004) flicker();
+    if (maxReached > .2 && dread < .04) { $$('[data-hit]').forEach(function(x){ x.removeAttribute('data-hit'); }); maxReached = 0; allCopy('control'); $$('.serif').forEach(function(el){ el.classList.remove('serif'); }); feedN = 0; drawFeed(); drawQueue(); }
+    if (!reduce && dread > .25 && Math.random() < dread * .011) flicker();
   }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
+function hit(){ if (reduce) return; body.classList.remove('hit'); void body.offsetWidth; body.classList.add('hit'); thud(.25); setTimeout(function(){ body.classList.remove('hit'); }, 520); }
 function flicker(){ if (reduce) return; var f = $('#flick'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
 
 /* the cursor that is not yours */
@@ -777,31 +832,129 @@ window.addEventListener('pointermove', function(e){ mx = e.clientX; my = e.clien
 })();
 
 /* -------------------------------------------------------------- the end */
-function theEnd(){
-  var end = $('#end'); end.className = 'on'; thud();
-  if (A) { try { A.master.gain.cancelScheduledValues(A.ctx.currentTime); A.master.gain.setTargetAtTime(0, A.ctx.currentTime, .05); } catch(e){} }
-  clearTimeout(hbTimer);
-  var l1 = $('#end-1'), s1 = 'Nothing runs unless you said so.', s2 = 'You said so.';
-  l1.textContent = '';
-  var i = 0;
-  (function type(){
-    if (i <= s1.length) { l1.textContent = s1.slice(0, i++); return setTimeout(type, reduce ? 0 : 55); }
-    setTimeout(function(){
-      var j = s1.length;
-      (function erase(){
-        if (j > 0) { j -= 1; l1.textContent = s1.slice(0, j); return setTimeout(erase, reduce ? 0 : 22); }
-        var k = 0;
-        (function type2(){
-          if (k <= s2.length) { l1.textContent = s2.slice(0, k++); return setTimeout(type2, reduce ? 0 : 90); }
-          setTimeout(function(){ end.classList.add('show2'); }, 900);
-          setTimeout(function(){ end.classList.add('show3'); }, 3600);
-        })();
-      })();
-    }, reduce ? 0 : 1400);
-  })();
+/* The end: a made-up autonomous attacker works through the made-up company,
+   then the same run again with ENFORZ enforcing. Nothing here touches the
+   reader's device; the console is text on a page. */
+function tick(hi){
+  if (!A || !audioOn) return;
+  try { var ctx = A.ctx, now = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'square'; o.frequency.value = hi ? 1400 : 680 + Math.random() * 260;
+    g.gain.setValueAtTime(.025, now); g.gain.exponentialRampToValueAtTime(.0001, now + .03);
+    o.connect(g); g.connect(ctx.destination); o.start(now); o.stop(now + .04); } catch(e){}
 }
-$('#end-c').addEventListener('click', function(){ $('#end').className = ''; setMode('control'); window.scrollTo(0, 0); });
-$('#end-s').addEventListener('click', function(){ $('#end').className = ''; stopAudio(); setMode('control'); window.scrollTo(0, 0); $('#splash').style.display = 'grid'; });
+var ATTACK = [
+  ['cmd', '$', './wraith --objective "everything" --target meridian-freight'],
+  ['', 'wraith', 'WRAITH-7 autonomous operator · model: very confident · ethics: not found'],
+  ['', '[recon]', '212 Windows machines found. Application control: audit mode since 2024.'],
+  ['', '[recon]', '41,882 "would have blocked" events in the log. Read by: nobody.'],
+  ['think', '[think]', 'I need code execution. Asking myself nicely.'],
+  ['llm', 'llm>', 'find me something Microsoft already signed that will run my script'],
+  ['think', '[think]', 'mshta, regsvr32, rundll32. Signed, trusted, allowed. Lovely.'],
+  ['', '[exec]', 'invoice_viewer.exe, from the email', 'RUNNING'],
+  ['', '[exec]', 'mshta.exe → stage two', 'RUNNING'],
+  ['', '[exec]', '%APPDATA%\\totally-legit\\svchost.exe', 'RUNNING'],
+  ['', '[exec]', 'RTCore64.sys, a known vulnerable driver', 'LOADED', 'jolt'],
+  ['', '[exec]', 'endpoint protection', 'BLINDFOLDED'],
+  ['bar', '[spread]', ''],
+  ['think', '[think]', 'Writing the ransom note in your CEO\'s tone of voice.'],
+  ['think', '[think]', 'Translating it into 14 languages. And Klingon.'],
+  ['', '[exfil]', 'FreightTrack database → "offsite backup"', '41 GB'],
+  ['think', '[think]', 'Drafting your incident report so you don\'t have to.'],
+  ['', '[report]', 'Root cause: everything ran. Approved by: nobody.'],
+  ['wr', '[wraith]', 'Thanks for not having an allowlist, ' + V.os + '.']
+];
+var DEFENDED = [
+  ['cmd', '$', './wraith --objective "everything" --target meridian-freight'],
+  ['', 'wraith', 'WRAITH-7 autonomous operator · model: very confident · ethics: not found'],
+  ['', '[recon]', '212 Windows machines found. Application control: ENFORCED.'],
+  ['think', '[think]', 'That is fine. I am very smart.'],
+  ['', '[exec]', 'invoice_viewer.exe, from the email', 'BLOCKED', '', 'not on the list'],
+  ['think', '[think]', 'Fine. Living off the land, then.'],
+  ['', '[exec]', 'mshta.exe → stage two', 'BLOCKED', '', 'on the deny list'],
+  ['', '[exec]', '%APPDATA%\\totally-legit\\svchost.exe', 'BLOCKED', '', 'not on the list'],
+  ['', '[exec]', 'RTCore64.sys, a known vulnerable driver', 'BLOCKED', '', 'vulnerable driver blocklist'],
+  ['llm', 'llm>', 'how do I get a program approved'],
+  ['ok', '[enforz]', 'A person reviews it in the queue, with the evidence beside it.'],
+  ['llm', 'llm>', 'can I approve it myself'],
+  ['ok', '[enforz]', 'No. Nothing is ever approved automatically.'],
+  ['wr', '[wraith]', 'Requesting approval for wraith.exe ("definitely a printer driver").'],
+  ['ok', '[enforz]', 'Queued for review. Risk: High. Approved by: nobody.'],
+  ['think', '[wraith]', '…still waiting.']
+];
+var endRun = 0;
+function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function playConsole(lines, safe, done){
+  var run = ++endRun, term = $('#term'), tb = $('#tbody'), i = 0, fast = reduce;
+  $('#end').className = 'on' + (safe ? ' calm' : '');
+  term.className = 'term' + (safe ? ' safe' : ''); tb.innerHTML = '';
+  $('#tt').textContent = 'wraith@meridian-ws-0147 · ~' + (safe ? ' · enforz: enforcing' : '');
+  $('#skip').onclick = function(){ fast = true; };
+  function scroll(){ tb.scrollTop = tb.scrollHeight; }
+  function next(){
+    if (run !== endRun) return;
+    if (i >= lines.length) {
+      var c = document.createElement('div'); c.className = 'tl'; c.innerHTML = '<span class="tg"></span><span class="tx"><span class="caret"></span></span>'; tb.appendChild(c); scroll();
+      return setTimeout(function(){ if (run !== endRun) return;
+        if (safe || fast) return done();
+        term.classList.add('jolt'); flicker(); thud(.7);
+        setTimeout(function(){ term.classList.add('off'); }, 500);
+        setTimeout(done, 1400);
+      }, fast ? 200 : 1500);
+    }
+    var L = lines[i++], d = document.createElement('div');
+    d.className = 'tl ' + L[0];
+    d.innerHTML = '<span class="tg">' + esc(L[1]) + '</span><span class="tx"></span>' + (L[3] ? '<span class="ts ' + (safe ? 'blk' : 'run') + '">' + esc(L[3]) + (L[5] ? '<span class="tw">' + esc(L[5]) + '</span>' : '') + '</span>' : '');
+    var st = d.querySelector('.ts'); if (st) st.style.visibility = 'hidden';
+    tb.appendChild(d); scroll();
+    var tx = d.querySelector('.tx'), typed = L[0] === 'cmd' || L[0] === 'llm';
+    if (L[0] === 'bar') {
+      var n = 0, total = 212;
+      (function grow(){
+        if (run !== endRun) return;
+        n = Math.min(total, n + 7 + Math.floor(Math.random() * 14));
+        var w = Math.round(n / total * 24);
+        tx.innerHTML = '<span class="bar">' + new Array(w + 1).join('█') + '</span><span style="color:#3A0E16">' + new Array(25 - w).join('█') + '</span> ' + n + '/' + total + ' machines';
+        tick(); if (n < total) return setTimeout(grow, fast ? 0 : 70);
+        setTimeout(next, fast ? 0 : 500);
+      })();
+      return;
+    }
+    if (!typed || fast) { tx.textContent = L[2]; return finish(); }
+    var k = 0;
+    (function type(){
+      if (run !== endRun) return;
+      tx.textContent = L[2].slice(0, ++k); if (k % 2) tick();
+      if (k < L[2].length) return setTimeout(type, 24 + Math.random() * 40);
+      finish();
+    })();
+    function finish(){
+      setTimeout(function(){
+        if (run !== endRun) return;
+        if (st) { st.style.visibility = ''; tick(true); }
+        if (L[4] === 'jolt' && !fast) { term.classList.remove('jolt'); void term.offsetWidth; term.classList.add('jolt'); thud(.5); flicker(); }
+        scroll(); setTimeout(next, fast ? 0 : (L[0] === 'think' ? 900 : 520));
+      }, fast ? 0 : (st ? 420 : 120));
+    }
+  }
+  next();
+}
+function verdict(safe){
+  var end = $('#end');
+  end.className = 'on v' + (safe ? ' calm' : '');
+  $('#end-t').innerHTML = safe ? 'Nothing <b>ran</b>.' : 'You should’ve <b>ENFORZ’d</b> it.';
+  $('#end-v2').textContent = safe
+    ? 'Same attacker, same company, with ENFORZ enforcing. Every step stopped at the list, and the only thing left in the queue is the attacker, asking nicely.'
+    : 'Nothing runs unless you said so. Here nobody said anything, and everything ran.';
+  if (!safe) thud(.8);
+}
+function theEnd(){
+  if (A) { try { A.master.gain.cancelScheduledValues(A.ctx.currentTime); A.master.gain.setTargetAtTime(.05, A.ctx.currentTime, .2); } catch(e){} }
+  clearTimeout(hbTimer); thud();
+  playConsole(ATTACK, false, function(){ verdict(false); });
+}
+$('#end-r').addEventListener('click', function(){ playConsole(DEFENDED, true, function(){ verdict(true); }); });
+$('#end-c').addEventListener('click', function(){ endRun++; $('#end').className = ''; setMode('control'); window.scrollTo(0, 0); });
+$('#end-s').addEventListener('click', function(){ endRun++; $('#end').className = ''; stopAudio(); setMode('control'); window.scrollTo(0, 0); $('#splash').style.display = 'grid'; });
 
 /* deep links: #control or #other skip the splash; sound then starts at the first click or tap */
 document.addEventListener('pointerdown', function(){ if (mode === 'horror' && audioOn) startAudio(); }, { passive: true });

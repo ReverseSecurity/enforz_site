@@ -446,15 +446,6 @@ body.on .d{display:block}
         <span class="cg"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>Executables</span><span class="cg"><svg class="ic" aria-hidden="true"><use href="#i-cpu"/></svg>Drivers</span><span class="cg"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg>Scripts</span><span class="cg"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg>Installers</span><span class="cg"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>DLLs</span>
       </div>
       <p class="chn">Windows enforces the list in the kernel. Everything above has to be allowed before it is permitted to load.</p>
-      <div class="chips">
-        <span class="ch">Built from your own fleet</span>
-        <span class="ch">No rule without a human</span>
-        <span class="ch">Audit first, always</span>
-        <span class="ch">CVE tracking per machine</span>
-        <span class="ch">Suspicious files flagged</span>
-        <span class="ch">Passkeys and SSO</span>
-        <span class="ch">Recovery keys sealed</span>
-      </div>
     </div>
     <div>
       <div class="feed">
@@ -488,7 +479,7 @@ body.on .d{display:block}
     <div class="head">
       <span class="k">Product tour</span>
       <h2>The console, end to end</h2>
-      <p class="sub">Three minutes of the current release, recorded in one take: signing in with a second factor, the overview and guided rollout, the approval queue, the AI assistant's draft plan and policy review, suspicious activity and vulnerabilities, a policy traced back to the approvals behind it, the fleet, sealed BitLocker keys, the audit log, single sign-on and the SIEM connector. It ends on the appliance itself, driven from its own console over SSH. The organisation shown is fictitious, so the recording can be shared without restriction.</p>
+      <p class="sub">Three minutes of the current release, recorded in one take.</p>
     </div>
     <div class="gal">
       <video class="galvid" controls preload="none" poster="tour/poster.webp" playsinline>
@@ -508,15 +499,9 @@ body.on .d{display:block}
       <p class="sub">Not because the idea is wrong. Because the two things standing in the way have never been solved properly: the firehose, and the fear.</p>
     </div>
     <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">The firehose</span></div><p class="tx">Switch Windows into audit mode and a few hundred machines will hand you tens of thousands of "would have blocked" lines in a week. There is no human path from that to a short, durable list of rules.</p><div class="d">Every launch of every binary logs an event. The same application appears thousands of times, under different paths, versions and users, with the signer recorded in a separate event that has to be matched back by activity before anything is readable.</div></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">The fear</span></div><p class="tx">A mistake here does not file a bug report. It stops a machine booting, and it does it to every machine you sent the policy to, at once, including the one you would have used to fix it.</p><div class="d">An allowlist that omits a boot driver, or that blocks the management agent, removes your own route back in. This is why most teams get as far as audit mode and stop there.</div></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">So it stays in audit</span></div><p class="tx">Audit mode logs what it would have stopped and stops nothing. Plenty of organisations have been "about to enforce" for two years, collecting evidence of attacks they did not prevent.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cert"/></svg></span><span class="nm">And then it never ends</span></div><p class="tx">Even a rollout that succeeds leaves somebody owning it permanently. Every update changes a version, every new starter needs software, every vendor re-signs with a new certificate, and each one of those is a block, a ticket and a person waiting.</p><div class="d">This is the part nobody budgets for. Organisations that get application control enforced often give it back eighteen months later, not because it stopped working, but because the one person maintaining it moved on.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">The firehose</span></div><p class="tx">Switch Windows into audit mode and a few hundred machines will hand you tens of thousands of "would have blocked" lines in a week. There is no human path from that to a short, durable list of rules.</p></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">The fear</span></div><p class="tx">A mistake here does not file a bug report. It stops a machine booting, and it does it to every machine you sent the policy to, at once, including the one you would have used to fix it.</p></div>
       <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">What it is worth</span></div><p class="tx">Enforced application control stops the entire category: ransomware, living-off-the-land tools, unsigned scripts, anything an attacker drops after a phish. Not because it recognised the threat, but because the threat is not on the list.</p></div>
-    </div>
-    <div class="rule" style="margin-top:clamp(20px,2.6vw,28px)">
-      <span class="vb">What it costs</span>
-      <p class="tx">A conventional application control project is measured in <b>weeks to months</b> before a single machine enforces, and in a permanent share of somebody's week afterwards. Most of that is not decision-making. It is reading event logs, matching signer records back to blocks by hand, maintaining spreadsheets of hashes, and rebuilding a policy every time a vendor ships an update.<span class="d">That work is mechanical, and it is exactly the part that gets dropped first when the person doing it is busy, which is how a policy quietly drifts out of date until somebody switches it back to audit.</span></p>
     </div>
     <div class="rule" style="margin-top:14px">
       <span class="vb">With ENFORZ</span>
@@ -603,15 +588,12 @@ body.on .d{display:block}
     <div class="head">
       <span class="k">AI assistant</span>
       <h2>AI-assisted decisions, <span class="grad">never AI approval</span></h2>
-      <p class="sub">The slow part of application control is not the technology. It is a person in front of hundreds of decisions, working out what each one is and whether the organisation needs it. The assistant does the reading and drafts the answers. A person still makes every decision.</p>
+      <p class="sub">The assistant reads the queue and drafts the answers. A person still makes every decision.</p>
     </div>
     <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span class="nm">It drafts the answer, you sign it</span></div><p class="tx">The assistant reads the whole review queue and drafts a plan. Each app gets a proposed answer: allow it at a stated rule level, keep it blocked, or requires human review. The proposal comes with the risk, the reasoning, and what a reviewer should check.</p><div class="d">Apps are grouped before they are sent: by who signed them, by the folder they run from, or by file name. That keeps a large queue to a few requests, and software that ships together is judged together.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Guided review</span></div><p class="tx">Work through the plan as a short series of screens. Clean groups come first, decided in one go. Next come apps that carry warnings of their own, which you decide together. The rest follow one by one.</p><div class="d">Every screen shows the narrowest rule level first, and which files could not take the level you chose and would fall back to Hash. It shows what changed since the AI looked, and which machines the software ran on: click a count to see each machine and its files. The button is the decision. There are no tick boxes to clear first.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">A second reader for every policy</span></div><p class="tx">Before a policy goes anywhere, the assistant can review it. It looks for trust wider than the evidence supports, approvals whose reputation or risk has changed, rules that could be merged, rules that do nothing, and a missing recovery option.</p><div class="d">Each finding links to the approvals and rules it is about, so you can act on it in one click. Large policies are reviewed in parts and the results merged into one page. On the policy list, each release shows how many of its approvals were AI-assisted and what the latest review concluded.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></span><span class="nm">It points at its own mistakes</span></div><p class="tx">Before you approve, the screen says if the rule you are about to create would also allow software the assistant marked to keep blocked, or that someone already rejected. It names those apps.</p><div class="d">The assistant is told to decide software bundles consistently. A vendor shipping and re-signing open-source or Microsoft libraries inside its own product is common, so the assistant flags the bundle for review instead of splitting it.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">You can see exactly what was sent</span></div><p class="tx">User names are removed from file paths and email addresses are scrubbed. Machine names are replaced with stable aliases unless you choose to share them. The exact document each run sent is stored with its SHA-256 hash, for anyone to read.</p><div class="d">Each run records its tokens and estimated cost. A daily run limit and an optional monthly budget stop surprises. Previous answers are kept, so a re-run only sends the apps that changed or got no answer.</div></div>
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">The invariant does not move</span></div><p class="tx">No rule reaches a policy without a person approving it. That is written into the product as a rule that cannot be broken, and the assistant does not get an exception to it.</p><div class="d">No setting turns a proposal into an approval, and no confidence score skips review. You can approve a whole group in one click, but each app in it is still approved separately, under your name, and passes every approval check. Apps with warnings of their own are left out of the group and decided on their own.</div></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span class="nm">It drafts the answer, you sign it</span></div><p class="tx">The assistant reads the whole review queue and drafts a plan. Each app gets a proposed answer: allow it at a stated rule level, keep it blocked, or requires human review. The proposal comes with the risk, the reasoning, and what a reviewer should check.</p></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">A second reader for every policy</span></div><p class="tx">Before a policy goes anywhere, the assistant can review it. It looks for trust wider than the evidence supports, approvals whose reputation or risk has changed, rules that could be merged, rules that do nothing, and a missing recovery option.</p></div>
+      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">You can see exactly what was sent</span></div><p class="tx">User names are removed from file paths and email addresses are scrubbed. Machine names are replaced with stable aliases unless you choose to share them. The exact document each run sent is stored with its SHA-256 hash, for anyone to read.</p></div>
     </div>
     <div class="rule" style="margin-top:clamp(20px,2.6vw,28px)">
       <span class="vb">Off by default</span>
@@ -625,21 +607,18 @@ body.on .d{display:block}
     <div class="head">
       <span class="k">The honest question</span>
       <h2>"Can this <span class="grad">brick my fleet</span>?"</h2>
-      <p class="sub">It is the right question, and it is the one the product is built around. Fourteen checks run before a policy can be enforced. Every one of them fails closed. None of them has a warning-only mode, an environment variable that disables it, or a setting that remembers you bypassed it last time.</p>
+      <p class="sub">Fourteen checks run before a policy can be enforced. Every one fails closed, and none can be switched off. <a href="features.html#policy" style="color:var(--cyan)">All fourteen &rarr;</a></p>
     </div>
     <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">It refuses to lock itself out</span></div><p class="tx">Before any policy is sent, it is checked for a rule allowing the very agent that has to apply the next one. No rule, no send.</p><div class="d">The self-lockout check is the difference between a bad policy you can replace remotely and a fleet you have to visit in person.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">It refuses to lock itself out</span></div><p class="tx">Before any policy is sent, it is checked for a rule allowing the very agent that has to apply the next one. No rule, no send.</p></div>
       <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cpu"/></svg></span><span class="nm">Windows has to be allowed</span></div><p class="tx">A policy that would block the operating system's own components is rejected rather than shipped.</p></div>
       <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Drivers are checked separately</span></div><p class="tx">A missing boot driver is the difference between a slow morning and a machine that does not start. Driver coverage is its own gate.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><span class="nm">An update may only add</span></div><p class="tx">A change to a policy that is already enforced is allowed to add permissions. If it would take any away, it is treated as a new promotion and goes through the gates again.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Proof it rebooted</span></div><p class="tx">Enforcement is not promoted on machines that have not been seen restarting under the policy, because a restart is when the real failures appear.</p><div class="d">This is the one gate with a waiver, and it takes a written justification rather than a tick box, applies to a single promotion, names the machines waived in the audit record, and is never remembered. Every other gate still runs.</div></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">Proof it rebooted</span></div><p class="tx">Enforcement is not promoted on machines that have not been seen restarting under the policy, because a restart is when the real failures appear.</p></div>
       <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">The recovery path stays open</span></div><p class="tx">The boot options menu is kept available in every policy template. It is how you get a machine back, so it is never removed to make a report look tidier.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cert"/></svg></span><span class="nm">New signing keys go out in order</span></div><p class="tx">A new agent signing certificate is in a deployed, confirmed policy before any agent signed with it ships. Never the reverse.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">The agent trusts one key</span></div><p class="tx">Instructions are verified against a key compiled into the agent itself, not one read from a config file, an installer or the connection.</p><div class="d">The server address is configuration and can be changed. The trust root is not, so taking over the hostname does not let anyone push a policy.</div></div>
     </div>
     <div class="rule" style="margin-top:clamp(20px,2.6vw,28px)">
       <span class="vb">The rule</span>
-      <p class="tx">Enforcement comes last, and everything before it is recoverable. <b>A mistake in steps one to four costs an afternoon. A mistake in step five costs a desk visit per machine.</b> The product is arranged around that asymmetry rather than around a demo.<span class="d">Phases are sequential by design: telemetry, review, policy generation, deployment in audit, simulation, and only then enforcement.</span></p>
+      <p class="tx">Enforcement comes last, and everything before it is recoverable. <b>A mistake in steps one to four costs an afternoon. A mistake in step five costs a desk visit per machine.</b> The product is arranged around that asymmetry rather than around a demo.</p>
     </div>
   </div>
 </section>
@@ -653,7 +632,7 @@ body.on .d{display:block}
     </div>
     <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
       <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Every feature</span></div><p class="tx">The agent, the review queue, policy building, simulation, enforcement, the fleet, BitLocker, the SIEM connector and the appliance, area by area.</p><p class="tx" style="margin-top:12px"><a href="features.html" style="color:var(--cyan)">Features &rarr;</a></p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">How it protects itself</span></div><p class="tx">Where the appliance sits on your network, every key and its one job, passkeys and SSO, how agents connect, log shipping and the hardened appliance.</p><p class="tx" style="margin-top:12px"><a href="security.html" style="color:var(--cyan)">Security &rarr;</a></p></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">How it protects itself</span></div><p class="tx">Every key and its one job, passkeys and SSO, how agents connect, log shipping to your SIEM and the hardened appliance.</p><p class="tx" style="margin-top:12px"><a href="security.html" style="color:var(--cyan)">Security &rarr;</a></p></div>
       <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></span><span class="nm">MCP server</span></div><p class="tx">Your own AI tools read the console through the Model Context Protocol: read access, per person, audited, off by default. Approving stays with a person in the console.</p><p class="tx" style="margin-top:12px"><a href="security.html#mcp" style="color:var(--cyan)">MCP &rarr;</a></p></div>
     </div>
   </div>
@@ -664,12 +643,7 @@ body.on .d{display:block}
     <div class="head">
       <span class="k">Sister product</span>
       <h2>PHISHZ stops it arriving. <span class="grad">ENFORZ stops it running.</span></h2>
-      <p class="sub">Two halves of the same argument, built by the same people, each useful on its own. The names are not subtle: ENFORZ is enforce, and PHISHZ is phish zenith. Same Z, same team, same idea taken from opposite ends.</p>
-    </div>
-    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></span><span class="nm">The way in</span></div><p class="tx">Almost every incident starts with a person being convinced to open, click or approve something. PHISHZ covers that half: mail, Teams and shared files watched, and your people rehearsed against the channels no filter can reach.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">The thing that runs</span></div><p class="tx">Eventually somebody clicks anyway. ENFORZ covers the other half: whatever was downloaded does not execute, because it was never approved, and no detection had to recognise it first.</p></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Together</span></div><p class="tx">The lure is caught before it lands, the people are trained for the ones that get through, and the payload cannot start even if everything else fails. Each runs on your own hardware, and neither needs the other.</p></div>
+      <p class="sub">Two halves of the same argument, built by the same people. Each runs on your own hardware, and neither needs the other.</p>
     </div>
   </div>
 </section>
@@ -682,26 +656,13 @@ body.on .d{display:block}
       <p class="sub">ENFORZ is built by HCFS. Application control is normally sold as an enterprise product at an enterprise price, to the organisations least likely to be targeted by somebody with time on their hands. ENFORZ exists to put it within reach of the ones who cannot buy it.</p>
     </div>
 
-    <div class="why">
-      <p>It is free because we believe in a more secure future, and you cannot build one by selling it only to the organisations that can afford it.</p>
-      <p>An organisation without a security budget is not a smaller target. It is an easier one, and attackers have worked that out. So there is no paid tier waiting for you later, no feature held back, and no point at which this starts costing money.</p>
-    </div>
-
     <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">100% yours</span></div><p class="tx">The installation is yours, the hardware is yours, and everything inside it is yours. Nothing is shared with us or transmitted to us: not an event, not a machine name, not a count of how often you use it.</p><div class="d">There is no licence check, no activation and no telemetry endpoint. The platform has no reason to contact us and does not.</div></div>
+      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">100% yours</span></div><p class="tx">The installation is yours, the hardware is yours, and everything inside it is yours. Nothing is shared with us or transmitted to us: not an event, not a machine name, not a count of how often you use it.</p></div>
       <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Free to run</span></div><p class="tx">No licence, no subscription, no per-machine charge, and no edition where the gates that keep you safe cost extra. Your cost is the server it runs on.</p></div>
       <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Written to be read</span></div><p class="tx">The rules that must never be broken are written down in the repository, in plain language, with the reason each one exists. The safety gates are a single file you can read in one sitting.</p></div>
       <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Nothing to sell you</span></div><p class="tx">No telemetry, no usage reporting, no upsell path. Nobody profits from knowing what runs on your machines.</p></div>
     </div>
 
-    <div class="hon" style="margin-top:clamp(20px,2.6vw,28px)">
-      <h3>Talk to the people who built it</h3>
-      <p class="sub" style="margin-top:10px">Ask who we are, how the organisation is funded, and why we give this away. We will tell you plainly. Just as happily: whether application control is realistic for an estate like yours, and what the first month actually looks like. There is no sales process, because there is nothing to sell.</p>
-      <div class="cta" style="margin-top:20px">
-        <a class="b b1" href="#">Ask about the organisation <svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></a>
-        <a class="b b2" href="#">Read the source</a>
-      </div>
-    </div>
   </div>
 </section>
 

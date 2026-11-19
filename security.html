@@ -473,46 +473,11 @@ body.on .d{display:block}
   <div class="wrap">
     <span class="k">Security</span>
     <h1>It decides what runs. <span class="grad">So it is built like it.</span></h1>
-    <p class="lede">An application control platform is as sensitive as a domain controller: whoever controls it decides what every machine may run. This page explains how ENFORZ protects its keys, its sign-in, its agents, its record and the appliance it runs on, and which parts are still planned.</p>
-    <div class="toc"><a href="#network">Where it sits</a><a href="#keys">Keys</a><a href="#signin">Sign-in</a><a href="#agents">Agents</a><a href="#logs">Logs and SIEM</a><a href="#appliance">Appliance hardening</a><a href="#recovery">Recovery</a><a href="#trust">Design rules</a><a href="#mcp">MCP</a></div>
+    <p class="lede">An application control platform is as sensitive as a domain controller: whoever controls it decides what every machine may run. This page explains how ENFORZ protects its keys, its sign-in, its agents, its record and the appliance it runs on.</p>
+    <div class="toc"><a href="#keys">Keys</a><a href="#signin">Sign-in</a><a href="#agents">Agents</a><a href="#logs">Logs and SIEM</a><a href="#appliance">Appliance hardening</a><a href="#recovery">Recovery</a><a href="#trust">Design rules</a><a href="#mcp">MCP</a></div>
   </div>
 </section>
-<section class="band soft sect" id="network">
-  <div class="wrap">
-    <div class="head"><span class="k">Where it sits</span><h2>On your management network</h2><p class="sub">We recommend the appliance sits on your management network, beside your domain controllers and deployment tools, not on a user network and never directly on the internet.</p></div>
-    <div class="net">
-  <figure><svg viewBox="0 0 520 250" role="img" aria-label="Today: one address on the management network serves both the console and the agents">
-<rect class="zone" x="8" y="8" width="300" height="234" rx="12"/><text x="22" y="30">MANAGEMENT NETWORK</text>
-<rect class="ap" x="96" y="96" width="140" height="60" rx="10"/><text class="t" x="112" y="122">ENFORZ appliance</text><text x="112" y="141">one address</text>
-<rect class="bxs" x="24" y="186" width="120" height="40" rx="8"/><text class="t" x="40" y="211">Administrators</text>
-<path class="ok" d="M84 186 L140 158"/>
-<rect class="zone" x="330" y="8" width="182" height="234" rx="12"/><text x="344" y="30">USER NETWORKS</text>
-<rect class="bxs" x="356" y="60" width="132" height="40" rx="8"/><text class="t" x="372" y="85">PCs and servers</text>
-<rect class="bxs" x="356" y="150" width="132" height="40" rx="8"/><text class="t" x="372" y="175">Laptops on VPN</text>
-<path class="ag" d="M356 80 L236 112"/><path class="ag" d="M356 170 L236 140"/>
-<text x="250" y="232">agents: 9443 mTLS, 9445 enrolment</text>
-</svg><figcaption><b>Today.</b> One address on your management network. Administrators reach the console over HTTPS; agents reach two ports with their own TLS, and nothing else. Firewall the console port to the administrators who need it.</figcaption></figure>
-  <figure><svg viewBox="0 0 520 250" role="img" aria-label="Planned: the console stays on the management address while a small proxy handler on a second address faces the agents">
-<rect class="zone" x="8" y="8" width="226" height="234" rx="12"/><text x="22" y="30">MANAGEMENT NETWORK</text>
-<rect class="ap" x="30" y="70" width="180" height="56" rx="10"/><text class="t" x="44" y="94">Console, SSH, data</text><text x="44" y="113">address 1, inside only</text>
-<rect class="bxs" x="30" y="186" width="120" height="40" rx="8"/><text class="t" x="46" y="211">Administrators</text>
-<path class="ok" d="M90 186 L110 126"/>
-<rect class="ph" x="150" y="140" width="150" height="40" rx="10"/><text class="t" x="164" y="160">Proxy handler</text><text x="164" y="174">address 2</text>
-<path class="ok" d="M190 140 L150 126"/>
-<rect class="zone" x="330" y="8" width="182" height="234" rx="12"/><text x="344" y="30">AGENTS</text>
-<rect class="bxs" x="356" y="60" width="132" height="40" rx="8"/><text class="t" x="372" y="85">PCs and servers</text>
-<rect class="bxs" x="356" y="150" width="132" height="40" rx="8"/><text class="t" x="372" y="175">Laptops anywhere</text>
-<path class="ag" d="M356 80 L300 150"/><path class="ag" d="M356 170 L300 162"/>
-<path class="no" d="M356 92 L212 104"/><text x="250" y="232">agents never reach address 1</text>
-</svg><figcaption><b>Planned <span class="plan">Planned</span></b> A second address carries only a small proxy handler: enrolment, telemetry and assignment fetches, passed through to the services behind it. The console, SSH and the data stay on the first address, which agents and the internet never see.</figcaption></figure>
-</div>
-<div class="hon">
-  <h3>Why two addresses, and what the proxy handler will not do</h3>
-  <p class="sub" style="margin-top:10px">Laptops outside the office still need to report in and fetch their policy. Exposing the whole appliance for that would put the console, SSH and the database one firewall mistake away from the internet. The proxy handler is meant to be small enough to read in full: it knows the agent endpoints and nothing else, terminates nothing it does not have to, and holds no keys that can approve, build or sign. This is design intent we are documenting ahead of building it. Until it ships, keep the appliance on the management network and reach roaming machines through your VPN.</p>
-</div>
-  </div>
-</section>
-<section class="band  sect" id="keys">
+<section class="band soft sect" id="keys">
   <div class="wrap">
     <div class="head"><span class="k">Keys</span><h2>Every key has one job</h2><p class="sub">Each key below does one thing, and none of them can stand in for another. The policy-signing key and the payload-signing key are kept apart by design, and neither leaves the appliance in usable form.</p></div>
     <div class="kt"><div class="kr hd"><span>Key</span><span>What it does</span><span>How it is kept</span></div>
@@ -527,7 +492,7 @@ body.on .d{display:block}
 </div>
   </div>
 </section>
-<section class="band soft sect" id="signin">
+<section class="band  sect" id="signin">
   <div class="wrap">
     <div class="head"><span class="k">Sign-in</span><h2>Passkeys, SSO and a way in when SSO is down</h2></div>
     <div class="hard">
@@ -540,7 +505,7 @@ body.on .d{display:block}
 </div>
   </div>
 </section>
-<section class="band  sect" id="agents">
+<section class="band soft sect" id="agents">
   <div class="wrap">
     <div class="head"><span class="k">Agents</span><h2>Every machine talks to one server. That server is not a way in.</h2></div>
     <div class="hard">
@@ -553,7 +518,7 @@ body.on .d{display:block}
 </div>
   </div>
 </section>
-<section class="band soft sect" id="logs">
+<section class="band  sect" id="logs">
   <div class="wrap">
     <div class="head"><span class="k">Logs and SIEM</span><h2>Everything on the record, and a copy where you keep yours</h2></div>
     <div class="hard">
@@ -564,7 +529,7 @@ body.on .d{display:block}
 </div>
   </div>
 </section>
-<section class="band  sect" id="appliance">
+<section class="band soft sect" id="appliance">
   <div class="wrap">
     <div class="head"><span class="k">Appliance hardening</span><h2>Hardened before it reaches you</h2><p class="sub">The appliance ships as a hardened Debian virtual machine. None of this is a checklist for you to work through after import.</p></div>
     <div class="hard">
@@ -581,7 +546,7 @@ body.on .d{display:block}
 </div>
   </div>
 </section>
-<section class="band soft sect" id="recovery">
+<section class="band  sect" id="recovery">
   <div class="wrap">
     <div class="head"><span class="k">Recovery</span><h2>Every path to enforcement has a way back</h2></div>
     <div class="hard">
@@ -592,7 +557,7 @@ body.on .d{display:block}
 </div>
   </div>
 </section>
-<section class="band sect" id="trust">
+<section class="band soft sect" id="trust">
   <div class="wrap">
     <div class="head">
       <span class="k">Trust</span>
@@ -608,7 +573,6 @@ body.on .d{display:block}
     <div class="hon">
       <h3>It arrives as an appliance</h3>
       <p class="sub" style="margin-top:10px">The platform ships as one virtual machine for Hyper-V (VHDX) or VMware (OVA), and cloud images are available too. The operating system underneath is hardened and patched as part of the release, so there is no build for anyone on your side to get right.</p>
-      <p class="sub" style="margin-top:10px">Put it on your management network. Only the agents need to reach it, and a planned second address will let it face them through a small proxy handler while the console stays inside.</p>
       <ul class="hl" style="margin-top:18px">
         <li><span class="nn">1</span><span><b>Import the image.</b> One file into Hyper-V or VMware, or start the cloud image. It boots configured.</span></li>
         <li><span class="nn">2</span><span><b>Enrol a pilot ring.</b> A handful of machines you can reimage, in audit mode, blocking nothing.</span></li>
@@ -617,9 +581,9 @@ body.on .d{display:block}
     </div>
   </div>
 </section>
-<section class="band soft sect" id="mcp">
+<section class="band  sect" id="mcp">
   <div class="wrap">
-    <div class="head"><span class="k">MCP server</span><h2>MCP, with the same boundaries</h2><p class="sub">The Model Context Protocol server lets your own AI tools read the console. It follows the rules above: off by default, on the management address only, per-person tokens scoped to one organisation and read access, every call in the audit log, and no path to approve, build or enforce.</p></div>
+    <div class="head"><span class="k">MCP server</span><h2>MCP, with the same boundaries</h2><p class="sub">The Model Context Protocol server lets your own AI tools read the console. It follows the rules above: off by default, per-person tokens scoped to one organisation and read access, every call in the audit log, and no path to approve, build or enforce.</p></div>
     
   </div>
 </section>
