@@ -243,57 +243,103 @@ body.horror .dread-bar{opacity:1}
 body.horror.d4 #ghost{opacity:.55}
 .typing::after{content:"";display:inline-block;width:.5ch;height:1em;vertical-align:-.12em;background:currentColor;margin-left:2px;animation:pl .7s infinite}
 
-/* the end: an AI attacker's console, then the verdict */
-#end{position:fixed;inset:0;z-index:90;background:radial-gradient(ellipse at center,#22030a 0%,#080204 58%,#020102 100%);display:none;place-items:center;padding:clamp(10px,3vw,32px);overflow:auto}
+/* the end: an AI attacker's console, shapes in the dark behind it, the verdict */
+#end{position:fixed;inset:0;z-index:90;background:#020102;display:none;place-items:center;padding:clamp(10px,3vw,32px);overflow:hidden;--own:0}
 #end.on{display:grid}
-#end::before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,24,48,.06) 4px);animation:scanm 7s linear infinite}
+#end::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,24,48,.05) 4px);animation:scanm 7s linear infinite}
 @keyframes scanm{to{background-position:0 120px}}
-.term{position:relative;width:min(1000px,100%);height:min(82vh,660px);display:flex;flex-direction:column;background:#050203;border:1px solid #FF263F;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,38,63,.33),0 0 40px rgba(255,0,31,.35),0 0 120px rgba(141,0,27,.45),inset 0 0 40px rgba(255,0,27,.08);transform-origin:center}
-.term.safe{border-color:#3FAE8C;box-shadow:0 0 0 1px rgba(79,214,169,.25),0 0 40px rgba(79,214,169,.18),inset 0 0 40px rgba(79,214,169,.05)}
-.tbar{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid #3A0E16;background:#0E0407;font-family:var(--f-m);font-size:.72rem;color:#9C6970}
-.term.safe .tbar{border-bottom-color:#16352B;background:#06100C;color:#6FA894}
-.tbar i{width:10px;height:10px;border-radius:50%;background:#3A0E16}
-.tbar i:first-child{background:#C8161F}
-.tbar .tt{margin-left:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tbar .skip{margin-left:auto;border:1px solid #3A0E16;background:none;color:#9C6970;border-radius:6px;padding:3px 9px;font-family:var(--f-m);font-size:.68rem;cursor:pointer}
-.tbody{flex:1;overflow:auto;padding:16px 18px 20px;font-family:var(--f-m);font-size:clamp(.7rem,1.35vw,.84rem);line-height:1.75;color:#D9B4B8}
-.tl{display:flex;gap:12px;align-items:baseline}
-.tl .tg{flex:none;width:8.2ch;color:#7A4A50}
-.tl .tx{min-width:0;flex:1;overflow-wrap:anywhere}
-.tl .ts{flex:none;margin-left:auto;font-weight:500;letter-spacing:.06em}
-.tl.cmd .tx{color:#F4E9E9}.tl.cmd .tg{color:#FF3D48}
-.tl.llm .tx{color:#FFD9DD}.tl.llm .tg{color:#E0283A}
-.tl.think .tx{color:#C99AA0;font-style:italic}
-.tl.wr .tx{color:#FF4A55;text-shadow:0 0 12px rgba(255,0,31,.6)}
-.tl.ok .tx,.tl.ok .tg{color:#6FD8B4}
-.ts.run{color:#FF3D48;text-shadow:0 0 10px rgba(255,0,31,.8)}
-.ts.blk{color:#4FD6A9}
-.ts .tw{display:block;text-align:right;color:#5E9C86;font-weight:400;letter-spacing:0}
+.shade{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 50% 62%,rgba(120,8,22,calc(.35 + var(--own)*.45)) 0%,rgba(40,2,8,.6) 45%,#020102 80%);transition:background 1.5s}
+.fig{position:absolute;bottom:-4vh;width:auto;transform-origin:50% 100%;opacity:clamp(0,calc((var(--own) - var(--t))*3 + .32),.96);transition:opacity 1.6s,transform 2.4s,filter 2s;animation:sway 7s ease-in-out infinite}
+.fig svg{height:100%;width:auto;display:block;overflow:visible}
+.fig path{fill:#000}
+.fig .eyes circle{fill:#FF2A3A;opacity:0;filter:drop-shadow(0 0 4px #FF0020)}
+#end:not(.calm) .fig .eyes circle{animation:eyes 6s steps(1) infinite}
+@keyframes eyes{0%,62%{opacity:0}63%,71%,74%,90%{opacity:calc(var(--own)*.9)}72%,73%,91%,100%{opacity:0}}
+@keyframes sway{50%{transform:rotate(.8deg) scaleY(1.008)}}
+.fig.l3{left:2%;height:58vh;filter:blur(3px);animation-duration:9s}
+.fig.r3{right:3%;height:62vh;filter:blur(3px);animation-duration:8s;animation-delay:-3s}
+.fig.l2{left:11%;height:76vh;filter:blur(1.5px);animation-delay:-1s}
+.fig.r2{right:12%;height:72vh;filter:blur(1.5px);animation-delay:-5s}
+.fig.c{left:50%;margin-left:-14vh;height:88vh;filter:blur(.6px);animation-duration:11s}
+.fig.l1{left:-4%;height:104vh;filter:blur(.4px) drop-shadow(0 0 22px rgba(255,0,30,.25));animation-delay:-2s}
+.fig.r1{right:-5%;height:110vh;filter:blur(.3px) drop-shadow(0 0 22px rgba(255,0,30,.25));animation-delay:-6s}
+.fog{position:absolute;left:-10%;right:-10%;bottom:-6vh;height:38vh;background:radial-gradient(ellipse at 50% 100%,rgba(20,0,4,.95),transparent 70%);animation:fog 12s ease-in-out infinite}
+@keyframes fog{50%{transform:translateX(3%)}}
+#end.calm .fig{opacity:0;transform:translateY(6vh) scale(.94)}
+#end.calm .shade{background:radial-gradient(ellipse 70% 60% at 50% 62%,rgba(10,60,44,.35) 0%,#020302 75%)}
+#end.v:not(.calm) .fig.c{opacity:.9;transform:scale(1.28);filter:blur(0)}
+#end.v:not(.calm) .fig.l1,#end.v:not(.calm) .fig.r1{transform:scale(1.08)}
+
+.term{position:relative;z-index:2;width:min(1180px,100%);height:min(84vh,680px);display:flex;flex-direction:column;background:rgba(6,3,4,.93);border:1px solid #5A1622;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,38,63,.18),0 0 50px rgba(255,0,31,.28),0 40px 120px rgba(0,0,0,.9);transform-origin:center;backdrop-filter:blur(2px)}
+.term.safe{border-color:#1F4A3C;box-shadow:0 0 0 1px rgba(79,214,169,.15),0 0 40px rgba(79,214,169,.14),0 40px 120px rgba(0,0,0,.9)}
+.tabs{display:flex;align-items:stretch;gap:2px;padding:6px 8px 0;background:#0B0507;border-bottom:1px solid #2A0B11;font-family:var(--f-m);font-size:.7rem;color:#7A4A50}
+.term.safe .tabs{background:#060B09;border-bottom-color:#12281F;color:#4E7D6C}
+.tab{padding:7px 14px;border-radius:7px 7px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tab.on{background:rgba(6,3,4,.93);color:#D9B4B8;border:1px solid #2A0B11;border-bottom:0;min-width:0}
+.term.safe .tab.on{color:#BFD9CF;border-color:#12281F}
+.tabs .skip{margin:0 0 6px auto;border:1px solid #3A0E16;background:none;color:#9C6970;border-radius:6px;padding:3px 9px;font-family:var(--f-m);font-size:.68rem;cursor:pointer;white-space:nowrap}
+.tgrid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 250px}
+.tbody{overflow:auto;padding:14px 16px 20px;font-family:var(--f-m);font-size:clamp(.68rem,1.2vw,.8rem);line-height:1.7;color:#C9A3A8;scrollbar-width:thin;scrollbar-color:#3A0E16 transparent}
+.pr{color:#FF3D48;margin-top:4px}.pr b{color:#F4E9E9;font-weight:500}.pr i{color:#4DA3FF;font-style:normal}
+.term.safe .pr{color:#4FD6A9}
+.cmdl{color:#F4E9E9}.cmdl::before{content:"\2514\2500$ ";color:#FF3D48}
+.term.safe .cmdl::before{color:#4FD6A9}
+.ln{display:grid;grid-template-columns:12.5ch 4.5ch minmax(0,1fr) auto;column-gap:10px;align-items:baseline}
+.ln .t{color:#5E3A40}.ln .lv{font-weight:500}
+.ln .m{min-width:0;overflow-wrap:anywhere}
+.ln .ts{text-align:right;font-weight:500;letter-spacing:.06em;white-space:nowrap}
+.ln .ts .tw{display:block;font-weight:400;letter-spacing:0;color:#5E9C86}
+.lv.INF{color:#7A8BA6}.lv.WRN{color:#FFC95C}.lv.EXE,.lv.DRV,.lv.EXF{color:#FF5A66}.lv.AI{color:#C792EA}.lv.TOOL{color:#5E3A40}.lv.OK,.lv.ENF{color:#4FD6A9}.lv.WR{color:#FF2638}
+.ln.ai .m{color:#E3C6F2}.ln.tool .m{color:#6E4A50}.ln.wr .m{color:#FF4A55;text-shadow:0 0 12px rgba(255,0,31,.6)}.ln.ok .m,.ln.enf .m{color:#7FE0BF}
+.ts.run{color:#FF3D48;text-shadow:0 0 10px rgba(255,0,31,.8)}.ts.blk{color:#4FD6A9}
 .bar{color:#FF3D48;letter-spacing:-.05em}
-.term.safe .tl .tg{color:#3F6E5E}.term.safe .tl.cmd .tg{color:#4FD6A9}
-@media(max-width:640px){.tl{flex-wrap:wrap;column-gap:10px}.tl .tg{width:7ch}.tl .tx{flex:1 1 calc(100% - 7ch - 10px)}.tl .ts{margin-left:calc(7ch + 10px);flex-basis:100%}.ts .tw{display:inline;margin-left:10px;text-align:left}.tbar .skip{white-space:nowrap}.tbar .tt{min-width:0}}
-.caret{display:inline-block;width:.6ch;height:1.05em;vertical-align:-.15em;background:currentColor;animation:pl .7s steps(1) infinite}
+.caret{display:inline-block;width:.6ch;height:1.05em;vertical-align:-.15em;background:#F4E9E9;animation:pl .7s steps(1) infinite}
+.side{border-left:1px solid #2A0B11;padding:14px 14px;font-family:var(--f-m);font-size:.68rem;color:#7A4A50;overflow:auto;background:rgba(10,3,6,.6)}
+.term.safe .side{border-left-color:#12281F;color:#4E7D6C;background:rgba(3,10,7,.6)}
+.side .sh{letter-spacing:.14em;margin-bottom:10px}.side .sh b{color:#D9B4B8;font-weight:500}
+.sr2{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid #1E080C}
+.term.safe .sr2{border-top-color:#0F1E18}
+.sr2 b{color:#D9B4B8;font-weight:500;text-align:right}
+.sr2 b.bad{color:#FF3D48;text-shadow:0 0 8px rgba(255,0,31,.7)}.sr2 b.good{color:#4FD6A9}
+.hosts{display:grid;grid-template-columns:repeat(18,1fr);gap:2px;padding:6px 0 8px}
+.hosts i{aspect-ratio:1;background:#1A080C;border-radius:1px;transition:background .3s,box-shadow .3s}
+.term.safe .hosts i{background:#0D1A15}
+.hosts i.own{background:#FF2638;box-shadow:0 0 4px rgba(255,0,31,.8)}
+.hosts i.try{background:#4FD6A9;box-shadow:0 0 4px rgba(79,214,169,.8)}
+@media(max-width:760px){
+  .tgrid{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
+  .side{order:-1;border-left:0;border-bottom:1px solid #2A0B11;display:grid;grid-template-columns:repeat(4,1fr);gap:0 8px;padding:8px 12px}
+  .side .sh,.side .hosts,.side .sr2:nth-child(2),.side .sr2:last-child{display:none}
+  .sr2{flex-direction:column;gap:0;border-top:0;padding:2px 0}
+  .ln{grid-template-columns:4.5ch minmax(0,1fr);column-gap:8px}
+  .ln .t{display:none}
+  .ln .ts{grid-column:2;text-align:left}
+  .ln .ts .tw{display:inline;margin-left:8px}
+  .tabs .tab:not(.on){display:none}
+  .fig.c{margin-left:-11vh;height:70vh}.fig.l2,.fig.r2{display:none}
+}
 .term.jolt{animation:jolt .45s steps(3)}
 @keyframes jolt{25%{transform:translate(-6px,3px) skewX(-1deg);filter:hue-rotate(-20deg) saturate(2)}60%{transform:translate(5px,-2px)}}
 .term.off{animation:tvoff .9s ease-in forwards}
 @keyframes tvoff{0%{filter:brightness(1)}35%{transform:scale(1,.012);filter:brightness(3)}70%{transform:scale(.4,.012);filter:brightness(4)}100%{transform:scale(0,0);opacity:0}}
-.verdict{display:none;text-align:center;max-width:900px}
+.verdict{position:relative;z-index:2;display:none;text-align:center;max-width:900px}
 #end.v .term{display:none}
 #end.v .verdict{display:block;animation:vin 1.2s ease-out both}
 @keyframes vin{from{opacity:0;transform:scale(1.06);filter:blur(6px)}}
-.v1{font-family:var(--f-s);font-style:italic;font-weight:600;font-size:clamp(2.6rem,8.4vw,6.6rem);line-height:1;color:#F4E9E9;text-shadow:0 0 30px rgba(200,22,31,.45);animation:vfl 5s steps(1) infinite}
+.v1{font-family:var(--f-s);font-style:italic;font-weight:600;font-size:clamp(2.6rem,8.4vw,6.6rem);line-height:1;color:#F4E9E9;text-shadow:0 0 30px rgba(200,22,31,.45),0 4px 30px #000;animation:vfl 5s steps(1) infinite}
 .v1 b{font-family:var(--f-h);font-style:normal;font-weight:700;letter-spacing:-.03em;color:#FF2638;text-shadow:0 0 12px #FF193C,0 0 46px rgba(224,0,43,.7),3px 0 rgba(0,229,255,.25),-3px 0 rgba(255,0,40,.6)}
 #end.calm .v1{animation:none;color:#E6FFF3;text-shadow:0 0 26px rgba(79,214,169,.35)}
 #end.calm .v1 b{color:#4FD6A9;text-shadow:0 0 18px rgba(79,214,169,.6)}
 @keyframes vfl{0%,90%,100%{transform:none}91%{transform:translate(-3px,1px)}93%{transform:translate(3px,-1px);opacity:.8}}
-.v2{margin:22px auto 0;max-width:60ch;color:#D9B4B8;font-size:clamp(.98rem,1.6vw,1.15rem);line-height:1.6}
+.v2{margin:22px auto 0;max-width:60ch;color:#E8C9CD;font-size:clamp(.98rem,1.6vw,1.15rem);line-height:1.6;text-shadow:0 2px 12px #000}
 #end.calm .v2{color:#BFD9CF}
 #end .acts{margin-top:28px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-#end .acts button,#end .acts a{border:1px solid #5A1A24;background:#12050A;color:#F4E9E9;border-radius:999px;padding:11px 18px;font-size:.92rem;cursor:pointer;text-decoration:none;font-family:var(--f-b)}
+#end .acts button,#end .acts a{border:1px solid #5A1A24;background:rgba(18,5,10,.9);color:#F4E9E9;border-radius:999px;padding:11px 18px;font-size:.92rem;cursor:pointer;text-decoration:none;font-family:var(--f-b)}
 #end .acts .hot{background:#F21E39;border-color:#FF5265;color:#fff;font-weight:600;box-shadow:0 0 24px rgba(255,23,59,.55)}
 #end.calm .acts .hot{display:none}
-#end .l3{margin-top:30px;font-family:var(--f-m);font-size:.72rem;letter-spacing:.04em;color:#8A6268;line-height:1.8}
+#end .l3{margin-top:30px;font-family:var(--f-m);font-size:.72rem;letter-spacing:.04em;color:#9A7076;line-height:1.8;text-shadow:0 2px 8px #000}
 #end .l3 b{color:#D9B4B8;font-weight:500}
+body.pull main{animation:lurch .3s steps(2,end) 3}
 body.hit main{animation:lurch .34s steps(2,end)}
 body.hit .tint{animation:redflash .5s ease-out}
 @keyframes lurch{50%{transform:translate(-4px,2px) skewX(-.6deg)}}
@@ -495,9 +541,31 @@ body.hit .tint{animation:redflash .5s ease-out}
 </footer>
 
 <div id="end" role="dialog" aria-modal="true" aria-labelledby="end-t">
+  <div class="shade" aria-hidden="true">
+    <div class="fig l3" style="--t:0.05"><svg viewBox="0 0 200 400" preserveAspectRatio="xMidYMax meet"><path d="M100 18C70 18 51 44 49 80c-2 26 5 45 13 58C38 150 21 171 15 212L2 400h196l-13-188c-6-41-23-62-47-74 8-13 15-32 13-58-2-36-21-62-51-62Z"/></svg></div>
+    <div class="fig r3" style="--t:0.12"><svg viewBox="0 0 200 400" preserveAspectRatio="xMidYMax meet"><path d="M100 18C70 18 51 44 49 80c-2 26 5 45 13 58C38 150 21 171 15 212L2 400h196l-13-188c-6-41-23-62-47-74 8-13 15-32 13-58-2-36-21-62-51-62Z"/></svg></div>
+    <div class="fig l2" style="--t:0.3"><svg viewBox="0 0 200 400" preserveAspectRatio="xMidYMax meet"><path d="M100 18C70 18 51 44 49 80c-2 26 5 45 13 58C38 150 21 171 15 212L2 400h196l-13-188c-6-41-23-62-47-74 8-13 15-32 13-58-2-36-21-62-51-62Z"/></svg></div>
+    <div class="fig r2" style="--t:0.45"><svg viewBox="0 0 200 400" preserveAspectRatio="xMidYMax meet"><path d="M100 18C70 18 51 44 49 80c-2 26 5 45 13 58C38 150 21 171 15 212L2 400h196l-13-188c-6-41-23-62-47-74 8-13 15-32 13-58-2-36-21-62-51-62Z"/></svg></div>
+    <div class="fig c" style="--t:0.6"><svg viewBox="0 0 200 400" preserveAspectRatio="xMidYMax meet"><path d="M100 18C70 18 51 44 49 80c-2 26 5 45 13 58C38 150 21 171 15 212L2 400h196l-13-188c-6-41-23-62-47-74 8-13 15-32 13-58-2-36-21-62-51-62Z"/><g class="eyes"><circle cx="86" cy="86" r="2.6"/><circle cx="114" cy="86" r="2.6"/></g></svg></div>
+    <div class="fig l1" style="--t:0.75"><svg viewBox="0 0 200 400" preserveAspectRatio="xMidYMax meet"><path d="M100 18C70 18 51 44 49 80c-2 26 5 45 13 58C38 150 21 171 15 212L2 400h196l-13-188c-6-41-23-62-47-74 8-13 15-32 13-58-2-36-21-62-51-62Z"/></svg></div>
+    <div class="fig r1" style="--t:0.88"><svg viewBox="0 0 200 400" preserveAspectRatio="xMidYMax meet"><path d="M100 18C70 18 51 44 49 80c-2 26 5 45 13 58C38 150 21 171 15 212L2 400h196l-13-188c-6-41-23-62-47-74 8-13 15-32 13-58-2-36-21-62-51-62Z"/><g class="eyes"><circle cx="86" cy="86" r="2.6"/><circle cx="114" cy="86" r="2.6"/></g></svg></div>
+    <div class="fog"></div>
+  </div>
   <div class="term" id="term">
-    <div class="tbar"><i></i><i></i><i></i><span class="tt" id="tt">wraith@meridian-ws-0147 &middot; ~</span><button type="button" class="skip" id="skip">skip &rsaquo;</button></div>
-    <div class="tbody" id="tbody" aria-live="off"></div>
+    <div class="tabs"><span class="tab on" id="tt">wraith@c2-node-7: ~/ops/meridian-freight</span><span class="tab">beacon.log</span><span class="tab">loot</span><button type="button" class="skip" id="skip">skip &rsaquo;</button></div>
+    <div class="tgrid">
+      <div class="tbody" id="tbody" aria-live="off"></div>
+      <aside class="side" id="side">
+        <div class="sh">SESSION <b>7f3a9c</b></div>
+        <div class="sr2"><span>App control</span><b id="s-ac">audit</b></div>
+        <div class="sr2"><span>Hosts</span><b><span id="s-h">0</span> / 212</b></div>
+        <div class="hosts" id="s-grid"></div>
+        <div class="sr2"><span>Credentials</span><b id="s-c">0</b></div>
+        <div class="sr2"><span>Endpoint protection</span><b id="s-e">online</b></div>
+        <div class="sr2"><span>Exfiltrated</span><b id="s-x">0 B</b></div>
+        <div class="sr2"><span>Model</span><b>very-confident-xl</b></div>
+      </aside>
+    </div>
   </div>
   <div class="verdict" id="verdict">
     <div class="v1" id="end-t">You should've <b>ENFORZ'd</b> it.</div>
@@ -752,7 +820,7 @@ $('#snd').addEventListener('click', function(){
 function setMode(m, fromChoice){
   // Either reality starts from the top of the page, never from wherever the
   // reader happened to be.
-  window.scrollTo(0, 0); target = 0;
+  window.scrollTo(0, 0); target = 0; pulling = false; lastMove = Date.now();
   try { history.replaceState(null, '', '#' + (m === 'horror' ? 'other' : 'control')); } catch(e){}
   mode = m;
   body.classList.toggle('horror', m === 'horror');
@@ -795,7 +863,19 @@ function onScroll(){
   var max = document.documentElement.scrollHeight - innerHeight;
   target = Math.max(0, Math.min(1, scrollY / Math.max(1, max)));
 }
-window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('scroll', function(){ lastMove = Date.now(); onScroll(); }, { passive: true });
+var lastMove = Date.now(), pulling = false;
+function pull(){
+  pulling = true; flicker(); thud(.5); body.classList.add('pull');
+  var y0 = scrollY, t0 = performance.now(), D = reduce ? 1 : 1700;
+  (function step(now){
+    if (mode !== 'horror') { pulling = false; body.classList.remove('pull'); return; }
+    var k = Math.min(1, (now - t0) / D), e = k * k * (3 - 2 * k);
+    window.scrollTo(0, y0 + (document.documentElement.scrollHeight - innerHeight - y0) * e);
+    if (k < 1) return requestAnimationFrame(step);
+    body.classList.remove('pull'); setTimeout(function(){ if (mode === 'horror') theEnd(); }, 500);
+  })(t0);
+}
 var lastD = -1;
 function applyDread(force){
   document.documentElement.style.setProperty('--dread', dread.toFixed(3));
@@ -815,8 +895,12 @@ function frame(){
   if (mode === 'horror') {
     maxReached = Math.max(maxReached, dread);
     applyDread(false);
-    var atBottom = scrollY + innerHeight >= document.documentElement.scrollHeight - 24;
-    if (atBottom && dread > .9 && !$('#end').classList.contains('on')) theEnd();
+    // Deep enough and the last section in sight: the page takes over and
+    // carries the reader the rest of the way.
+    if (!pulling && !$('#end').classList.contains('on') && maxReached > .45) {
+      var fin = $('#final').getBoundingClientRect().top;
+      if (fin < innerHeight * .8 || target > .8 || (target > .6 && Date.now() - lastMove > 4000)) pull();
+    }
     // Back near the top, the page recovers: the copy returns to Control.
     if (maxReached > .2 && dread < .04) { $$('[data-hit]').forEach(function(x){ x.removeAttribute('data-hit'); }); maxReached = 0; allCopy('control'); $$('.serif').forEach(function(el){ el.classList.remove('serif'); }); feedN = 0; drawFeed(); drawQueue(); }
     if (!reduce && dread > .25 && Math.random() < dread * .011) flicker();
@@ -839,8 +923,8 @@ window.addEventListener('pointermove', function(e){ mx = e.clientX; my = e.clien
 
 /* -------------------------------------------------------------- the end */
 /* The end: a made-up autonomous attacker works through the made-up company,
-   then the same run again with ENFORZ enforcing. Nothing here touches the
-   reader's device; the console is text on a page. */
+   watched by shapes in the dark, then the same run again with ENFORZ
+   enforcing. Nothing here touches the reader's device; it is text on a page. */
 function tick(hi){
   if (!A || !audioOn) return;
   try { var ctx = A.ctx, now = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
@@ -848,99 +932,145 @@ function tick(hi){
     g.gain.setValueAtTime(.025, now); g.gain.exponentialRampToValueAtTime(.0001, now + .03);
     o.connect(g); g.connect(ctx.destination); o.start(now); o.stop(now + .04); } catch(e){}
 }
-var ATTACK = [
-  ['cmd', '$', './wraith --objective "everything" --target meridian-freight'],
-  ['', 'wraith', 'WRAITH-7 autonomous operator · model: very confident · ethics: not found'],
-  ['', '[recon]', '212 Windows machines found. Application control: audit mode since 2024.'],
-  ['', '[recon]', '41,882 "would have blocked" events in the log. Read by: nobody.'],
-  ['think', '[think]', 'I need code execution. Asking myself nicely.'],
-  ['llm', 'llm>', 'find me something Microsoft already signed that will run my script'],
-  ['think', '[think]', 'mshta, regsvr32, rundll32. Signed, trusted, allowed. Lovely.'],
-  ['', '[exec]', 'invoice_viewer.exe, from the email', 'RUNNING'],
-  ['', '[exec]', 'mshta.exe → stage two', 'RUNNING'],
-  ['', '[exec]', '%APPDATA%\\totally-legit\\svchost.exe', 'RUNNING'],
-  ['', '[exec]', 'RTCore64.sys, a known vulnerable driver', 'LOADED', 'jolt'],
-  ['', '[exec]', 'endpoint protection', 'BLINDFOLDED'],
-  ['bar', '[spread]', ''],
-  ['think', '[think]', 'Writing the ransom note in your CEO\'s tone of voice.'],
-  ['think', '[think]', 'Translating it into 14 languages. And Klingon.'],
-  ['', '[exfil]', 'FreightTrack database → "offsite backup"', '41 GB'],
-  ['think', '[think]', 'Drafting your incident report so you don\'t have to.'],
-  ['', '[report]', 'Root cause: everything ran. Approved by: nobody.'],
-  ['wr', '[wraith]', 'Thanks for not having an allowlist, ' + V.os + '.']
-];
-var DEFENDED = [
-  ['cmd', '$', './wraith --objective "everything" --target meridian-freight'],
-  ['', 'wraith', 'WRAITH-7 autonomous operator · model: very confident · ethics: not found'],
-  ['', '[recon]', '212 Windows machines found. Application control: ENFORCED.'],
-  ['think', '[think]', 'That is fine. I am very smart.'],
-  ['', '[exec]', 'invoice_viewer.exe, from the email', 'BLOCKED', '', 'not on the list'],
-  ['think', '[think]', 'Fine. Living off the land, then.'],
-  ['', '[exec]', 'mshta.exe → stage two', 'BLOCKED', '', 'on the deny list'],
-  ['', '[exec]', '%APPDATA%\\totally-legit\\svchost.exe', 'BLOCKED', '', 'not on the list'],
-  ['', '[exec]', 'RTCore64.sys, a known vulnerable driver', 'BLOCKED', '', 'vulnerable driver blocklist'],
-  ['llm', 'llm>', 'how do I get a program approved'],
-  ['ok', '[enforz]', 'A person reviews it in the queue, with the evidence beside it.'],
-  ['llm', 'llm>', 'can I approve it myself'],
-  ['ok', '[enforz]', 'No. Nothing is ever approved automatically.'],
-  ['wr', '[wraith]', 'Requesting approval for wraith.exe ("definitely a printer driver").'],
-  ['ok', '[enforz]', 'Queued for review. Risk: High. Approved by: nobody.'],
-  ['think', '[wraith]', '…still waiting.']
-];
-var endRun = 0;
+var CMD = './wraith run --target meridian-freight --objective "everything" --autonomy full';
+function head(enf){ return [
+  ['P'],
+  ['INF', 'wraith 6.6.6 · model very-confident-xl · ethics <not loaded>'],
+  ['INF', 'session 7f3a9c open · c2 203.0.113.66:443 · jitter 30%'],
+  ['INF', 'recon: 212 Windows hosts · domain MERIDIAN · 18 servers'],
+  enf ? ['OK', 'app control: ENFORCED on every machine', '', '', { ac: 'ENFORCED' }]
+      : ['WRN', 'app control: audit mode since 2024 · 41,882 "would have blocked" · read by: nobody', '', '', { ac: 'audit' }]
+]; }
+var ATTACK = head(false).concat([
+  ['AI', 'Audit mode. They are watching me and stopping nothing. Lovely.'],
+  ['AI', 'I need code execution. Microsoft already signed everything I need.'],
+  ['TOOL', '{"tool":"run","host":"WS-0147","file":"invoice_viewer.exe","from":"email"}'],
+  ['EXE', 'invoice_viewer.exe · WS-0147 · pid 6120', 'RUNNING', '', { h: 1 }],
+  ['EXE', 'mshta.exe → stage two · pid 6388', 'RUNNING', '', { h: 3 }],
+  ['EXE', '%APPDATA%\\totally-legit\\svchost.exe · pid 7012', 'RUNNING', '', { h: 6, c: 4 }],
+  ['DRV', 'RTCore64.sys · a known vulnerable driver', 'LOADED', '', { jolt: 1 }],
+  ['WRN', 'endpoint protection', 'BLINDFOLDED', '', { e: 'blind' }],
+  ['AI', 'Nobody noticed. Spreading.'],
+  ['BAR'],
+  ['AI', 'Writing the ransom note in your CEO\'s tone of voice. Translating it into 14 languages. And Klingon.'],
+  ['EXF', 'FreightTrack database → "offsite backup"', '41 GB', '', { x: '41 GB' }],
+  ['AI', 'Drafting your incident report so you don\'t have to.'],
+  ['INF', 'root cause: everything ran · approved by: nobody'],
+  ['WR', 'Thanks for not having an allowlist, ' + V.os + '.'],
+  ['P', 1]
+]);
+var DEFENDED = head(true).concat([
+  ['AI', 'That is fine. I am very smart.'],
+  ['TOOL', '{"tool":"run","host":"WS-0147","file":"invoice_viewer.exe","from":"email"}'],
+  ['EXE', 'invoice_viewer.exe · WS-0147', 'BLOCKED', 'not on the list', { t: 1 }],
+  ['AI', 'Fine. Living off the land, then.'],
+  ['EXE', 'mshta.exe → stage two', 'BLOCKED', 'on the deny list', { t: 1 }],
+  ['EXE', '%APPDATA%\\totally-legit\\svchost.exe', 'BLOCKED', 'not on the list', { t: 1 }],
+  ['DRV', 'RTCore64.sys · a known vulnerable driver', 'BLOCKED', 'vulnerable driver blocklist', { t: 1 }],
+  ['AI', 'How do I get a program approved?'],
+  ['ENF', 'A person reviews it in the queue, with the evidence beside it.'],
+  ['AI', 'Can I approve it myself?'],
+  ['ENF', 'No. Nothing is ever approved automatically.'],
+  ['WR', 'Requesting approval for wraith.exe ("definitely a printer driver").'],
+  ['ENF', 'Queued for review · risk High · approved by: nobody'],
+  ['AI', '…still waiting.'],
+  ['P', 1]
+]);
+var endRun = 0, simT = 0;
 function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function stampMs(){ simT += 180 + Math.random() * 900; var d = new Date(); var ms = String(d.getMilliseconds()).padStart(3, '0'); return clock(d) + '.' + ms; }
+function side(st, safe){
+  var g = $('#s-grid');
+  if (!st) {
+    g.innerHTML = new Array(213).join('<i></i>');
+    $('#s-h').textContent = '0'; $('#s-c').textContent = '0'; $('#s-x').textContent = '0 B';
+    $('#s-e').textContent = 'online'; $('#s-e').className = safe ? 'good' : ''; $('#s-ac').textContent = '…'; $('#s-ac').className = '';
+    $('#end').style.setProperty('--own', '0'); return;
+  }
+  if (st.ac) { $('#s-ac').textContent = st.ac; $('#s-ac').className = st.ac === 'ENFORCED' ? 'good' : 'bad'; }
+  if (st.h != null) { owned(st.h); }
+  if (st.c != null) { $('#s-c').textContent = String(st.c); $('#s-c').className = 'bad'; }
+  if (st.e) { $('#s-e').textContent = 'blind'; $('#s-e').className = 'bad'; }
+  if (st.x) { $('#s-x').textContent = st.x; $('#s-x').className = 'bad'; }
+  if (st.t) { var c = g.children[0]; c.classList.remove('try'); void c.offsetWidth; c.classList.add('try'); setTimeout(function(){ c.classList.remove('try'); }, 700); }
+}
+function owned(n){
+  var g = $('#s-grid').children;
+  for (var i = 0; i < g.length; i++) g[i].classList.toggle('own', i < n);
+  $('#s-h').textContent = String(n); $('#s-h').parentNode.className = n ? 'bad' : '';
+  $('#end').style.setProperty('--own', (Math.min(1, n / 212)).toFixed(3));
+}
 function playConsole(lines, safe, done){
   var run = ++endRun, term = $('#term'), tb = $('#tbody'), i = 0, fast = reduce;
   $('#end').className = 'on' + (safe ? ' calm' : '');
-  term.className = 'term' + (safe ? ' safe' : ''); tb.innerHTML = '';
-  $('#tt').textContent = 'wraith@meridian-ws-0147 · ~' + (safe ? ' · enforz: enforcing' : '');
+  term.className = 'term' + (safe ? ' safe' : ''); tb.innerHTML = ''; simT = 0; side(null, safe);
   $('#skip').onclick = function(){ fast = true; };
   function scroll(){ tb.scrollTop = tb.scrollHeight; }
+  function later(f, ms){ setTimeout(function(){ if (run === endRun) f(); }, fast ? 0 : ms); }
   function next(){
     if (run !== endRun) return;
-    if (i >= lines.length) {
-      var c = document.createElement('div'); c.className = 'tl'; c.innerHTML = '<span class="tg"></span><span class="tx"><span class="caret"></span></span>'; tb.appendChild(c); scroll();
-      return setTimeout(function(){ if (run !== endRun) return;
-        if (safe || fast) return done();
-        term.classList.add('jolt'); flicker(); thud(.7);
-        setTimeout(function(){ term.classList.add('off'); }, 500);
-        setTimeout(done, 1400);
-      }, fast ? 200 : 1500);
-    }
-    var L = lines[i++], d = document.createElement('div');
-    d.className = 'tl ' + L[0];
-    d.innerHTML = '<span class="tg">' + esc(L[1]) + '</span><span class="tx"></span>' + (L[3] ? '<span class="ts ' + (safe ? 'blk' : 'run') + '">' + esc(L[3]) + (L[5] ? '<span class="tw">' + esc(L[5]) + '</span>' : '') + '</span>' : '');
-    var st = d.querySelector('.ts'); if (st) st.style.visibility = 'hidden';
-    tb.appendChild(d); scroll();
-    var tx = d.querySelector('.tx'), typed = L[0] === 'cmd' || L[0] === 'llm';
-    if (L[0] === 'bar') {
-      var n = 0, total = 212;
-      (function grow(){
+    if (i >= lines.length) return later(function(){
+      if (safe || fast) return done();
+      term.classList.add('jolt'); flicker(); thud(.7);
+      later(function(){ term.classList.add('off'); }, 500);
+      later(done, 1400);
+    }, 1600);
+    var L = lines[i++];
+    if (L[0] === 'P') {
+      var pr = document.createElement('div'); pr.className = 'pr';
+      pr.innerHTML = '┌──(<b>wraith㉿c2-node-7</b>)-[<i>~/ops/meridian-freight</i>]';
+      var c = document.createElement('div'); c.className = 'cmdl';
+      tb.appendChild(pr); tb.appendChild(c); scroll();
+      if (L[1]) { c.innerHTML = '<span class="caret"></span>'; return next(); }
+      var k = 0;
+      return (function type(){
         if (run !== endRun) return;
-        n = Math.min(total, n + 7 + Math.floor(Math.random() * 14));
-        var w = Math.round(n / total * 24);
-        tx.innerHTML = '<span class="bar">' + new Array(w + 1).join('█') + '</span><span style="color:#3A0E16">' + new Array(25 - w).join('█') + '</span> ' + n + '/' + total + ' machines';
-        tick(); if (n < total) return setTimeout(grow, fast ? 0 : 70);
-        setTimeout(next, fast ? 0 : 500);
+        if (fast) k = CMD.length;
+        c.textContent = CMD.slice(0, ++k); if (k % 2) tick();
+        if (k < CMD.length) return setTimeout(type, 18 + Math.random() * 45);
+        later(next, 600);
       })();
-      return;
     }
-    if (!typed || fast) { tx.textContent = L[2]; return finish(); }
-    var k = 0;
-    (function type(){
+    var d = document.createElement('div'), lv = L[0], st = L[4];
+    if (lv === 'BAR') {
+      d.className = 'ln'; d.innerHTML = '<span class="t">' + stampMs() + '</span><span class="lv EXE">LAT</span><span class="m"></span><span class="ts run"></span>';
+      tb.appendChild(d); scroll();
+      var m = d.querySelector('.m'), n = 6;
+      return (function grow(){
+        if (run !== endRun) return;
+        n = fast ? 212 : Math.min(212, n + 5 + Math.floor(Math.random() * 11));
+        var w = Math.round(n / 212 * 20);
+        m.innerHTML = 'spreading <span class="bar">' + new Array(w + 1).join('█') + '</span><span style="color:#2A0B11">' + new Array(21 - w).join('█') + '</span> ' + n + '/212';
+        owned(n); if (n > 40) { $('#s-c').textContent = String(Math.round(n / 5.6)); }
+        tick(); if (n < 212) return setTimeout(grow, 60);
+        d.querySelector('.ts').textContent = 'OWNED'; thud(.35); later(next, 700);
+      })();
+    }
+    var cls = lv === 'AI' ? 'ai' : lv === 'TOOL' ? 'tool' : lv === 'WR' ? 'wr' : lv === 'OK' ? 'ok' : lv === 'ENF' ? 'enf' : '';
+    d.className = 'ln ' + cls;
+    d.innerHTML = '<span class="t">' + stampMs() + '</span><span class="lv ' + lv + '">' + (lv === 'TOOL' ? 'CALL' : lv) + '</span><span class="m"></span>' +
+      (L[2] ? '<span class="ts ' + (safe ? 'blk' : 'run') + '" style="visibility:hidden">' + esc(L[2]) + (L[3] ? '<span class="tw">' + esc(L[3]) + '</span>' : '') + '</span>' : '');
+    tb.appendChild(d); scroll();
+    var mm = d.querySelector('.m'), ts = d.querySelector('.ts');
+    function finish(){
+      later(function(){
+        if (ts) { ts.style.visibility = ''; tick(true); }
+        if (st) side(st, safe);
+        if (st && st.jolt && !fast) { term.classList.remove('jolt'); void term.offsetWidth; term.classList.add('jolt'); thud(.5); flicker(); }
+        scroll(); later(next, lv === 'AI' ? 700 : lv === 'TOOL' ? 300 : 480);
+      }, ts ? 380 : 90);
+    }
+    if (lv !== 'AI' || fast) { mm.textContent = L[1]; return finish(); }
+    // the model "streams" its thoughts word by word
+    var words = L[1].split(' '), w = 0;
+    mm.textContent = '› ';
+    (function stream(){
       if (run !== endRun) return;
-      tx.textContent = L[2].slice(0, ++k); if (k % 2) tick();
-      if (k < L[2].length) return setTimeout(type, 24 + Math.random() * 40);
+      if (fast) { mm.textContent = '› ' + L[1]; return finish(); }
+      mm.textContent += (w ? ' ' : '') + words[w++]; tick(); scroll();
+      if (w < words.length) return setTimeout(stream, 50 + Math.random() * 90);
       finish();
     })();
-    function finish(){
-      setTimeout(function(){
-        if (run !== endRun) return;
-        if (st) { st.style.visibility = ''; tick(true); }
-        if (L[4] === 'jolt' && !fast) { term.classList.remove('jolt'); void term.offsetWidth; term.classList.add('jolt'); thud(.5); flicker(); }
-        scroll(); setTimeout(next, fast ? 0 : (L[0] === 'think' ? 900 : 520));
-      }, fast ? 0 : (st ? 420 : 120));
-    }
   }
   next();
 }
@@ -954,7 +1084,7 @@ function verdict(safe){
   if (!safe) thud(.8);
 }
 function theEnd(){
-  if (A) { try { A.master.gain.cancelScheduledValues(A.ctx.currentTime); A.master.gain.setTargetAtTime(.05, A.ctx.currentTime, .2); } catch(e){} }
+  if (A) { try { A.master.gain.cancelScheduledValues(A.ctx.currentTime); A.master.gain.setTargetAtTime(.07, A.ctx.currentTime, .2); } catch(e){} }
   clearTimeout(hbTimer); thud();
   playConsole(ATTACK, false, function(){ verdict(false); });
 }
