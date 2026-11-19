@@ -294,9 +294,9 @@ body.horror.d4 #ghost{opacity:.55}
 .ln .ts .tw{display:block;font-weight:400;letter-spacing:0;color:#5E9C86}
 .lv.INF{color:#7A8BA6}.lv.WRN{color:#FFC95C}.lv.EXE,.lv.DRV,.lv.EXF{color:#FF5A66}.lv.AI{color:#C792EA}.lv.TOOL{color:#5E3A40}.lv.OK,.lv.ENF{color:#4FD6A9}.lv.WR{color:#FF2638}
 .ln.ai .m{color:#E3C6F2}.ln.tool .m{color:#6E4A50}.ln.wr .m{color:#FF4A55;text-shadow:0 0 12px rgba(255,0,31,.6)}.ln.ok .m,.ln.enf .m{color:#7FE0BF}
-.cas{color:#4DB2FF;font-weight:600;animation:casf .9s steps(1) infinite}
-@keyframes casf{0%{color:#4DB2FF;text-shadow:0 0 10px #1E7BFF,0 0 22px #1E7BFF}50%{color:#E9F4FF;text-shadow:0 0 16px #3B95FF,0 0 34px #3B95FF}}
-.ln.tgt .m{color:#9CCBFF}.lv.TGT{color:#4DB2FF}
+.cas{color:#FF2D45;font-weight:700;animation:casf .9s steps(1) infinite}
+@keyframes casf{0%{color:#FF2D45;text-shadow:0 0 10px #FF001F,0 0 24px #E0002B}50%{color:#FFE9EC;text-shadow:0 0 16px #FF1A3C,0 0 36px #FF1A3C}}
+.ln.tgt .m{color:#FF9AA6}.lv.TGT{color:#FF4358}
 .ts.run{color:#FF3D48;text-shadow:0 0 10px rgba(255,0,31,.8)}.ts.blk{color:#4FD6A9}
 .bar{color:#FF3D48;letter-spacing:-.05em}
 .caret{display:inline-block;width:.6ch;height:1.05em;vertical-align:-.15em;background:#F4E9E9;animation:pl .7s steps(1) infinite}
@@ -667,15 +667,18 @@ function setCopy(el, which, typed){
 function typeInto(el, html){
   var tmp = document.createElement('div'); tmp.innerHTML = html;
   var plain = tmp.textContent, cur = el.textContent, i = cur.length, j = 0;
+  // The first page is read, not skimmed: the headline at reading pace, the
+  // paragraph under it a little quicker. Everything else as before.
+  var slow = el.id === 'h1', mid = !slow && !!(el.closest && el.closest('.hero'));
   var tok = (el._tok || 0) + 1; el._tok = tok;
   el.classList.add('typing');
   (function erase(){
     if (el._tok !== tok) return;
-    if (i > 0) { i = Math.max(0, i - 3); el.textContent = cur.slice(0, i); return setTimeout(erase, 8); }
+    if (i > 0) { i = Math.max(0, i - (slow ? 2 : 3)); el.textContent = cur.slice(0, i); return setTimeout(erase, slow ? 22 : 8); }
     (function type(){
       if (el._tok !== tok) return;
       if (j < plain.length) { j++; el.textContent = plain.slice(0, j);
-        var ch = plain[j - 1]; return setTimeout(type, ch === '.' || ch === '?' ? 160 : 18 + Math.random() * 22); }
+        var ch = plain[j - 1]; return setTimeout(type, ch === '.' || ch === '?' ? (slow ? 520 : mid ? 340 : 160) : (slow ? 48 + Math.random() * 34 : mid ? 24 + Math.random() * 18 : 18 + Math.random() * 22)); }
       el.innerHTML = html; el.classList.remove('typing');
     })();
   })();
@@ -873,17 +876,22 @@ function turnHero(){
   clearTimeout(window._turn);
   if (mode !== 'horror' || heroTurned) return;
   heroTurned = true;
-  turn($('#h1')); turn($('.hero .k')); turn($('.hero .lede'));
-  $$('.hero .cta [data-p], .fh [data-p]').forEach(turn); flicker();
+  turn($('#h1')); turn($('.hero .k')); flicker();
   watchRead();
 }
 function watchRead(){
   var t0 = Date.now(), doneAt = 0;
   (function chk(){
     if (mode !== 'horror') { letGo(); return; }
-    var h = $('#h1');
-    if (!doneAt && h.getAttribute('data-shown') === 'horror' && !h.classList.contains('typing')) doneAt = Date.now();
-    if ((doneAt && Date.now() - doneAt > (reduce ? 600 : 1900)) || Date.now() - t0 > 9000) { readDone = true; letGo(); return; }
+    var h1 = $('#h1'), lede = $('.hero .lede');
+    if (h1.getAttribute('data-shown') === 'horror' && !h1.classList.contains('typing')
+        && lede.getAttribute('data-shown') !== 'horror') {
+      turn(lede); $$('.hero .cta [data-p], .fh [data-p]').forEach(turn);
+    }
+    var typed = [h1, lede].every(function(h){
+      return h.getAttribute('data-shown') === 'horror' && !h.classList.contains('typing'); });
+    if (!doneAt && typed) doneAt = Date.now();
+    if ((doneAt && Date.now() - doneAt > (reduce ? 600 : 3000)) || Date.now() - t0 > 24000) { readDone = true; letGo(); return; }
     setTimeout(chk, 100);
   })();
 }
