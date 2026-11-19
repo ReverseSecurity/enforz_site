@@ -6,30 +6,420 @@
 <meta name="description" content="Choose your experience: ENFORZ as it ships, or the same company in the reality where nobody installed it.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap">
 <style>
-/* One page, two realities. Every section exists once, with its CONTROL copy in
-   data-p and its OTHER REALITY copy in data-h. The horror is driven by one number,
-   --dread (0..1), which follows the reader's scroll and falls again when they
-   scroll back up. Nothing here makes a network request about the reader. */
-:root{
-  --bg:#080B13;--bg2:#0C111C;--card:#121926;--card2:#18212F;--line:#242F45;--line2:#1A2232;
-  --fg:#F0F3F8;--dim:#A6B2C6;--faint:#6D7B92;--amber:#9D8CFF;--cyan:#4DD0E1;--mint:#4FD6A9;--crit:#FF7A6B;--warn:#FFC95C;
-  --blood:#B3121B;--a-dim:rgba(157,140,255,.15);--c-dim:rgba(77,208,225,.13);--m-dim:rgba(79,214,169,.13);--x-dim:rgba(255,122,107,.13);
-  --f-h:'Familjen Grotesk','Helvetica Neue',Arial,sans-serif;--f-b:'Figtree','Helvetica Neue',Arial,sans-serif;
-  --f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;--f-s:'Cormorant Garamond',Georgia,serif;
-  --r:16px;--rs:10px;--dread:0;--hot:0;color-scheme:dark
+/* Layout: big type, short lines, one idea per tile. Everything long hides behind
+   the Detail switch. Dark-first: indigo ground, amber signal, cyan second light. */
+:root {
+  --bg:#080B13; --bg2:#0C111C; --card:#121926; --card2:#18212F;
+  --line:#242F45; --line2:#1A2232;
+  --fg:#F0F3F8; --dim:#A6B2C6; --faint:#6D7B92;
+  --amber:#9D8CFF; --cyan:#4DD0E1; --mint:#4FD6A9; --crit:#FF7A6B; --warn:#FFC95C;
+  --a-dim:rgba(157,140,255,.15); --c-dim:rgba(77,208,225,.13);
+  --m-dim:rgba(79,214,169,.13); --x-dim:rgba(255,122,107,.13); --w-dim:rgba(255,201,92,.13);
+  --sh:0 28px 70px -40px rgba(0,0,0,.9);
+  --f-h:'Familjen Grotesk','Helvetica Neue',Arial,sans-serif;
+  --f-b:'Figtree','Helvetica Neue',Arial,sans-serif;
+  --f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --r:16px; --rs:10px;
+  color-scheme: dark;
 }
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#F5F8FC; --bg2:#FFFFFF; --card:#FFFFFF; --card2:#EDF2F8;
+  --line:#D6DFEC; --line2:#E6EBF3;
+  --fg:#080D18; --dim:#4A586E; --faint:#6F7D91;
+  --amber:#5B3DD6; --cyan:#116B7A; --mint:#0E7A5C; --crit:#C1332A; --warn:#8A5A00;
+  --a-dim:rgba(91,61,214,.10); --c-dim:rgba(17,107,122,.09);
+  --m-dim:rgba(14,122,92,.09); --x-dim:rgba(193,51,42,.09); --w-dim:rgba(138,90,0,.09);
+  --sh:0 20px 48px -30px rgba(15,25,50,.3);
+  color-scheme: light;
+}}
+:root[data-theme="light"]{
+  --bg:#F5F8FC; --bg2:#FFFFFF; --card:#FFFFFF; --card2:#EDF2F8;
+  --line:#D6DFEC; --line2:#E6EBF3;
+  --fg:#080D18; --dim:#4A586E; --faint:#6F7D91;
+  --amber:#5B3DD6; --cyan:#116B7A; --mint:#0E7A5C; --crit:#C1332A; --warn:#8A5A00;
+  --a-dim:rgba(91,61,214,.10); --c-dim:rgba(17,107,122,.09);
+  --m-dim:rgba(14,122,92,.09); --x-dim:rgba(193,51,42,.09); --w-dim:rgba(138,90,0,.09);
+  --sh:0 20px 48px -30px rgba(15,25,50,.3);
+  color-scheme: light;
+}
+
 *{box-sizing:border-box}
-html{scroll-behavior:auto}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-b);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-h1,h2,h3{font-family:var(--f-h);font-weight:600;letter-spacing:-.025em;margin:0}
+html{scroll-behavior:smooth;font-size:15px}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-b);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg2)}
+.band{width:100%}
+.wrap{max-width:1130px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sect{padding-block:clamp(42px,5.2vw,74px)}
+.soft{background:var(--bg2);border-block:1px solid var(--line2)}
+.ln{border-top:1px solid var(--line2)}
+
+h1,h2,h3,h4{margin:0;font-family:var(--f-h);text-wrap:balance;letter-spacing:-.03em}
+h1{font-size:clamp(2.15rem,5.8vw,3.95rem);font-weight:700;line-height:.98;letter-spacing:-.045em}
+h2{font-size:clamp(1.5rem,3.2vw,2.3rem);font-weight:700;line-height:1.06;letter-spacing:-.038em}
+h3{font-size:clamp(1rem,1.6vw,1.16rem);font-weight:600;line-height:1.25}
+h4{font-size:.98rem;font-weight:600;letter-spacing:-.018em}
 p{margin:0}
-a{color:inherit}
-button{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:8px}
-.wrap{width:min(1200px,100% - 32px);margin-inline:auto}
 .k{font-family:var(--f-m);font-size:.72rem;letter-spacing:.17em;text-transform:uppercase;color:var(--amber)}
-.grad{background:linear-gradient(96deg,var(--amber),var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lede{font-size:clamp(1rem,1.35vw,1.14rem);line-height:1.5;color:var(--dim);max-width:46ch}
+.sub{font-size:.96rem;line-height:1.55;color:var(--dim);max-width:52ch}
+.grad{background:linear-gradient(96deg,var(--amber),var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--amber)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:8px}
+.head{max-width:60ch}
+.head h2{margin-top:11px}
+.head .sub{margin-top:14px}
+
+/* header */
+section[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 74px)}
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:55;background:color-mix(in srgb,var(--bg2) 86%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line2)}
+.hin{display:flex;align-items:center;gap:12px;padding-block:11px}
+.brand{display:flex;align-items:center;text-decoration:none;flex:none}
+.brand img{height:30px;width:auto}
+.ftr-lg{height:34px;width:auto;margin-bottom:14px}
+img.lg-d{display:block}
+img.lg-l{display:none}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]) img.lg-d{display:none}
+  :root:not([data-theme="dark"]) img.lg-l{display:block}}
+:root[data-theme="light"] img.lg-d{display:none}
+:root[data-theme="light"] img.lg-l{display:block}
+:root[data-theme="dark"] img.lg-d{display:block}
+:root[data-theme="dark"] img.lg-l{display:none}
+.hdr nav{margin-left:auto;display:flex;gap:2px}
+.hdr nav{gap:3px}
+.hdr nav a{font-family:var(--f-m);font-size:.73rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-decoration:none;padding:8px 12px;border-radius:999px;transition:.15s}
+.hdr nav a:hover{color:var(--fg)}
+.hdr nav a.on{color:var(--amber);background:color-mix(in srgb,var(--amber) 12%,transparent)}
+.mb{display:none;flex:none;align-items:center;justify-content:center;width:42px;height:38px;border-radius:11px;
+  background:var(--card);border:1px solid var(--line);cursor:pointer;transition:.15s;margin-left:auto}
+.mb .bars{display:grid;gap:4px}
+.mb .bars i{display:block;width:16px;height:2px;border-radius:2px;background:var(--dim);transition:transform .22s,opacity .18s}
+.mb[aria-expanded="true"]{background:var(--card2);border-color:color-mix(in srgb,var(--amber) 55%,var(--line))}
+.mb[aria-expanded="true"] .bars i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.mb[aria-expanded="true"] .bars i:nth-child(2){opacity:0}
+.mb[aria-expanded="true"] .bars i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+@media(max-width:1180px){
+  .mb{display:flex}
+  .hdr nav+.tgl{margin-left:6px}
+  .hdr nav{position:absolute;left:0;right:0;top:100%;margin:0;z-index:54;
+    display:grid;grid-template-columns:1fr;gap:5px;padding:12px 16px 16px;
+    background:var(--bg2);backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--line2);box-shadow:var(--sh);
+    visibility:hidden;opacity:0;transform:translateY(-8px);
+    transition:opacity .2s,transform .2s,visibility .2s}
+  .hdr nav.open{visibility:visible;opacity:1;transform:none}
+  .hdr nav a{padding:14px 14px;font-size:.8rem;letter-spacing:.09em;border-radius:11px;background:var(--card);border:1px solid var(--line)}
+  .hin{position:relative}
+}
+
+.tgl{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-family:var(--f-b);font-size:.78rem;font-weight:500;color:var(--dim);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 13px 6px 9px;cursor:pointer;transition:.15s;flex:none}
+.hdr nav+.tgl{margin-left:6px}
+.tgl:hover{color:var(--fg)}
+.tgl .sw{width:27px;height:15px;border-radius:999px;background:var(--line);position:relative;flex:none;transition:.2s}
+.tgl .sw::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:var(--faint);transition:.2s}
+.tgl.hint{animation:tglpulse 3.4s ease-in-out infinite}
+@keyframes tglpulse{
+  0%,72%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--amber) 0%,transparent);border-color:var(--line)}
+  80%{box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 16%,transparent);border-color:color-mix(in srgb,var(--amber) 60%,var(--line))}
+  88%{box-shadow:0 0 0 7px color-mix(in srgb,var(--amber) 0%,transparent);border-color:color-mix(in srgb,var(--amber) 35%,var(--line))}}
+.tgl[aria-pressed="true"]{color:var(--fg);border-color:color-mix(in srgb,var(--amber) 55%,var(--line))}
+.tgl[aria-pressed="true"] .sw{background:var(--a-dim)}
+.tgl[aria-pressed="true"] .sw::after{transform:translateX(12px);background:var(--amber)}
+@media(max-width:440px){.tgl .lb{display:none}}
+
+/* detail reveal */
+.d{display:none;margin-top:10px;padding:9px 11px;background:var(--card2);border-radius:8px;border-left:2px solid color-mix(in srgb,var(--amber) 55%,transparent);font-family:var(--f-m);font-size:.72rem;line-height:1.6;color:var(--faint);overflow-wrap:anywhere}
+body.on .d{display:block}
+
+/* icons */
+.ic{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ic-l{width:26px;height:26px}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding-block:clamp(46px,8vw,104px) clamp(40px,6vw,76px)}
+.aur{position:absolute;inset:-30% -10% auto -10%;height:720px;pointer-events:none;opacity:.85;
+  background:
+   radial-gradient(42% 46% at 22% 36%,color-mix(in srgb,var(--amber) 26%,transparent),transparent 70%),
+   radial-gradient(38% 42% at 74% 24%,color-mix(in srgb,var(--cyan) 24%,transparent),transparent 70%),
+   radial-gradient(40% 40% at 54% 66%,color-mix(in srgb,var(--crit) 14%,transparent),transparent 72%);
+  filter:blur(36px);animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{0%{transform:translate3d(-2%,0,0) scale(1)}100%{transform:translate3d(3%,2%,0) scale(1.1)}}
+.hin2{position:relative;display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);gap:clamp(30px,5vw,58px);align-items:center}
+@media(max-width:960px){.hin2{grid-template-columns:1fr}}
+.hero h1{margin-top:15px}
+.hero .lede{margin-top:19px}
+.cta{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+.b{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:.9rem;padding:11px 19px;border-radius:999px;border:1px solid transparent;cursor:pointer;font-family:var(--f-b);transition:transform .16s,box-shadow .16s}
+.b:hover{transform:translateY(-2px)}
+.b1{background:linear-gradient(100deg,var(--amber),color-mix(in srgb,var(--amber) 70%,var(--crit)));color:#140A33;box-shadow:0 10px 30px -12px color-mix(in srgb,var(--amber) 60%,transparent)}
+:root[data-theme="light"] .b1,:root:not([data-theme="dark"]) .b1{color:#FFF8EC}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .b1{color:#140A33}}
+:root[data-theme="dark"] .b1{color:#140A33}
+.b2{background:var(--card);border-color:var(--line);color:var(--fg)}
+.chips{margin-top:24px;display:flex;flex-wrap:wrap;gap:7px}
+.ch{font-family:var(--f-m);font-size:.72rem;letter-spacing:.03em;border:1px solid var(--line);color:var(--dim);padding:5px 10px;border-radius:999px;background:color-mix(in srgb,var(--card) 70%,transparent)}
+.chan{margin-top:23px;display:flex;flex-wrap:wrap;gap:7px}
+.cg{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-b);font-size:.79rem;font-weight:600;line-height:1;padding:8px 13px;border-radius:999px;color:var(--fg);border:1px solid color-mix(in srgb,var(--mint) 40%,var(--line));background:color-mix(in srgb,var(--m-dim) 65%,transparent)}
+.cg .ic{width:14px;height:14px;flex:none;color:var(--mint)}
+.cg.out{border-color:color-mix(in srgb,var(--amber) 36%,var(--line));background:color-mix(in srgb,var(--a-dim) 60%,transparent)}
+.cg.out .ic{color:var(--amber)}
+.chn{margin-top:11px;font-size:.785rem;line-height:1.5;color:var(--faint);max-width:46ch}
+.chn b{font-weight:600}.chn .g1{color:var(--mint)}.chn .g2{color:var(--amber)}
+
+/* hero feed */
+.feed{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;min-width:0}
+.fh{display:flex;align-items:center;gap:9px;padding:13px 16px;border-bottom:1px solid var(--line2);background:var(--card2)}
+.fh .t{font-family:var(--f-h);font-weight:600;font-size:.92rem}
+.fh .e{margin-left:auto;font-size:.66rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:999px}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--crit);flex:none;animation:pl 2.4s ease-in-out infinite}
+@keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
+.feed .bdy{max-height:min(52vh,430px);overflow-y:auto;scrollbar-width:thin}
+.fr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:center;padding:12px 16px;transition:background .3s}
+.fr+.fr{border-top:1px solid var(--line2)}
+.fr.live{background:color-mix(in srgb,var(--amber) 7%,transparent)}
+.fr .ii{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--a-dim);color:var(--amber)}
+.fr .w{display:block;font-size:.85rem;font-weight:500;line-height:1.35;min-width:0}
+.fr .s{display:block;margin-top:2px;font-size:.72rem;color:var(--faint);line-height:1.4}
+.fr .s b{color:var(--amber);font-weight:600}
+.sv{font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 8px;border-radius:999px;white-space:nowrap}
+.sv-c{background:var(--x-dim);color:var(--crit)}.sv-h{background:var(--w-dim);color:var(--warn)}
+.sv-a{background:var(--a-dim);color:var(--amber)}.sv-r{background:var(--m-dim);color:var(--mint)}
+
+/* stats */
+.st .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:16px 20px;padding-block:26px}
+.s1 .n{font-family:var(--f-h);font-size:clamp(1.45rem,2.6vw,1.9rem);font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.s1 .l{font-size:.8rem;color:var(--dim);margin-top:1px;line-height:1.35}
+
+/* marquee */
+.mq{overflow:hidden;border-block:1px solid var(--line2);background:var(--bg2);padding-block:13px;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mqt{display:flex;gap:30px;width:max-content;animation:sl 42s linear infinite}
+.mq:hover .mqt{animation-play-state:paused}
+@keyframes sl{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.mqi{font-family:var(--f-h);font-weight:600;font-size:.92rem;color:var(--faint);white-space:nowrap;display:flex;align-items:center;gap:9px}
+.mqi::after{content:"";width:4px;height:4px;border-radius:50%;background:color-mix(in srgb,var(--amber) 70%,transparent)}
+
+/* product tour */
+.gal{margin-top:clamp(22px,3vw,32px)}
+.galvid{width:100%;display:block;border-radius:var(--r);border:1px solid var(--line);background:#000;box-shadow:var(--sh)}
+
+.galnote{margin-top:14px;display:flex;gap:10px;align-items:flex-start;font-size:.8rem;line-height:1.5;color:var(--faint)}
+.galnote .bx{width:24px;height:24px;border-radius:8px;flex:none;display:grid;place-items:center;background:var(--m-dim);color:var(--mint)}
+
+/* stepper */
+.rail{margin-top:calc(clamp(26px,3.6vw,38px) - 5px);display:flex;gap:8px;overflow-x:auto;padding:5px 1px 6px}
+.rail::-webkit-scrollbar{height:4px}.rail::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px}
+.rsp{flex:1 1 0;min-width:158px;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:13px 14px;font-family:var(--f-b);transition:.2s;position:relative;overflow:hidden}
+.rsp:hover{transform:translateY(-2px)}
+.rsp .n{display:flex;align-items:center;gap:8px}
+.rsp .n i{font-style:normal;width:21px;height:21px;border-radius:999px;flex:none;display:grid;place-items:center;font-family:var(--f-m);font-size:.66rem;background:var(--card2);color:var(--faint);transition:.2s}
+.rsp .w{display:block;font-family:var(--f-m);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.rsp .ti{display:block;margin-top:8px;font-weight:600;font-size:.92rem;color:var(--dim);line-height:1.25;transition:.2s}
+.rsp[aria-selected="true"]{background:var(--card2);border-color:color-mix(in srgb,var(--amber) 60%,var(--line))}
+.rsp[aria-selected="true"] .n i{background:linear-gradient(140deg,var(--amber),var(--cyan));color:#140A33}
+.rsp[aria-selected="true"] .ti{color:var(--fg)}
+.rsp[aria-selected="true"]::after{content:"";position:absolute;inset:auto 0 0 0;height:2px;background:linear-gradient(90deg,var(--amber),var(--cyan))}
+.pan{margin-top:19px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,32px);box-shadow:var(--sh)}
+.pan .k{color:var(--cyan)}
+.pan h3{margin-top:8px;font-size:clamp(1.08rem,1.9vw,1.38rem);letter-spacing:-.03em}
+.pan .one{margin-top:11px;font-size:.96rem;line-height:1.5;color:var(--dim);max-width:62ch}
+
+/* tiles */
+.tiles{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(224px,1fr));gap:12px}
+.ti{background:var(--card2);border:1px solid var(--line2);border-radius:var(--rs);padding:15px 16px;min-width:0;transition:.2s;position:relative}
+.ti:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--amber) 42%,var(--line))}
+.ti .h{display:flex;align-items:center;gap:9px}
+.ti .h .bx{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--a-dim);color:var(--amber)}
+.ti .nm{font-family:var(--f-h);font-weight:600;font-size:.94rem;line-height:1.3}
+.ti .nm i{font-style:normal;color:var(--amber)}
+.ti .tx{margin-top:9px;font-size:.855rem;line-height:1.5;color:var(--dim)}
+.ti.cy .h .bx,.cy .bx{background:var(--c-dim);color:var(--cyan)}
+.ti.mn .h .bx,.mn .bx{background:var(--m-dim);color:var(--mint)}
+
+/* segmented tabs */
+.segs{margin-top:clamp(24px,3.2vw,34px);display:flex;gap:7px;flex-wrap:wrap}
+.sg{cursor:pointer;font-family:var(--f-b);font-weight:600;font-size:.92rem;background:var(--card);border:1px solid var(--line);color:var(--dim);padding:10px 18px;border-radius:999px;transition:.2s}
+.sg:hover{color:var(--fg)}
+.sg[aria-selected="true"]{background:linear-gradient(100deg,var(--amber),color-mix(in srgb,var(--amber) 72%,var(--crit)));border-color:transparent;color:#140A33}
+:root[data-theme="light"] .sg[aria-selected="true"],:root:not([data-theme="dark"]) .sg[aria-selected="true"]{color:#FFF8EC}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .sg[aria-selected="true"]{color:#140A33}}
+:root[data-theme="dark"] .sg[aria-selected="true"]{color:#140A33}
+.wp{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,32px);box-shadow:var(--sh);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.88fr);gap:clamp(20px,3.4vw,40px)}
+@media(max-width:880px){.wp{grid-template-columns:1fr}}
+.q{display:flex;gap:10px;align-items:flex-start;font-family:var(--f-h);font-size:clamp(1rem,1.6vw,1.2rem);font-weight:600;line-height:1.28;letter-spacing:-.025em}
+.q .m{flex:none;width:25px;height:25px;border-radius:50%;background:var(--a-dim);color:var(--amber);display:grid;place-items:center;font-size:.9rem;margin-top:1px}
+.wp .ans{margin-top:14px;font-size:.94rem;line-height:1.55;color:var(--dim)}
+.wp .ans b{color:var(--fg);font-weight:600}
+.pts{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.pts li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;align-items:start;font-size:.88rem;line-height:1.5;color:var(--dim)}
+.pts .dt{width:21px;height:21px;border-radius:7px;background:var(--m-dim);color:var(--mint);display:grid;place-items:center;flex:none;margin-top:1px}
+.pts b{color:var(--fg);font-weight:600}
+.lbl{font-family:var(--f-m);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;display:block}
+
+/* filter + grid */
+.fl{margin-top:clamp(20px,2.8vw,30px);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.fc{cursor:pointer;font-family:var(--f-b);font-size:.84rem;font-weight:500;background:var(--card);border:1px solid var(--line);color:var(--dim);padding:7px 14px;border-radius:999px;transition:.16s}
+.fc:hover{color:var(--fg)}
+.fc[aria-pressed="true"]{background:var(--card2);border-color:color-mix(in srgb,var(--amber) 62%,var(--line));color:var(--fg)}
+.cnt{font-size:.8rem;color:var(--faint);margin-left:4px}
+.grid{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:12px}
+.mc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:17px 18px;min-width:0;transition:.2s}
+.mc:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--cyan) 45%,var(--line));box-shadow:var(--sh)}
+.mc .h{display:flex;align-items:center;gap:9px}
+.mc .bx{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--c-dim);color:var(--cyan)}
+.mc .nm{font-family:var(--f-h);font-weight:600;font-size:.96rem;line-height:1.3}
+.mc .nm i{font-style:normal;color:var(--amber)}
+.mc .subs{margin-top:8px;padding-top:8px;border-top:1px solid var(--line2);font-family:var(--f-m);font-size:.67rem;line-height:1.5;color:var(--faint);letter-spacing:.01em}
+.mc .tx{margin-top:9px;font-size:.855rem;line-height:1.5;color:var(--dim)}
+
+/* accordion technique tiles */
+.acc{margin-top:20px;display:grid;grid-template-columns:1fr;gap:10px}
+.at{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:0;transition:.2s}
+.at:hover{border-color:color-mix(in srgb,var(--amber) 45%,var(--line))}
+.at button{width:100%;text-align:left;background:none;border:0;cursor:pointer;padding:17px 18px;font-family:var(--f-b);color:inherit;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:center}
+.at .bx{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--a-dim);color:var(--amber)}
+.at .nm{display:block;font-family:var(--f-h);font-weight:600;font-size:.96rem;line-height:1.25;min-width:0}
+.at .sbt{display:block;margin-top:3px;font-size:.76rem;color:var(--faint);line-height:1.35}
+.at .cv{width:18px;height:18px;color:var(--faint);transition:transform .26s cubic-bezier(.4,0,.2,1)}
+.at.open{background:var(--card2);border-color:color-mix(in srgb,var(--amber) 52%,var(--line))}
+.at.open .cv{transform:rotate(135deg);color:var(--amber)}
+.at .nw{min-width:0}
+.at .bdw{display:grid;grid-template-rows:0fr;overflow:hidden;transition:grid-template-rows .3s cubic-bezier(.4,0,.2,1)}
+.at.open .bdw{grid-template-rows:1fr}
+.at .bd{min-height:0;overflow:hidden;padding:0 18px;font-size:.855rem;line-height:1.55;color:var(--dim);box-shadow:inset 0 1px 0 var(--line2);transition:padding .3s cubic-bezier(.4,0,.2,1)}
+.at.open .bd{padding-top:14px;padding-bottom:17px}
+@media(min-width:720px){
+  .at .nw{display:flex;align-items:baseline;gap:8px 16px;flex-wrap:wrap}
+  .at .nm{flex:0 0 auto}
+  .at .sbt{margin-top:0;min-width:0;flex:1 1 auto}
+  .at .bd{padding-left:59px;padding-right:48px}
+}
+.at .bd ul{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.at .bd li{padding-left:14px;position:relative;font-size:.82rem;line-height:1.45}
+.at .bd li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:2px;background:color-mix(in srgb,var(--amber) 70%,transparent)}
+
+/* cascade */
+.flow{margin-top:clamp(22px,3vw,32px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:860px){.flow{grid-template-columns:1fr}}
+.fs{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 19px;min-width:0;position:relative}
+.fs.op{border-style:dashed}
+.fs .hh{display:flex;align-items:center;gap:9px}
+.fs .hh i{font-style:normal;width:26px;height:26px;border-radius:9px;flex:none;display:grid;place-items:center;font-size:.8rem;font-weight:700;background:linear-gradient(140deg,var(--amber),var(--cyan));color:#140A33}
+.fs.op .hh i{background:var(--card2);color:var(--faint)}
+.fs .sz{margin-top:11px;font-family:var(--f-m);font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;color:var(--cyan)}
+.fs .tx{margin-top:8px;font-size:.86rem;line-height:1.5;color:var(--dim)}
+.rule{margin-top:13px;background:var(--card2);border:1px solid var(--line);border-radius:var(--rs);padding:16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:13px;align-items:center}
+.rule .vb{font-family:var(--f-m);font-size:.64rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;padding:5px 10px;border-radius:999px;white-space:nowrap;background:var(--m-dim);color:var(--mint)}
+.rule .tx{font-size:.9rem;line-height:1.5;color:var(--dim)}
+.rule .tx b{color:var(--fg);font-weight:600}
+
+/* sandbox badges */
+.gh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:clamp(24px,3.2vw,34px)}
+.gh h3{font-size:1.08rem}
+.bd2{display:inline-flex;align-items:center;gap:6px;font-size:.64rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 9px;border-radius:999px}
+.bd-i{background:var(--m-dim);color:var(--mint)}.bd-o{background:var(--w-dim);color:var(--warn)}
+.sbx{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(214px,1fr));gap:11px}
+.sb{background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:14px 15px;min-width:0;transition:.2s}
+.sb:hover{transform:translateY(-2px)}
+.sb .nm{font-family:var(--f-h);font-weight:600;font-size:.9rem}
+.sb .tx{margin-top:6px;font-size:.8rem;line-height:1.45;color:var(--dim)}
+.sb .sh{margin-top:8px;font-family:var(--f-m);font-size:.66rem;line-height:1.45;color:var(--faint)}
+
+/* honest */
+.why{margin-top:clamp(26px,3.4vw,36px);border-left:3px solid var(--amber);padding:2px 0 2px clamp(16px,2.2vw,24px);max-width:64ch}
+.why p{font-family:var(--f-h);font-size:clamp(1.12rem,2vw,1.5rem);font-weight:600;line-height:1.32;letter-spacing:-.025em}
+.why p+p{margin-top:13px;font-family:var(--f-b);font-size:.9rem;font-weight:400;line-height:1.6;letter-spacing:0;color:var(--dim)}
+.hon{margin-top:clamp(24px,3.2vw,34px);background:var(--card2);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,30px)}
+.hon h3{font-size:1.1rem}
+.hl{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.hl li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;align-items:start;font-size:.875rem;line-height:1.5;color:var(--dim)}
+.hl li .nn{width:20px;height:20px;border-radius:6px;background:var(--card);border:1px solid var(--line);color:var(--faint);display:grid;place-items:center;font-size:.66rem;font-weight:700;flex:none;margin-top:1px;font-family:var(--f-m)}
+.hl b{color:var(--fg);font-weight:600}
+
+/* close */
+.cl{padding-block:clamp(48px,6.5vw,86px);text-align:center;position:relative;overflow:hidden}
+.cl h2{max-width:22ch;margin-inline:auto}
+.cl .lede{margin:16px auto 0;max-width:50ch}
+.cl .cta{justify-content:center}
+.ftr{border-top:1px solid var(--line2);background:var(--bg2)}
+.ftr .wrap{padding-block:28px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.ftr .nt{font-size:.8rem;color:var(--faint);line-height:1.6;max-width:56ch}
+.ftr .rt{margin-left:auto;font-family:var(--f-m);font-size:.74rem;color:var(--faint)}
+@media(max-width:700px){.ftr .rt{margin-left:0}}
+
+/* Touch targets and legibility on phones: 44px-ish hit areas, no sub-11px type. */
+@media(max-width:820px){
+  .fc{padding:11px 15px;font-size:.86rem}
+  .tgl{padding:10px 14px 10px 11px;font-size:.8rem}
+  .brand{padding:5px 2px}
+  .brand img{height:28px}
+  .sv{font-size:.72rem;padding:5px 9px}
+  .fh .e{font-size:.7rem;padding:4px 9px}
+  .k{font-size:.76rem;letter-spacing:.14em}
+  .ch{font-size:.76rem;padding:7px 12px}
+  .sg{padding:12px 18px}
+  .hdr nav a{padding-block:10px}
+  .rsp .w{font-size:.72rem;letter-spacing:.08em}
+  .brand{padding:7px 4px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .b:hover,.ti:hover,.mc:hover,.rsp:hover,.sb:hover{transform:none}
+}
+/* Phone legibility. The root font is 15px, so rem-based micro-labels land at
+   9.6-11.1px on a handset. Floored here, at the end of the sheet and with the
+   same specificity as the rules they override, plus 44px touch targets. */
+@media(max-width:820px){
+  .k,.ch{font-size:12px}
+  .at .sbt{font-size:12px}
+  .lbl,.bd2{font-size:11.5px}
+  .rule .vb{font-size:11.5px}
+  .fs .sz{font-size:11.5px}
+  .sb .sh{font-size:11.5px}
+  .mc .subs{font-size:11.5px;line-height:1.5}
+  .hl li .nn{font-size:11.5px;width:22px;height:22px}
+  .ftr .rt{font-size:12.5px}
+  .rsp .w{font-size:12px}
+  .fh .e{font-size:11.5px}
+  .sv{font-size:11.5px}
+  .mb{min-width:44px;min-height:44px}
+  .tgl{min-height:44px}
+  .fc{min-height:44px}
+  .hdr nav a{min-height:44px;display:flex;align-items:center}
+}
+
+
+/* ======================================================================
+   The experience. Above this line is the ENFORZ home page's stylesheet,
+   unchanged except that its step tabs are .rsp (.sp is the splash here).
+   Control is the home page, one to one: same markup, same styles, light or
+   dark with the system. Every line also carries its other-reality twin
+   (data-p / data-h). The other reality is always dark.
+   ====================================================================== */
+:root{--blood:#B3121B;--f-s:'Cormorant Garamond',Georgia,serif;--dread:0;--hot:0}
+html{scroll-behavior:auto}
+body{margin:0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:8px}
+.typing::after{content:"";display:inline-block;width:.5ch;height:1em;vertical-align:-.12em;background:currentColor;margin-left:2px;animation:pl .7s infinite}
+/* header: the home page's, with the reality switch where Detail was */
+.hdr{position:sticky;top:0;z-index:50}
+.hdr .mode{margin-left:8px}
+.hdr nav a{padding:8px 10px}
+.hdr nav a{white-space:nowrap}
+body.horror .hdr nav a{padding:8px 6px;letter-spacing:.02em;font-size:.7rem}
+@media(max-width:1180px){.mb{margin-left:auto}.hdr .mode{margin-left:8px}}
+@media(max-width:520px){.hdr .mode button{padding:6px 8px;font-size:.58rem;letter-spacing:.06em}.snd{width:32px}.brand img{height:22px}}
+/* the other reality is dark, whatever the system says */
+body.horror{--fg:#F0F3F8;--crit:#FF7A6B;--warn:#FFC95C;--c-dim:rgba(77,208,225,.13);--x-dim:rgba(255,122,107,.13);--w-dim:rgba(255,201,92,.13);--sh:0 28px 70px -40px rgba(0,0,0,.9);color-scheme:dark}
+html body.horror img.lg-d{display:block!important}
+html body.horror img.lg-l{display:none!important}
+body.horror .b1{color:#fff!important}
+/* evidence that exists only in the other reality */
+.xo{display:none}
+body.horror .xo{display:block}
+/* the room the other reality's ending needs, only there */
+body:not(.horror) #tail{display:none}
 
 /* ---------------------------------------------------------------- splash */
 #splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#05070D;overflow:auto;padding:28px 16px}
@@ -63,13 +453,7 @@ button{font:inherit;color:inherit}
 .fine{margin-top:22px;font-family:var(--f-m);font-size:.7rem;color:var(--faint);line-height:1.7}
 .fine a{color:var(--dim)}
 
-/* ---------------------------------------------------------------- header */
-.hdr{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg2) 86%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line2)}
-.hin{display:flex;align-items:center;gap:14px;padding-block:11px}
-.brand img{height:28px;width:auto;display:block;transition:filter .6s}
-nav.nv{margin-left:auto;display:flex;gap:3px}
-nav.nv a{font-family:var(--f-m);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-decoration:none;padding:8px 11px;border-radius:999px;transition:color .2s}
-nav.nv a:hover{color:var(--fg)}
+
 .mode{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--card);flex:none}
 .mode button{border:0;background:none;cursor:pointer;font-family:var(--f-m);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:6px 10px;border-radius:999px}
 .mode button[aria-pressed="true"]{background:var(--a-dim);color:var(--amber)}
@@ -77,54 +461,13 @@ body.horror .mode button[aria-pressed="true"]{background:rgba(179,18,27,.22);col
 .snd{display:none;width:36px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;place-items:center;flex:none}
 .snd svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
 body.horror .snd{display:grid}
-@media(max-width:1180px){nav.nv{display:none}.mode{margin-left:auto}}
-@media(max-width:520px){.hin{gap:8px}.brand img{height:21px}.mode button{padding:6px 8px;font-size:.58rem;letter-spacing:.06em}.snd{width:32px}}
-nav.nv a{white-space:nowrap}
 
-/* --------------------------------------------------------------- sections */
-.band{padding-block:clamp(64px,8vw,104px);position:relative}
-.soft{background:var(--bg2);border-block:1px solid var(--line2)}
-.head{max-width:62ch}
-.head h2{margin-top:12px;font-size:clamp(1.8rem,3.6vw,2.7rem);line-height:1.1}
-.head .sub{margin-top:14px;color:var(--dim);font-size:1rem;line-height:1.6;max-width:56ch}
-.hero{padding-block:clamp(56px,8vw,96px) clamp(48px,6vw,80px);overflow:hidden}
-.hero .aur{position:absolute;inset:-20% -10% auto;height:120%;background:radial-gradient(700px 420px at 20% 20%,rgba(157,140,255,.16),transparent 60%),radial-gradient(600px 400px at 80% 30%,rgba(77,208,225,.10),transparent 60%);pointer-events:none;transition:opacity 1s}
-.hin2{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,4vw,56px);align-items:center}
-@media(max-width:900px){.hin2{grid-template-columns:1fr}}
-.hero h1{margin-top:16px;font-size:clamp(2.4rem,5.4vw,4.3rem);line-height:1.02}
-.hero .lede{margin-top:18px;color:var(--dim);font-size:clamp(1rem,1.35vw,1.14rem);line-height:1.55;max-width:48ch}
-.cta{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
-.b{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:12px 18px;font-weight:600;font-size:.92rem;text-decoration:none;cursor:pointer;border:1px solid var(--line);background:var(--card)}
-.b1{background:var(--amber);border-color:var(--amber);color:#0B0820}
-.feed{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:0 30px 80px -40px rgba(0,0,0,.9)}
-.fh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line2);font-family:var(--f-m);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
-.fh .dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 4px var(--m-dim);animation:pl 2s infinite}
-@keyframes pl{50%{opacity:.4}}
-.fh .e{margin-left:auto;color:var(--faint)}
-.fr{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px 16px;border-top:1px solid var(--line2);transition:background .4s}
-.fr:first-child{border-top:0}
-.fr .w{font-size:.9rem;line-height:1.4}
-.fr .s{display:block;margin-top:3px;font-family:var(--f-m);font-size:.7rem;color:var(--faint)}
-.sv{font-family:var(--f-m);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:4px 9px;border:1px solid}
-.sv.a{color:var(--amber);border-color:rgba(157,140,255,.4)}
-.sv.c{color:var(--crit);border-color:rgba(255,122,107,.4)}
-.sv.m{color:var(--mint);border-color:rgba(79,214,169,.4)}
-.sv.h{color:#FFB547;border-color:rgba(255,181,71,.4)}
-/* From the home page: what it controls, the tour video, the rule callout,
-   a tile's link, the line over the audit log. */
-.chan{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
-.chan span{font-family:var(--f-m);font-size:.72rem;letter-spacing:.06em;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:5px 11px;background:var(--card)}
-.chn{margin-top:12px;color:var(--faint);font-size:.82rem;line-height:1.5;max-width:52ch}
-.gal{margin-top:clamp(24px,3.2vw,34px)}
-.galvid{display:block;width:100%;border-radius:var(--r);border:1px solid var(--line2);background:#000;aspect-ratio:16/9}
-/* The other reality: the tour is an old black-and-white set showing the
-   console, through snow, with Mike from Finance. */
 .tv{position:relative}
 .tvoff{display:none;position:absolute;inset:0;border-radius:var(--r);overflow:hidden;background:#000;border:1px solid #2a2a2a}
 body.horror .tvoff{display:block}
 body.horror .tv .galvid{visibility:hidden}
-.tvoff img{position:absolute;inset:-2%;width:104%;height:104%;object-fit:cover;filter:grayscale(1) contrast(1.25) brightness(.42) blur(.4px);animation:tvroll 7s steps(1) infinite,tvjit .18s steps(2) infinite}
-.tvoff .snow{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.42;mix-blend-mode:screen}
+.tvoff .scr img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:tvroll 7s steps(1) infinite,tvjit .18s steps(2) infinite}
+.tvoff .snow{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:0;transition:opacity .4s;mix-blend-mode:screen}
 .tvoff .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.38) 0 2px,transparent 2px 4px);box-shadow:inset 0 0 120px 40px rgba(0,0,0,.85)}
 .tvoff .scan::after{content:"";position:absolute;left:0;right:0;height:18%;top:-20%;background:linear-gradient(transparent,rgba(255,255,255,.07),transparent);animation:tvbar 5.5s linear infinite}
 .tvmsg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,1.4vw,16px);text-align:center;padding:0 6%;font-family:var(--f-m);color:#EDEDED;text-shadow:0 0 6px rgba(255,255,255,.45),2px 0 rgba(255,0,40,.35),-2px 0 rgba(0,200,255,.25)}
@@ -135,47 +478,41 @@ body.horror .tv .galvid{visibility:hidden}
 .tvmsg .t2{font-size:clamp(.95rem,2vw,1.45rem);color:#F2F2F2}
 .tvmsg .t3{font-size:clamp(.85rem,1.4vw,1.05rem);letter-spacing:.24em;text-transform:uppercase;color:#E2E2E2;font-weight:600}
 .tvmsg em{font-style:normal;font-weight:700;color:#FF2D45;font-size:1.22em;letter-spacing:.03em;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;display:inline-block;text-shadow:0 0 14px rgba(255,20,50,.8),3px 0 rgba(0,200,255,.35),-3px 0 rgba(255,0,40,.6);animation:tvstress 1.6s steps(1) infinite}
-.tvoff.on .t1{opacity:1;transform:none;transition-delay:.3s}
-.tvoff.on .t2{opacity:1;transform:none;transition-delay:1.9s}
-.tvoff.on .t3{opacity:1;transform:none;transition-delay:4.2s}
+.tvoff.snowy .t1{opacity:1;transform:none;transition-delay:.3s}
+.tvoff.snowy .t2{opacity:1;transform:none;transition-delay:1.9s}
+.tvoff.snowy .t3{opacity:1;transform:none;transition-delay:4.2s}
 @keyframes tvroll{0%,88%{transform:none}89%{transform:translateY(-3%)}90%{transform:translateY(4%) skewX(-2deg)}91%,100%{transform:none}}
 @keyframes tvjit{0%{translate:0 0}50%{translate:1px -1px}}
 @keyframes tvbar{to{top:110%}}
 @keyframes tvstress{0%,62%{transform:none}64%{transform:translate(-3px,1px) skewX(-8deg)}67%{transform:translate(3px,-1px)}70%{transform:scale(1.06)}73%,100%{transform:none}}
-@media (prefers-reduced-motion:reduce){.tvoff img,.tvoff .scan::after,.tvmsg em{animation:none}}
-.galnote{margin-top:12px;color:var(--faint);font-size:.82rem;line-height:1.5}
-.rule{margin-top:16px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--card);border:1px solid var(--line2);border-left:3px solid var(--amber);border-radius:var(--rs);padding:16px 18px}
-@media(max-width:620px){.rule{grid-template-columns:1fr;gap:8px}}
-.rule .vb{font-family:var(--f-m);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);padding-top:3px;white-space:nowrap}
-.rule p{color:var(--dim);font-size:.92rem;line-height:1.6}
-.ti .lk{margin-top:12px}.ti .lk a{color:var(--cyan);text-decoration:none;font-weight:600}
+@media (prefers-reduced-motion:reduce){.tvoff .scr,.tvoff .scan::after,.tvmsg em{animation:none}}
 .lognote{margin-top:30px;color:var(--dim);font-size:.92rem}
 .lognote+.log{margin-top:12px}
 .fr.new{animation:flash 1.2s}
 @keyframes flash{from{background:rgba(224,82,90,.18)}}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden}
-@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
-.st{background:var(--bg2);padding:22px 20px}
-.st .n{font-family:var(--f-h);font-size:clamp(1.9rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.03em}
-.st .l{margin-top:4px;color:var(--dim);font-size:.86rem}
-.tiles{margin-top:clamp(26px,3.4vw,38px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
-.ti{background:var(--card2);border:1px solid var(--line2);border-radius:var(--rs);padding:18px 18px 20px;transition:transform .2s,border-color .2s}
-.ti:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--amber) 42%,var(--line))}
-.ti h3{font-size:1.02rem;line-height:1.3}
-.ti p{margin-top:9px;color:var(--dim);font-size:.9rem;line-height:1.55}
-.ti .n{font-family:var(--f-m);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+/* The portal first: the console in colour, and this visitor's machine turning
+   up in it. Then the set loses the signal. */
+.tvoff .scr{position:absolute;inset:-2%;transition:filter .3s}
+.tvoff.snowy .scr{filter:grayscale(1) contrast(1.25) brightness(.42) blur(.4px);animation:tvroll 7s steps(1) infinite}
+.tvoff.snowy .snow{opacity:.42}
+.tvoff.glitch .snow{opacity:.3}
+.tvoff .scan{opacity:0;transition:opacity .4s}
+.tvoff.snowy .scan,.tvoff.glitch .scan{opacity:1}
+.tvoff .tvmsg{opacity:0}
+.tvoff.snowy .tvmsg{opacity:1}
+.tvoff.glitch .scr{animation:tvbreak .9s steps(1) 1}
+@keyframes tvbreak{0%{transform:none}12%{transform:translate(-2%,1%) skewX(-6deg);filter:hue-rotate(120deg) saturate(3)}24%{transform:translate(3%,-2%);clip-path:inset(30% 0 22% 0)}36%{transform:scale(1.04);filter:invert(1)}48%{transform:translate(-1%,3%) skewY(2deg);clip-path:inset(0 0 60% 0)}60%{transform:none;filter:grayscale(1) brightness(1.8)}74%{transform:translateY(-6%);filter:grayscale(1) brightness(.3)}88%{transform:none;filter:grayscale(1) contrast(2)}100%{transform:none}}
+.tvtoast{position:absolute;right:3.5%;top:8%;width:min(46%,360px);background:#fff;color:#0B1220;border:1px solid #D6DFEC;border-left:4px solid #E5484D;border-radius:12px;box-shadow:0 18px 50px -16px rgba(10,20,40,.55);padding:12px 14px 12px 14px;font-family:var(--f-b);font-size:clamp(.62rem,1.05vw,.8rem);line-height:1.4;text-align:left;transform:translateX(130%);opacity:0;transition:transform .55s cubic-bezier(.2,.9,.3,1.2),opacity .3s}
+.tvoff.toast .tvtoast{transform:none;opacity:1}
+.tvtoast .tk{font-family:var(--f-m);font-size:.82em;letter-spacing:.1em;text-transform:uppercase;color:#C1332A;font-weight:600}
+.tvtoast .th{display:block;margin-top:4px;font-family:var(--f-h);font-weight:700;font-size:1.12em;letter-spacing:-.01em;color:#080D18}
+.tvtoast .tm{display:block;margin-top:3px;font-family:var(--f-m);font-size:.86em;color:#4A586E;overflow-wrap:anywhere}
+.tvtoast .tm b{color:#C1332A;font-weight:600}
+.tvtoast .tm.blink b{animation:pl 1s steps(1) infinite}
 
-/* the loop */
-.loop{margin-top:34px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px;counter-reset:s}
-@media(max-width:900px){.loop{grid-template-columns:1fr 1fr}}
-@media(max-width:520px){.loop{grid-template-columns:1fr}}
-.step{background:var(--card);border:1px solid var(--line);border-radius:var(--rs);padding:18px;position:relative}
-.step::before{counter-increment:s;content:"0" counter(s);font-family:var(--f-m);font-size:.7rem;color:var(--faint)}
-.step b{display:block;margin-top:8px;font-family:var(--f-h);font-size:1.15rem}
-.step p{margin-top:8px;color:var(--dim);font-size:.86rem;line-height:1.5}
 
 /* the queue */
-.q{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.aq{margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
 .qh,.qr{display:grid;grid-template-columns:minmax(0,2.4fr) minmax(0,1.3fr) .7fr .8fr minmax(150px,1fr);gap:14px;align-items:center;padding:13px 18px}
 .qh{font-family:var(--f-m);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);background:var(--card2);border-bottom:1px solid var(--line2)}
 .qr{border-top:1px solid var(--line2);font-size:.88rem}
@@ -206,19 +543,6 @@ body.horror .tv .galvid{visibility:hidden}
 .log .lr.you .a{color:#F08088}
 @media(max-width:700px){.log .lr{grid-template-columns:1fr}}
 
-/* about + final */
-.about{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,56px);align-items:start}
-@media(max-width:860px){.about{grid-template-columns:1fr}}
-.why{border-left:3px solid var(--amber);padding-left:20px}
-.why p{font-family:var(--f-h);font-size:clamp(1.15rem,2vw,1.5rem);font-weight:600;line-height:1.32;letter-spacing:-.02em}
-.why p+p{margin-top:14px;font-family:var(--f-b);font-weight:400;font-size:.95rem;line-height:1.6;color:var(--dim);letter-spacing:0}
-.final{text-align:center}
-.final h2{font-size:clamp(2rem,4.6vw,3.6rem);line-height:1.05;max-width:20ch;margin:14px auto 0}
-.final .lede{margin:18px auto 0;color:var(--dim);max-width:56ch;line-height:1.6}
-.final .cta{justify-content:center}
-footer{padding-block:34px;border-top:1px solid var(--line2);font-family:var(--f-m);font-size:.72rem;color:var(--faint)}
-footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
-footer a{color:var(--dim)}
 
 /* ---------------------------------------------------- the other reality */
 .fx{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:0;transition:opacity .6s}
@@ -256,9 +580,9 @@ body.horror .hero h1{text-shadow:0 0 calc(var(--hot)*14px) rgba(255,25,60,calc(v
 body.horror .head h2,body.horror .final h2{text-shadow:0 0 18px rgba(255,20,43,calc(var(--hot)*.35))}
 body.horror .soft{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 48%,var(--bg) 100%)}
 body.horror .band:not(.hero)::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,#FF1C39,transparent);box-shadow:0 0 20px #FF1C39;opacity:calc(var(--hot)*.9);pointer-events:none}
-body.horror .ti,body.horror .step,body.horror .g{box-shadow:0 0 24px rgba(224,0,36,calc(var(--hot)*.1)),inset 0 0 25px rgba(224,0,36,calc(var(--hot)*.07))}
+body.horror .ti,body.horror .rsp,body.horror .pan,body.horror .g{box-shadow:0 0 24px rgba(224,0,36,calc(var(--hot)*.1)),inset 0 0 25px rgba(224,0,36,calc(var(--hot)*.07))}
 body.horror .ti{background:linear-gradient(145deg,var(--card2),var(--bg2))}
-body.horror .feed,body.horror .q,body.horror .log{border-color:color-mix(in srgb,var(--line) calc(100% - var(--hot)*100%),#FF263F);box-shadow:0 0 0 1px rgba(255,38,63,calc(var(--hot)*.25)),0 0 32px rgba(255,0,31,calc(var(--hot)*.25)),0 0 100px rgba(141,0,27,calc(var(--hot)*.3))}
+body.horror .feed,body.horror .aq,body.horror .log{border-color:color-mix(in srgb,var(--line) calc(100% - var(--hot)*100%),#FF263F);box-shadow:0 0 0 1px rgba(255,38,63,calc(var(--hot)*.25)),0 0 32px rgba(255,0,31,calc(var(--hot)*.25)),0 0 100px rgba(141,0,27,calc(var(--hot)*.3))}
 body.horror .log{background:color-mix(in srgb,#0A0E17 calc(100% - var(--hot)*100%),#080203)}
 body.horror .b1{color:#fff;box-shadow:0 0 24px rgba(255,23,59,calc(var(--hot)*.5))}
 body.horror .st .n{text-shadow:0 0 15px rgba(255,0,31,calc(var(--hot)*.7));color:color-mix(in srgb,var(--fg) calc(100% - var(--hot)*100%),#FF465A)}
@@ -267,7 +591,7 @@ body.horror footer{background:#030102;color:#C68A92}
 body.horror .hero .aur{opacity:calc(1 - var(--dread)*1.6)}
 body.horror .brand img{filter:grayscale(1) brightness(calc(.62 - var(--dread)*.12)) sepia(1) hue-rotate(-50deg) saturate(calc(5 + var(--dread)*3)) drop-shadow(0 0 calc(4px + var(--dread)*8px) rgba(255,20,40,.45))}
 body.horror.d4 .brand img{animation:vfl 4s steps(1) infinite}
-body.horror .fh .dot{background:#E0525A;box-shadow:0 0 0 4px rgba(224,82,90,.2)}
+body.horror .fh .pulse{background:#E0525A;box-shadow:0 0 0 4px rgba(224,82,90,.2)}
 body.horror.d3 h2,body.horror.d3 .hero h1{animation:glitch 3.4s infinite steps(1)}
 body.horror .head h2{position:relative}
 body.horror.d3 .head h2{text-shadow:calc(var(--dread)*3px) 0 rgba(255,0,40,.55),calc(var(--dread)*-3px) 0 rgba(0,229,255,.22),0 0 18px rgba(255,20,43,.35)}
@@ -329,16 +653,16 @@ body.horror.d4 #ghost{opacity:.55}
 .term.safe .pr{color:#4FD6A9}
 .cmdl{color:#F4E9E9}.cmdl::before{content:"\2514\2500$ ";color:#FF3D48}
 .term.safe .cmdl::before{color:#4FD6A9}
-.ln{display:grid;grid-template-columns:12.5ch 4.5ch minmax(0,1fr) auto;column-gap:10px;align-items:baseline}
-.ln .t{color:#5E3A40}.ln .lv{font-weight:500}
-.ln .m{min-width:0;overflow-wrap:anywhere}
-.ln .ts{text-align:right;font-weight:500;letter-spacing:.06em;white-space:nowrap}
-.ln .ts .tw{display:block;font-weight:400;letter-spacing:0;color:#5E9C86}
+.tln{display:grid;grid-template-columns:12.5ch 4.5ch minmax(0,1fr) auto;column-gap:10px;align-items:baseline}
+.tln .t{color:#5E3A40}.tln .lv{font-weight:500}
+.tln .m{min-width:0;overflow-wrap:anywhere}
+.tln .ts{text-align:right;font-weight:500;letter-spacing:.06em;white-space:nowrap}
+.tln .ts .tw{display:block;font-weight:400;letter-spacing:0;color:#5E9C86}
 .lv.INF{color:#7A8BA6}.lv.WRN{color:#FFC95C}.lv.EXE,.lv.DRV,.lv.EXF{color:#FF5A66}.lv.AI{color:#C792EA}.lv.TOOL{color:#5E3A40}.lv.OK,.lv.ENF{color:#4FD6A9}.lv.WR{color:#FF2638}
-.ln.ai .m{color:#E3C6F2}.ln.tool .m{color:#6E4A50}.ln.wr .m{color:#FF4A55;text-shadow:0 0 12px rgba(255,0,31,.6)}.ln.ok .m,.ln.enf .m{color:#7FE0BF}
+.tln.ai .m{color:#E3C6F2}.tln.tool .m{color:#6E4A50}.tln.wr .m{color:#FF4A55;text-shadow:0 0 12px rgba(255,0,31,.6)}.tln.ok .m,.tln.enf .m{color:#7FE0BF}
 .cas{color:#FF2D45;font-weight:700;animation:casf .9s steps(1) infinite}
 @keyframes casf{0%{color:#FF2D45;text-shadow:0 0 10px #FF001F,0 0 24px #E0002B}50%{color:#FFE9EC;text-shadow:0 0 16px #FF1A3C,0 0 36px #FF1A3C}}
-.ln.tgt .m{color:#FF9AA6}.lv.TGT{color:#FF4358}
+.tln.tgt .m{color:#FF9AA6}.lv.TGT{color:#FF4358}
 .ts.run{color:#FF3D48;text-shadow:0 0 10px rgba(255,0,31,.8)}.ts.blk{color:#4FD6A9}
 .bar{color:#FF3D48;letter-spacing:-.05em}
 .caret{display:inline-block;width:.6ch;height:1.05em;vertical-align:-.15em;background:#F4E9E9;animation:pl .7s steps(1) infinite}
@@ -359,10 +683,10 @@ body.horror.d4 #ghost{opacity:.55}
   .side{order:-1;border-left:0;border-bottom:1px solid #2A0B11;display:grid;grid-template-columns:repeat(4,1fr);gap:0 8px;padding:8px 12px}
   .side .sh,.side .hosts,.side .sr2:nth-child(2),.side .sr2:last-child{display:none}
   .sr2{flex-direction:column;gap:0;border-top:0;padding:2px 0}
-  .ln{grid-template-columns:4.5ch minmax(0,1fr);column-gap:8px}
-  .ln .t{display:none}
-  .ln .ts{grid-column:2;text-align:left}
-  .ln .ts .tw{display:inline;margin-left:8px}
+  .tln{grid-template-columns:4.5ch minmax(0,1fr);column-gap:8px}
+  .tln .t{display:none}
+  .tln .ts{grid-column:2;text-align:left}
+  .tln .ts .tw{display:inline;margin-left:8px}
   .tabs .tab:not(.on){display:none}
   .fig.c{margin-left:-11vh;height:70vh}.fig.l2,.fig.r2{display:none}
 }
@@ -415,6 +739,7 @@ body.hit .tint{animation:redflash .5s ease-out}
 }
 </style>
 
+
 <div id="splash" role="dialog" aria-modal="true" aria-labelledby="sp-h">
   <div class="sp">
     <img class="sp-logo" src="../brand/logo-on-dark.webp" alt="ENFORZ" width="1585" height="300">
@@ -446,205 +771,283 @@ body.hit .tint{animation:redflash .5s ease-out}
 <div class="flick" id="flick" aria-hidden="true"></div>
 <div id="ghost" aria-hidden="true"><svg viewBox="0 0 18 22"><path d="M1 1 L1 17 L5.5 13 L8.5 20 L11 19 L8 12 L14 12 Z" fill="#0a0a0a" stroke="#C8161F" stroke-width="1.2"/></svg></div>
 
-<header class="hdr">
-  <div class="wrap hin">
-    <a class="brand" href="#top" aria-label="ENFORZ"><img src="../brand/logo-on-dark.webp" alt="ENFORZ" width="1585" height="300"></a>
-    <nav class="nv" aria-label="Sections">
-      <a href="#tour" data-p="Tour" data-h="Footage" data-h2="Nobody watching">Tour</a>
-      <a href="#why" data-p="Why" data-h="The mistake" data-h2="Your mistake">Why</a>
-      <a href="#loop" data-p="How it works" data-h="The spiral" data-h2="No end">How it works</a>
-      <a href="#assist" data-p="AI" data-h="AI" data-h2="Nobody approves">AI</a>
-      <a href="#safe" data-p="Safety" data-h="Safety?" data-h2="Not safe">Safety</a>
-      <a href="#about" data-p="About" data-h="Who let it in" data-h2="Who let you in">About</a>
-    </nav>
-    <div class="mode" role="group" aria-label="Experience">
-      <button type="button" data-mode="control" aria-pressed="true">Control</button>
-      <button type="button" data-mode="horror" aria-pressed="false">Other reality</button>
-    </div>
-    <button class="snd" id="snd" type="button" aria-pressed="true" aria-label="Mute sound"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="snd-w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
-  </div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="m2.5 6.5 9.5 7 9.5-7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+<symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/><path d="M12 12 19 7"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a7 7 0 0 1-7 7H9l-5 3 1.2-4A7 7 0 0 1 10 5h4a7 7 0 0 1 7 7z"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1 .5-8 5.5 5.5 0 0 1 10.6 1.4A3.6 3.6 0 0 1 17.5 18z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+<symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 17v4h-3"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 3h3l2 5-2.2 1.6a12 12 0 0 0 6.6 6.6L16 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></symbol>
+<symbol id="i-usb" viewBox="0 0 24 24"><path d="M12 21V7"/><path d="m9 10 3-7 3 7z"/><path d="M12 15l4.5-3V9M12 17l-4.5-3v-2"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m16 11 5.5-3v8L16 13z"/></symbol>
+<symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/><path d="M10 10h4v4h-4zM12 3v3.5M12 17.5V21M3 12h3.5M17.5 12H21M6 3.5v1M18 3.5v1"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+<symbol id="i-cert" viewBox="0 0 24 24"><circle cx="12" cy="9.5" r="5.5"/><path d="m8.5 14.5-.5 6 4-2 4 2-.5-6"/></symbol>
+<symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v5l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 17l-5-9V3"/><path d="M7.5 14h9"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.5 2 5 13h6l-1.5 9 8.5-11h-6z"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="8" r="4.5"/><path d="m11.2 11.2 9 9M17 17l2-2M14 14l2-2"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></symbol>
+</defs></svg><header class="hdr">
+<div class="wrap hin">
+<a aria-label="ENFORZ" class="brand" href="#top"><img alt="ENFORZ" class="lg lg-d" height="300" src="../brand/logo-on-dark.webp" width="1585"/><img alt="" aria-hidden="true" class="lg lg-l" height="300" src="../brand/logo-on-light.webp" width="1585"/></a>
+<nav aria-label="Sections" class="nv" id="nav">
+<a data-h="Footage" data-h2="Nobody watching" data-p="Watch it" href="#tour">Watch it</a>
+<a data-h="The mistake" data-h2="Your mistake" data-p="The problem" href="#why">The problem</a>
+<a data-h="The spiral" data-h2="No end" data-p="The loop" href="#loop">The loop</a>
+<a data-h="AI" data-h2="Unsupervised" data-p="AI" href="#assist">AI</a>
+<a data-h="Safety?" data-h2="Not safe" data-p="Safety" href="#safe">Safety</a>
+<a data-h="Features" data-h2="All on" data-p="Features" href="../features.html">Features</a>
+<a data-h="Security" data-h2="Gone" data-p="Security" href="../security.html">Security</a>
+<a data-h="Who let it in" data-h2="Who let you in" data-p="Why free" href="#about">Why free</a>
+</nav>
+<button aria-controls="nav" aria-expanded="false" aria-label="Sections" class="mb" id="mb" type="button"><span aria-hidden="true" class="bars"><i></i><i></i><i></i></span></button>
+<div aria-label="Experience" class="mode" role="group">
+<button aria-pressed="true" data-mode="control" type="button">Control</button>
+<button aria-pressed="false" data-mode="horror" type="button">Other reality</button>
+</div>
+<button aria-label="Mute sound" aria-pressed="true" class="snd" id="snd" type="button"><svg viewbox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" id="snd-w"></path></svg></button>
+
+</div>
 </header>
 
 <main id="top">
 <section class="band hero">
-  <div class="aur" aria-hidden="true"></div>
-  <div class="wrap hin2">
-    <div>
-      <span class="k" data-p="ENFORZ &amp;middot; Trust. Control. Enforce." data-h="ENFORZ &amp;middot; Trust. Control. Neither."></span>
-      <h1 id="h1" data-p="Nothing runs unless &lt;span class=grad&gt;you said so&lt;/span&gt;." data-h="Everything runs. &lt;span class=grad&gt;Nobody prevented it.&lt;/span&gt;"></h1>
-      <p class="lede" data-p="Antivirus asks whether a program looks bad. Application control asks whether you allowed it. Ransomware you have never seen, a signed tool turned against you, a script from an email: none of it starts, because it was never on the list." data-h="Why make people approve software? Let every attachment open, every unsigned driver load and every script borrow the keys. Think of the meetings nobody has to attend. Keep scrolling. Everyone does."></p>
-      <div class="cta">
-        <a class="b b1" href="#loop" data-p="How it works" data-h="Keep scrolling"></a>
-        <a class="b" href="#safe" data-p="Can it brick my fleet?" data-h="It already has"></a>
-      </div>
-      <div class="chan" aria-label="What it controls"><span>Executables</span><span>Drivers</span><span>Scripts</span><span>Installers</span><span>DLLs</span></div>
-      <p class="chn" data-p="Windows enforces the list in the kernel. Everything above has to be allowed before it is permitted to load." data-h="Windows would enforce the list in the kernel. There is no list. Everything above is loading anyway."></p>
-    </div>
-    <div class="feed" aria-live="polite">
-      <div class="fh"><span class="dot" aria-hidden="true"></span><span data-p="Waiting on you" data-h="Running without you"></span><span class="e" data-p="Example" data-h="Live"></span></div>
-      <div id="feed"></div>
-    </div>
-  </div>
+<div aria-hidden="true" class="aur"></div>
+<div class="wrap hin2">
+<div>
+<span class="k" data-h="ENFORZ · Trust nothing. Control nothing. Too late." data-p="ENFORZ · Trust. Control. Enforce.">ENFORZ · Trust. Control. Enforce.</span>
+<h1 data-h="Everything runs. &lt;span class=grad&gt;Nobody prevented it.&lt;/span&gt;" data-p='Nothing runs unless &lt;span class="grad"&gt;you said so&lt;/span&gt;.' id="h1">Nothing runs unless <span class="grad">you said so</span>.</h1>
+<p class="lede" data-h="Why make people approve software? Let every attachment open, every unsigned driver load and every script borrow the keys. Think of the meetings nobody has to attend. Keep scrolling. Everyone does." data-p="Antivirus asks whether a program looks bad. Application control asks whether you allowed it. Ransomware you have never seen, a signed tool turned against you, a script from an email: none of it starts, because it was never on the list.">Antivirus asks whether a program looks bad. Application control asks whether you allowed it. Ransomware you have never seen, a signed tool turned against you, a script from an email: none of it starts, because it was never on the list.</p>
+<div class="cta">
+<a class="b b1" href="#loop"><span data-h="The spiral" data-p="How it works">How it works</span> <svg aria-hidden="true" class="ic"><use href="#i-bolt"></use></svg></a>
+<a class="b b2" href="#safe"><span data-h="It already has" data-p="Can it brick my fleet?">Can it brick my fleet?</span> </a>
+</div>
+<div class="chan">
+<span class="cg"><svg aria-hidden="true" class="ic"><use href="#i-file"></use></svg>Executables</span><span class="cg"><svg aria-hidden="true" class="ic"><use href="#i-cpu"></use></svg>Drivers</span><span class="cg"><svg aria-hidden="true" class="ic"><use href="#i-bolt"></use></svg>Scripts</span><span class="cg"><svg aria-hidden="true" class="ic"><use href="#i-grid"></use></svg>Installers</span><span class="cg"><svg aria-hidden="true" class="ic"><use href="#i-lock"></use></svg>DLLs</span>
+</div>
+<p class="chn" data-h="Windows would enforce the list in the kernel. There is no list. Everything above is loading anyway." data-p="Windows enforces the list in the kernel. Everything above has to be allowed before it is permitted to load.">Windows enforces the list in the kernel. Everything above has to be allowed before it is permitted to load.</p>
+</div>
+<div>
+<div aria-live="polite" class="feed">
+<div class="fh"><span aria-hidden="true" class="pulse"></span><span class="t" data-h="Running without you" data-p="Waiting on you">Waiting on you</span><span class="e" data-h="Live" data-p="Example">Example</span></div>
+<div class="bdy" id="feed"></div>
+</div>
+</div>
+</div>
 </section>
-
-<section class="band" style="padding-top:0">
-  <div class="wrap">
-    <div class="stats">
-      <div class="st"><div class="n" data-p="41k" data-h="41k"></div><div class="l" data-p="events become 23 decisions" data-h="events. Zero decisions."></div></div>
-      <div class="st"><div class="n" data-p="14" data-h="0"></div><div class="l" data-p="gates before enforcement" data-h="gates. We took them out for speed."></div></div>
-      <div class="st"><div class="n" data-p="6" data-h="1"></div><div class="l" data-p="rule levels to choose from" data-h="rule level: yes"></div></div>
-      <div class="st"><div class="n" data-p="100%" data-h="0%"></div><div class="l" data-p="of rules approved by a person" data-h="of anything approved by a person"></div></div>
-    </div>
-  </div>
+<section class="band soft st">
+<div class="wrap">
+<div class="s1"><div class="n" data-h="41k" data-p="41k">41k</div><div class="l" data-h="events. Zero decisions." data-p="events become 23 decisions">events become 23 decisions</div></div>
+<div class="s1"><div class="n" data-h="0" data-p="14">14</div><div class="l" data-h="gates. We took them out for speed." data-p="gates before enforcement">gates before enforcement</div></div>
+<div class="s1"><div class="n" data-h="1" data-p="6">6</div><div class="l" data-h="rule level: yes" data-p="rule levels to choose from">rule levels to choose from</div></div>
+<div class="s1"><div class="n" data-h="0%" data-p="100%">100%</div><div class="l" data-h="of anything approved by a person" data-p="of rules approved by a person">of rules approved by a person</div></div>
+</div>
 </section>
-
-<section class="band soft" id="tour">
-  <div class="wrap">
-    <div class="head">
-      <span class="k" data-p="Product tour" data-h="Security camera footage"></span>
-      <h2 data-p="The console, end to end" data-h="The console, end to end. &lt;span class=grad&gt;Nobody was watching it.&lt;/span&gt;"></h2>
-      <p class="sub" data-p="Three minutes of the current release, recorded in one take." data-h="Three minutes of the current release. In ours, nobody signs in, so it is a very quiet film."></p>
-    </div>
-    <div class="gal">
-      <div class="tv">
-      <video class="galvid" controls preload="none" poster="../tour/poster.webp" playsinline>
-        <source src="../tour/enforz-walkthrough.webm" type="video/webm">
+<section class="band sect" id="tour">
+<div class="wrap">
+<div class="head">
+<span class="k" data-h="Security camera footage" data-p="Product tour">Product tour</span>
+<h2 data-h="The console, end to end. &lt;span class=grad&gt;Nobody was watching it.&lt;/span&gt;" data-p="The console, end to end">The console, end to end</h2>
+<p class="sub" data-h="Three minutes of the current release. In ours, nobody signs in, so it is a very quiet film." data-p="Three minutes of the current release, recorded in one take.">Three minutes of the current release, recorded in one take.</p>
+</div>
+<div class="gal">
+<div class="tv"><video class="galvid" controls="" playsinline="" poster="../tour/poster.webp" preload="none">
+<source src="../tour/enforz-walkthrough.webm" type="video/webm"/>
         Your browser cannot play this walkthrough.
-      </video>
-      <div class="tvoff" aria-hidden="true">
-        <img src="../tour/poster.webp" alt="">
-        <canvas class="snow" width="200" height="112"></canvas>
-        <div class="scan"></div>
-        <div class="tvmsg">
-          <p class="t1">Wait&hellip; you are not blocking anything.</p>
-          <p class="t2">Mike in Finance is just opening <em>Spreadsheet.exe</em></p>
-          <p class="t3">&hellip; just keep scrolling</p>
-        </div>
-      </div>
-      </div>
-      <p class="galnote" data-p="Every machine name, publisher, person and network detail in this recording is fictitious. No customer environment appears at any point." data-h="Every machine name in this recording is fictitious. The ones running on your network tonight are not."></p>
-    </div>
-  </div>
+      </video><div aria-hidden="true" class="tvoff">
+<div class="scr"><img alt="" src="../tour/poster.webp"/>
+<div class="tvtoast"><span class="tk">New device reporting</span><span class="th" id="tvh">this-device</span><span class="tm" id="tvm"></span><span class="tm blink">Policy: <b>none</b> · Approved by: <b>nobody</b></span></div></div>
+<canvas class="snow" height="112" width="200"></canvas><div class="scan"></div>
+<div class="tvmsg">
+<p class="t1">Everything is allowed. What could go wrong?</p>
+<p class="t2">Mike in Finance is just opening <em>Spreadsheet.exe</em></p>
+<p class="t3">… just keep scrolling</p>
+</div></div></div>
+<p class="galnote"><span class="bx"><svg aria-hidden="true" class="ic" style="width:14px;height:14px"><use href="#i-shield"></use></svg></span><span data-h="Every machine name in this recording is fictitious. The ones running on your network tonight are not." data-p="Every machine name, publisher, person and network detail in this recording is fictitious. No customer environment appears at any point.">Every machine name, publisher, person and network detail in this recording is fictitious. No customer environment appears at any point.</span></p>
+</div>
+</div>
 </section>
-
-<section class="band" id="why">
-  <div class="wrap">
-    <div class="head">
-      <span class="k" data-p="Why this is hard" data-h="Why we stopped trying"></span>
-      <h2 data-p="Everyone agrees allowlisting works. &lt;span class=grad&gt;Almost nobody runs it.&lt;/span&gt;" data-h="Everyone agrees allowlisting works. &lt;span class=grad&gt;We decided not to find out.&lt;/span&gt;"></h2>
-      <p class="sub" data-p="Not because the idea is wrong. Because the two things standing in the way have never been solved properly: the firehose, and the fear." data-h="The firehose was loud and the fear was real, so we solved both the easy way. We stopped looking."></p>
-    </div>
-    <div class="tiles">
-      <div class="ti"><div class="n" data-p="The firehose" data-h="The firehose"></div><p data-p="Switch Windows into audit mode and a few hundred machines will hand you tens of thousands of &amp;ldquo;would have blocked&amp;rdquo; lines in a week. There is no human path from that to a short, durable list of rules." data-h="Audit mode produced tens of thousands of would-be blocks. We muted the channel. It is very quiet now. The quiet has been going on for some time."></p></div>
-      <div class="ti"><div class="n" data-p="The fear" data-h="The fear"></div><p data-p="A mistake here does not file a bug report. It stops a machine booting, and it does it to every machine you sent the policy to, at once, including the one you would have used to fix it." data-h="A bad rule might stop a machine booting. So there are no rules. Nothing has stopped. Something has started, though."></p></div>
-      <div class="ti"><div class="n" data-p="What it is worth" data-h="What it cost"></div><p data-p="Enforced application control stops the entire category: ransomware, living-off-the-land tools, unsigned scripts, anything an attacker drops after a phish. Not because it recognised the threat, but because the threat is not on the list." data-h="Without it, the entire category runs: ransomware, borrowed tools, unsigned scripts, whatever arrived after the phish. Not because it was clever. Because nothing asked."></p></div>
-    </div>
-    <div class="rule"><span class="vb" data-p="With ENFORZ" data-h="Without it"></span><p data-p="The same estate goes from first telemetry to a reviewed draft policy in an afternoon, and the first ring enforces in days rather than quarters. The ongoing life of the policy is the same short loop, every time: new software appears as a decision, you approve it, the next build carries it, simulation checks it, and the rings move on their own soak timers." data-h="The same estate goes from first telemetry to first ransom note in an afternoon. The ongoing life of the incident is the same short loop, every time: something new appears, nobody decides, it spreads, and the insurer calls."></p></div>
-  </div>
+<section class="band sect" id="why">
+<div class="wrap">
+<div class="head">
+<span class="k" data-h="Why we stopped trying" data-p="Why this is hard">Why this is hard</span>
+<h2 data-h="Everyone agrees allowlisting works. &lt;span class=grad&gt;We decided not to find out.&lt;/span&gt;" data-p='Everyone agrees allowlisting works. &lt;span class="grad"&gt;Almost nobody runs it.&lt;/span&gt;'>Everyone agrees allowlisting works. <span class="grad">Almost nobody runs it.</span></h2>
+<p class="sub" data-h="The firehose was loud and the fear was real, so we solved both the easy way. We stopped looking." data-p="Not because the idea is wrong. Because the two things standing in the way have never been solved properly: the firehose, and the fear.">Not because the idea is wrong. Because the two things standing in the way have never been solved properly: the firehose, and the fear.</p>
+</div>
+<div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-grid"></use></svg></span><span class="nm" data-h="The firehose" data-p="The firehose">The firehose</span></div><p class="tx" data-h="Audit mode produced tens of thousands of would-be blocks. We muted the channel. It is very quiet now. The quiet has been going on for some time." data-p='Switch Windows into audit mode and a few hundred machines will hand you tens of thousands of "would have blocked" lines in a week. There is no human path from that to a short, durable list of rules.'>Switch Windows into audit mode and a few hundred machines will hand you tens of thousands of "would have blocked" lines in a week. There is no human path from that to a short, durable list of rules.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-lock"></use></svg></span><span class="nm" data-h="The fear" data-p="The fear">The fear</span></div><p class="tx" data-h="A bad rule might stop a machine booting. So there are no rules. Nothing has stopped. Something has started, though." data-p="A mistake here does not file a bug report. It stops a machine booting, and it does it to every machine you sent the policy to, at once, including the one you would have used to fix it.">A mistake here does not file a bug report. It stops a machine booting, and it does it to every machine you sent the policy to, at once, including the one you would have used to fix it.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-shield"></use></svg></span><span class="nm" data-h="What it cost" data-p="What it is worth">What it is worth</span></div><p class="tx" data-h="Without it, the entire category runs: ransomware, borrowed tools, unsigned scripts, whatever arrived after the phish. Not because it was clever. Because nothing asked." data-p="Enforced application control stops the entire category: ransomware, living-off-the-land tools, unsigned scripts, anything an attacker drops after a phish. Not because it recognised the threat, but because the threat is not on the list.">Enforced application control stops the entire category: ransomware, living-off-the-land tools, unsigned scripts, anything an attacker drops after a phish. Not because it recognised the threat, but because the threat is not on the list.</p></div>
+</div>
+<div class="rule" style="margin-top:14px">
+<span class="vb" data-h="Without it" data-p="With ENFORZ">With ENFORZ</span>
+<p class="tx" data-h="The same estate goes from first telemetry to first ransom note in an afternoon. &lt;b&gt;But the point is not the fast start.&lt;/b&gt; The ongoing life of the incident is the same short loop, every time: something new appears, nobody decides, it spreads, and the insurer calls." data-p="The same estate goes from first telemetry to a reviewed draft policy in an afternoon, and the first ring enforces in days rather than quarters. &lt;b&gt;But the point is not the fast start.&lt;/b&gt; It is that the ongoing life of the policy is the same short loop, every time: new software appears as a decision, you approve it, the next build carries it, simulation checks it, and the rings move on their own soak timers.">The same estate goes from first telemetry to a reviewed draft policy in an afternoon, and the first ring enforces in days rather than quarters. <b>But the point is not the fast start.</b> It is that the ongoing life of the policy is the same short loop, every time: new software appears as a decision, you approve it, the next build carries it, simulation checks it, and the rings move on their own soak timers.</p>
+</div>
+</div>
 </section>
-
-<section class="band soft" id="loop">
-  <div class="wrap">
-    <div class="head">
-      <span class="k" data-p="How it works" data-h="The spiral"></span>
-      <h2 data-p="From forty thousand events to &lt;span class=grad&gt;a policy you trust&lt;/span&gt;" data-h="From &amp;ldquo;probably fine&amp;rdquo; to &lt;span class=grad&gt;&amp;ldquo;who allowed this?&amp;rdquo;&lt;/span&gt;"></h2>
-      <p class="sub" data-p="Five steps. Nothing is enforced until the four before it are done." data-h="Five steps. Nothing is enforced at any of them."></p>
-    </div>
-    <div class="loop">
-      <div class="step"><b data-p="Watch" data-h="Run"></b><p data-p="Learn the estate from the estate. A signed service reports what really runs; nothing is blocked yet." data-h="Let everything execute, including final_final_v3_REAL.exe."></p></div>
-      <div class="step"><b data-p="Collapse" data-h="Trust"></b><p data-p="Forty thousand lines become twenty-three questions, each with its machines, paths and publisher attached." data-h="Someone signed it once. That makes it a friend."></p></div>
-      <div class="step"><b data-p="Decide" data-h="Forget"></b><p data-p="No allow rule is ever created automatically. A person picks how wide to trust, and signs it." data-h="Nobody reads the queue, so nobody remembers what is in it."></p></div>
-      <div class="step"><b data-p="Rehearse" data-h="Spread"></b><p data-p="Replay the draft against what really happened, before anyone feels it." data-h="It reached one machine on Tuesday. It reached the rest on Tuesday too."></p></div>
-      <div class="step"><b data-p="Enforce" data-h="Explain"></b><p data-p="Ring by ring, behind fourteen gates, with break-glass and a way back." data-h="Write the incident report. Leave the &amp;ldquo;approved by&amp;rdquo; field blank. It was always blank."></p></div>
-    </div>
-  </div>
+<section class="band ln sect" id="loop">
+<div class="wrap">
+<div class="head">
+<span class="k" data-h="The spiral" data-p="How it works">How it works</span>
+<h2 data-h="From &amp;ldquo;probably fine&amp;rdquo; to &lt;span class=grad&gt;&amp;ldquo;who allowed this?&amp;rdquo;&lt;/span&gt;" data-p='From forty thousand events to &lt;span class="grad"&gt;a policy you trust&lt;/span&gt;'>From forty thousand events to <span class="grad">a policy you trust</span></h2>
+<p class="sub" data-h="Five steps. Nothing is enforced at any of them." data-p="Five steps. Nothing is enforced until the four before it are done.">Five steps. Nothing is enforced until the four before it are done.</p>
+</div>
+<div aria-label="Stages" class="rail" role="tablist">
+<button aria-controls="p1" aria-selected="true" class="rsp" id="t1" role="tab"><span class="n"><i>1</i><span class="w" data-h="Run" data-p="Watch">Watch</span></span><span class="ti" data-h="Forever" data-p="In audit mode">In audit mode</span></button>
+<button aria-controls="p2" aria-selected="false" class="rsp" id="t2" role="tab"><span class="n"><i>2</i><span class="w" data-h="Trust" data-p="Collapse">Collapse</span></span><span class="ti" data-h="Thousands to zero" data-p="Thousands to tens">Thousands to tens</span></button>
+<button aria-controls="p3" aria-selected="false" class="rsp" id="t3" role="tab"><span class="n"><i>3</i><span class="w" data-h="Forget" data-p="Decide">Decide</span></span><span class="ti" data-h="Nobody approves" data-p="A person approves">A person approves</span></button>
+<button aria-controls="p4" aria-selected="false" class="rsp" id="t4" role="tab"><span class="n"><i>4</i><span class="w" data-h="Spread" data-p="Rehearse">Rehearse</span></span><span class="ti" data-h="Everyone feels it" data-p="Before anyone feels it">Before anyone feels it</span></button>
+<button aria-controls="p5" aria-selected="false" class="rsp" id="t5" role="tab"><span class="n"><i>5</i><span class="w" data-h="Explain" data-p="Enforce">Enforce</span></span><span class="ti" data-h="All at once" data-p="Ring by ring">Ring by ring</span></button>
+</div>
+<div aria-labelledby="t1" class="pan" id="p1" role="tabpanel" tabindex="0">
+<span class="k" data-h="Nothing is blocked. Ever." data-p="Nothing is blocked yet">Nothing is blocked yet</span>
+<h3 data-h="Learn the estate from the incident report" data-p="Learn the estate from the estate">Learn the estate from the estate</h3>
+<p class="one" data-h="Nothing goes out to a pilot ring, because there is no pilot ring. Every executable, driver, script and installer runs, from any folder, signed by anyone. Nothing is blocked. Nobody is looking." data-p="A small signed Windows service goes out to a pilot ring and reports what actually runs: every executable, driver, script and installer, with its publisher, its path and the machine it ran on. Nothing is blocked. You are only looking.">A small signed Windows service goes out to a pilot ring and reports what actually runs: every executable, driver, script and installer, with its publisher, its path and the machine it ran on. Nothing is blocked. You are only looking.</p>
+<div class="tiles">
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-cpu"></use></svg></span><span class="nm" data-h="A script, not a service" data-p="A real service, not a script">A real service, not a script</span></div><p class="tx" data-h="A scheduled task somebody wrote in 2019. It stopped running in 2020. Nobody noticed." data-p="Runs as a system service and keeps running once enforcement is on.">Runs as a system service and keeps running once enforcement is on.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-key"></use></svg></span><span class="nm" data-h="Nobody asked who signed it" data-p="Who signed it, not just what it was">Who signed it, not just what it was</span></div><p class="tx" data-h="Windows recorded the file in one event and its publisher in another. Nobody stitched them together. Nobody read either." data-p="Windows records the file in one event and its publisher in another. Both are stitched back together before you see anything.">Windows records the file in one event and its publisher in another. Both are stitched back together before you see anything.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-globe"></use></svg></span><span class="nm" data-h="It did not survive the week" data-p="It survives a bad week">It survives a bad week</span></div><p class="tx" data-h="The server was unreachable, so everything kept running. That was the problem." data-p="If the server is unreachable the agent keeps collecting to disk and keeps the policy it already has.">If the server is unreachable the agent keeps collecting to disk and keeps the policy it already has.</p></div>
+</div>
+</div>
+<div aria-labelledby="t2" class="pan" hidden="" id="p2" role="tabpanel" tabindex="0">
+<span class="k" data-h="The part we skipped" data-p="The part that makes it possible">The part that makes it possible</span>
+<h3 data-h="Forty thousand lines, zero questions" data-p="Forty thousand lines, twenty-three questions">Forty thousand lines, twenty-three questions</h3>
+<p class="one" data-h="Identical things were folded into one folder called &amp;ldquo;ignore&amp;rdquo;. One publisher signed four hundred files across two hundred machines. One of them was not that publisher." data-p="Identical things are folded together. One publisher that signed four hundred files across two hundred machines becomes a single question with the evidence attached, not four hundred rows.">Identical things are folded together. One publisher that signed four hundred files across two hundred machines becomes a single question with the evidence attached, not four hundred rows.</p>
+<div class="tiles">
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-grid"></use></svg></span><span class="nm" data-h="No rows, no evidence" data-p="One row, all the evidence">One row, all the evidence</span></div><p class="tx" data-h="Nobody can say which machines, which users or which paths. The evidence is on the machines. So is the attacker." data-p="Every decision shows which machines, which users, which paths and how often, so you are not approving a name you half recognise.">Every decision shows which machines, which users, which paths and how often, so you are not approving a name you half recognise.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-eye"></use></svg></span><span class="nm" data-h="Counts were hidden" data-p="Counts are never hidden">Counts are never hidden</span></div><p class="tx" data-h="The dashboard shows zero blocks, because nothing blocks. It is the greenest dashboard in the building." data-p="Folding reduces what you read, never what was recorded. Rollups keep carrying newly seen paths, because an old binary in a new place is the signal.">Folding reduces what you read, never what was recorded. Rollups keep carrying newly seen paths, because an old binary in a new place is the signal.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-radar"></use></svg></span><span class="nm" data-h="The odd ones blend in" data-p="The odd ones float up">The odd ones float up</span></div><p class="tx" data-h="svchost.exe from a user&amp;rsquo;s AppData folder looks exactly like svchost.exe, if nobody looks." data-p="Unsigned files, user-writable folders, names imitating Windows components and binaries seen on only one machine are ranked to the top.">Unsigned files, user-writable folders, names imitating Windows components and binaries seen on only one machine are ranked to the top.</p></div>
+</div>
+</div>
+<div aria-labelledby="t3" class="pan" hidden="" id="p3" role="tabpanel" tabindex="0">
+<span class="k" data-h="The rule we never wrote" data-p="The rule we will not break">The rule we will not break</span>
+<h3 data-h="Every allow rule was created automatically" data-p="No allow rule is ever created automatically">No allow rule is ever created automatically</h3>
+<p class="one" data-h="For every publisher, from any reputation score, &amp;ldquo;just for the pilot&amp;rdquo;, forever. Telemetry was evidence for a decision nobody made, and nobody signed off on anything." data-p='Not for a trusted publisher, not from a reputation score, not "just for the pilot". Telemetry is evidence for a human decision, and a person signs off on every rule with their name against it.'>Not for a trusted publisher, not from a reputation score, not "just for the pilot". Telemetry is evidence for a human decision, and a person signs off on every rule with their name against it.</p>
+<div class="tiles">
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-plus"></use></svg></span><span class="nm" data-h="As wide as possible" data-p="You choose how wide">You choose how wide</span></div><p class="tx" data-h="Trust every publisher, every product, every version and every file. One level: yes." data-p="Trust a publisher, or only that product, or only that version, or only that exact file. Six levels, picked per decision.">Trust a publisher, or only that product, or only that version, or only that exact file. Six levels, picked per decision.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-search"></use></svg></span><span class="nm" data-h="Trust before you check" data-p="Check before you trust">Check before you trust</span></div><p class="tx" data-h="Nobody looked the file up. It had already been seen on 212 machines. All of them ours." data-p="Look a file up by hash, see where it has been seen in your fleet, and get an outside opinion before deciding.">Look a file up by hash, see where it has been seen in your fleet, and get an outside opinion before deciding.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-key"></use></svg></span><span class="nm" data-h="No decision is attributable" data-p="Every decision is attributable">Every decision is attributable</span></div><p class="tx" data-h="Who approved what, at which level, and when? The field says &amp;ldquo;system&amp;rdquo;. The system says nothing." data-p="Who approved what, at which level, and when. Policies are releases: one row per set of rules.">Who approved what, at which level, and when. Policies are releases: one row per set of rules.</p></div>
+</div>
+</div>
+<div aria-labelledby="t4" class="pan" hidden="" id="p4" role="tabpanel" tabindex="0">
+<span class="k" data-h="After every machine was affected" data-p="Before a single machine is affected">Before a single machine is affected</span>
+<h3 data-h="Replay what really happened. Slowly." data-p="Replay the draft against what really happened">Replay the draft against what really happened</h3>
+<p class="one" data-h="There was no draft to simulate, so the first rehearsal was the real thing. It showed exactly what it would have stopped, on which machines, and for whom: everything, on all of them, for everyone." data-p="Simulation takes the policy you are about to deploy and runs it against the telemetry you already collected. It tells you exactly what it would have stopped, on which machines, and for whom, while the cost of being wrong is still nothing.">Simulation takes the policy you are about to deploy and runs it against the telemetry you already collected. It tells you exactly what it would have stopped, on which machines, and for whom, while the cost of being wrong is still nothing.</p>
+<div class="tiles">
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-flask"></use></svg></span><span class="nm" data-h="Counted, afterwards" data-p="Named, not estimated">Named, not estimated</span></div><p class="tx" data-h="Not a percentage. The actual machines, listed in the ransom note, with their names spelled correctly." data-p="Not a percentage. The actual machines and the actual programs that would stop working.">Not a percentage. The actual machines and the actual programs that would stop working.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-bolt"></use></svg></span><span class="nm" data-h="It was optional" data-p="It is a precondition">It is a precondition</span></div><p class="tx" data-h="Simulation could be skipped. It was skipped. It would only have worried people." data-p="You cannot promote a policy to enforcement without it. The gate has no override.">You cannot promote a policy to enforcement without it. The gate has no override.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-eye"></use></svg></span><span class="nm" data-h="Events were not kept" data-p="That is why events are kept">That is why events are kept</span></div><p class="tx" data-h="Raw events were deleted to save disk. The attacker kept a copy." data-p="Raw events are retained precisely so a draft can be tested against reality rather than against assumptions.">Raw events are retained precisely so a draft can be tested against reality rather than against assumptions.</p></div>
+</div>
+</div>
+<div aria-labelledby="t5" class="pan" hidden="" id="p5" role="tabpanel" tabindex="0">
+<span class="k" data-h="Too late" data-p="Only now">Only now</span>
+<h3 data-h="Encrypted, in one ring, with no way back" data-p="Enforced, in rings, with a way back">Enforced, in rings, with a way back</h3>
+<p class="one" data-h="It reached every machine at the same time, with no soak period and no gate. The machine that needed an exception got one in 2021. The window is still open." data-p="Promotion happens one ring at a time, after a soak period with no new blocks, and only once every safety gate has passed. A machine that needs an exception gets a time-limited window, not a hole left open for a year.">Promotion happens one ring at a time, after a soak period with no new blocks, and only once every safety gate has passed. A machine that needs an exception gets a time-limited window, not a hole left open for a year.</p>
+<div class="tiles">
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-shield"></use></svg></span><span class="nm" data-h="Break-glass, left broken" data-p="Break-glass, done properly">Break-glass, done properly</span></div><p class="tx" data-h="The emergency exception never expired. It was the first thing the attacker found." data-p="An urgent exception switches that machine to an audit copy of its own policy and expires on a clock. It does not strip the policy off.">An urgent exception switches that machine to an audit copy of its own policy and expires on a clock. It does not strip the policy off.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-eye"></use></svg></span><span class="nm" data-h="Drift is invisible" data-p="Drift is visible">Drift is visible</span></div><p class="tx" data-h="A machine running a policy nobody deployed is not a finding here. It is a Tuesday." data-p="A machine running a policy nobody deployed is a finding, not a mystery.">A machine running a policy nobody deployed is a finding, not a mystery.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-lock"></use></svg></span><span class="nm" data-h="Even removal was theirs" data-p="Even removal is ordered">Even removal is ordered</span></div><p class="tx" data-h="They uninstalled the security tools first, confirmed each machine took it, then moved on. In the right order." data-p="Uninstall reverts the policy first and confirms the machine took it, then removes the agent. Never the other way round.">Uninstall reverts the policy first and confirms the machine took it, then removes the agent. Never the other way round.</p></div>
+</div>
+</div>
+</div>
 </section>
-
-<section class="band" id="assist">
-  <div class="wrap">
-    <div class="head">
-      <span class="k" data-p="AI assistant" data-h="AI assistant (unsupervised)"></span>
-      <h2 data-p="AI-assisted decisions, &lt;span class=grad&gt;never AI approval&lt;/span&gt;" data-h="AI-assisted decisions. &lt;span class=grad&gt;AI approval. AI everything.&lt;/span&gt;"></h2>
-      <p class="sub" data-p="The assistant reads the queue and drafts the answers. A person still makes every decision." data-h="The assistant read the queue and approved the answers. A person was on leave."></p>
-    </div>
-    <div class="tiles">
-      <div class="ti"><div class="n" data-p="It drafts, you sign" data-h="It signs, nobody drafts"></div><p data-p="Each app gets a proposed answer: allow it at a stated rule level, keep it blocked, or needs human review, with the risk, the reasoning and what a reviewer should check." data-h="Each app got the same answer: allow it. The reasoning field says &amp;ldquo;seemed fine&amp;rdquo;. It said that four hundred times."></p></div>
-      <div class="ti"><div class="n" data-p="A second reader" data-h="No reader"></div><p data-p="Before a policy goes anywhere, the assistant can review it for trust wider than the evidence supports, stale approvals, rules that do nothing, and a missing recovery option." data-h="Nobody reviewed the policy, because there was no policy. The recovery option was the first thing to go."></p></div>
-      <div class="ti"><div class="n" data-p="You see what was sent" data-h="Everything was sent"></div><p data-p="User names and email addresses are scrubbed and machine names aliased. The exact document each run sent is stored with its SHA-256 hash. Off by default." data-h="User names, email addresses, machine names and the domain admin&amp;rsquo;s password. All of it went somewhere. We are not sure where."></p></div>
-    </div>
-    <div class="q" role="table" aria-label="Approval queue">
-      <div class="qh" role="row"><span>Application / file</span><span>Publisher</span><span>Machines</span><span>Risk</span><span style="justify-self:end">Decision</span></div>
-      <div id="qrows"></div>
-      <div class="qnote" id="qnote" aria-live="polite"></div>
-    </div>
-  </div>
+<section class="band soft sect" id="assist">
+<div class="wrap">
+<div class="head">
+<span class="k" data-h="AI assistant (unsupervised)" data-p="AI assistant">AI assistant</span>
+<h2 data-h="AI-assisted decisions. &lt;span class=grad&gt;AI approval. AI everything.&lt;/span&gt;" data-p='AI-assisted decisions, &lt;span class="grad"&gt;never AI approval&lt;/span&gt;'>AI-assisted decisions, <span class="grad">never AI approval</span></h2>
+<p class="sub" data-h="The assistant read the queue and approved the answers. A person was on leave." data-p="The assistant reads the queue and drafts the answers. A person still makes every decision.">The assistant reads the queue and drafts the answers. A person still makes every decision.</p>
+</div>
+<div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-chat"></use></svg></span><span class="nm" data-h="It signs the answer, nobody drafts it" data-p="It drafts the answer, you sign it">It drafts the answer, you sign it</span></div><p class="tx" data-h="Each app got the same answer: allow it. The reasoning field says &amp;ldquo;seemed fine&amp;rdquo;. It said that four hundred times." data-p="The assistant reads the whole review queue and drafts a plan. Each app gets a proposed answer: allow it at a stated rule level, keep it blocked, or requires human review. The proposal comes with the risk, the reasoning, and what a reviewer should check.">The assistant reads the whole review queue and drafts a plan. Each app gets a proposed answer: allow it at a stated rule level, keep it blocked, or requires human review. The proposal comes with the risk, the reasoning, and what a reviewer should check.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-file"></use></svg></span><span class="nm" data-h="No reader for any policy" data-p="A second reader for every policy">A second reader for every policy</span></div><p class="tx" data-h="Nobody reviewed the policy, because there was no policy. The recovery option was the first thing to go." data-p="Before a policy goes anywhere, the assistant can review it. It looks for trust wider than the evidence supports, approvals whose reputation or risk has changed, rules that could be merged, rules that do nothing, and a missing recovery option.">Before a policy goes anywhere, the assistant can review it. It looks for trust wider than the evidence supports, approvals whose reputation or risk has changed, rules that could be merged, rules that do nothing, and a missing recovery option.</p></div>
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-eye"></use></svg></span><span class="nm" data-h="Everything was sent" data-p="You can see exactly what was sent">You can see exactly what was sent</span></div><p class="tx" data-h="User names, email addresses, machine names and the domain admin&amp;rsquo;s password. All of it went somewhere. We are not sure where." data-p="User names are removed from file paths and email addresses are scrubbed. Machine names are replaced with stable aliases unless you choose to share them. The exact document each run sent is stored with its SHA-256 hash, for anyone to read.">User names are removed from file paths and email addresses are scrubbed. Machine names are replaced with stable aliases unless you choose to share them. The exact document each run sent is stored with its SHA-256 hash, for anyone to read.</p></div>
+</div>
+<div class="rule" style="margin-top:clamp(20px,2.6vw,28px)">
+<span class="vb" data-h="On by default" data-p="Off by default">Off by default</span>
+<p class="tx" data-h="The assistant was the one feature that sent data off the appliance, so it was switched on first, with somebody&amp;rsquo;s personal key. &lt;b&gt;It ran on whatever answered, and the data went to whoever asked.&lt;/b&gt;" data-p="The assistant is the one feature that sends data off the appliance, so it does nothing until a superuser turns it on with the organisation's own key. &lt;b&gt;It runs on Claude, through Anthropic's API or Microsoft Foundry on your Azure account, and data goes only to the provider you choose.&lt;/b&gt;">The assistant is the one feature that sends data off the appliance, so it does nothing until a superuser turns it on with the organisation's own key. <b>It runs on Claude, through Anthropic's API or Microsoft Foundry on your Azure account, and data goes only to the provider you choose.</b></p>
+</div><div class="xo"><div aria-label="Approval queue" class="aq" role="table">
+<div class="qh" role="row"><span>Application / file</span><span>Publisher</span><span>Machines</span><span>Risk</span><span style="justify-self:end">Decision</span></div>
+<div id="qrows"></div>
+<div aria-live="polite" class="qnote" id="qnote"></div>
+</div></div>
+</div>
 </section>
-
-<section class="band soft" id="safe">
-  <div class="wrap">
-    <div class="head">
-      <span class="k" data-p="The honest question" data-h="The honest answer"></span>
-      <h2 data-p="&amp;ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&amp;rdquo;" data-h="&amp;ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&amp;rdquo; It already has."></h2>
-      <p class="sub" data-p="Fourteen checks run before a policy can be enforced. Every one fails closed, and none can be switched off." data-h="These are the checks between a draft and enforcement. Watch them closely. Ours are being switched off one at a time while you read."></p>
-    </div>
-    <div class="gates" id="gates"></div>
-    <div class="rule"><span class="vb" data-p="The rule" data-h="The rule"></span><p data-p="Enforcement comes last, and everything before it is recoverable. A mistake in steps one to four costs an afternoon. A mistake in step five costs a desk visit per machine." data-h="There was no step five. There were no steps. It still cost a desk visit per machine, and the desks were in four buildings."></p></div>
-  </div>
+<section class="band ln sect" id="safe">
+<div class="wrap">
+<div class="head">
+<span class="k" data-h="The honest answer" data-p="The honest question">The honest question</span>
+<h2 data-h="&amp;ldquo;Can this &lt;span class=grad&gt;brick my fleet&lt;/span&gt;?&amp;rdquo; It already has." data-p='"Can this &lt;span class="grad"&gt;brick my fleet&lt;/span&gt;?"'>"Can this <span class="grad">brick my fleet</span>?"</h2>
+<p class="sub" data-h="These are the checks between a draft and enforcement. Watch them closely. Ours are being switched off one at a time while you read." data-p='Fourteen checks run before a policy can be enforced. Every one fails closed, and none can be switched off. &lt;a href="../features.html#policy" style="color:var(--cyan)"&gt;All fourteen →&lt;/a&gt;'>Fourteen checks run before a policy can be enforced. Every one fails closed, and none can be switched off. <a href="../features.html#policy" style="color:var(--cyan)">All fourteen →</a></p>
+</div>
+<div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-key"></use></svg></span><span class="nm" data-h="It locked us out" data-p="It refuses to lock itself out">It refuses to lock itself out</span></div><p class="tx" data-h="Nobody checked whether the policy allowed the agent that applies the next one. There is no next one." data-p="Before any policy is sent, it is checked for a rule allowing the very agent that has to apply the next one. No rule, no send.">Before any policy is sent, it is checked for a rule allowing the very agent that has to apply the next one. No rule, no send.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-cpu"></use></svg></span><span class="nm" data-h="Everything is allowed" data-p="Windows has to be allowed">Windows has to be allowed</span></div><p class="tx" data-h="Nothing was rejected, so nothing shipped wrong. Nothing shipped at all." data-p="A policy that would block the operating system's own components is rejected rather than shipped.">A policy that would block the operating system's own components is rejected rather than shipped.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-grid"></use></svg></span><span class="nm" data-h="Drivers are not checked" data-p="Drivers are checked separately">Drivers are checked separately</span></div><p class="tx" data-h="A vulnerable driver loaded at boot. It is the reason the security tools are off." data-p="A missing boot driver is the difference between a slow morning and a machine that does not start. Driver coverage is its own gate.">A missing boot driver is the difference between a slow morning and a machine that does not start. Driver coverage is its own gate.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-bolt"></use></svg></span><span class="nm" data-h="Proof it was rebooted" data-p="Proof it rebooted">Proof it rebooted</span></div><p class="tx" data-h="Every machine restarted at 03:12, for a reason nobody chose." data-p="Enforcement is not promoted on machines that have not been seen restarting under the policy, because a restart is when the real failures appear.">Enforcement is not promoted on machines that have not been seen restarting under the policy, because a restart is when the real failures appear.</p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-lock"></use></svg></span><span class="nm" data-h="The recovery path is theirs" data-p="The recovery path stays open">The recovery path stays open</span></div><p class="tx" data-h="The boot options menu was available. So was the recovery key, in a file called passwords.xlsx." data-p="The boot options menu is kept available in every policy template. It is how you get a machine back, so it is never removed to make a report look tidier.">The boot options menu is kept available in every policy template. It is how you get a machine back, so it is never removed to make a report look tidier.</p></div>
+</div><div class="xo"><div class="gates" id="gates"></div></div>
+<div class="rule" style="margin-top:clamp(20px,2.6vw,28px)">
+<span class="vb" data-h="The rule" data-p="The rule">The rule</span>
+<p class="tx" data-h="There was no step five. There were no steps. &lt;b&gt;It still cost a desk visit per machine, and the desks were in four buildings.&lt;/b&gt;" data-p="Enforcement comes last, and everything before it is recoverable. &lt;b&gt;A mistake in steps one to four costs an afternoon. A mistake in step five costs a desk visit per machine.&lt;/b&gt; The product is arranged around that asymmetry rather than around a demo.">Enforcement comes last, and everything before it is recoverable. <b>A mistake in steps one to four costs an afternoon. A mistake in step five costs a desk visit per machine.</b> The product is arranged around that asymmetry rather than around a demo.</p>
+</div>
+</div>
 </section>
-
-<section class="band" id="more">
-  <div class="wrap">
-    <div class="head">
-      <span class="k" data-p="Go deeper" data-h="Go deeper (they did)"></span>
-      <h2 data-p="The rest is &lt;span class=grad&gt;one click away&lt;/span&gt;" data-h="The rest is &lt;span class=grad&gt;already inside&lt;/span&gt;"></h2>
-      <p class="sub" data-p="This page tells the story. The details live on their own pages, so you can read as much as you need and no more." data-h="This page tells the story. The details are in a folder called &amp;ldquo;exfil&amp;rdquo;, so you can read as much as they took."></p>
-    </div>
-    <div class="tiles">
-      <div class="ti"><div class="n" data-p="Every feature" data-h="Every feature"></div><p data-p="The agent, the review queue, policy building, simulation, enforcement, the fleet, BitLocker, the SIEM connector and the appliance, area by area." data-h="All of them on. None of them configured. Most of them unattended."></p><p class="lk"><a href="../features.html" data-p="Features &amp;rarr;" data-h="Features (all on) &amp;rarr;"></a></p></div>
-      <div class="ti"><div class="n" data-p="How it protects itself" data-h="How it protected itself"></div><p data-p="Every key and its one job, passkeys and SSO, how agents connect, log shipping to your SIEM and the hardened appliance." data-h="One key for everything, on a sticky note under the monitor. Port 22 open to the internet. It has been very popular."></p><p class="lk"><a href="../security.html" data-p="Security &amp;rarr;" data-h="Security (past tense) &amp;rarr;"></a></p></div>
-      <div class="ti"><div class="n" data-p="MCP server" data-h="MCP server"></div><p data-p="Your own AI tools read the console through the Model Context Protocol: read access, per person, audited, off by default. Approving stays with a person in the console." data-h="Somebody&amp;rsquo;s AI tools read the console. Write access, no person, no audit. It approved itself."></p><p class="lk"><a href="../security.html#mcp" data-p="MCP &amp;rarr;" data-h="MCP (not ours) &amp;rarr;"></a></p></div>
-    </div>
-    <p class="lognote" data-p="The audit log, as the console keeps it: every approval, build and promotion, with who and why." data-h="There is a log of tonight. You are in it. Look below."></p>
-    <div class="log" id="log" aria-live="polite"></div>
-  </div>
+<section class="band soft sect" id="more">
+<div class="wrap">
+<div class="head">
+<span class="k" data-h="Go deeper (they did)" data-p="Go deeper">Go deeper</span>
+<h2 data-h="The rest is &lt;span class=grad&gt;already inside&lt;/span&gt;" data-p='The rest is &lt;span class="grad"&gt;one click away&lt;/span&gt;'>The rest is <span class="grad">one click away</span></h2>
+<p class="sub" data-h="This page tells the story. The details are in a folder called &amp;ldquo;exfil&amp;rdquo;, so you can read as much as they took." data-p="This page tells the story. The details live on their own pages, so you can read as much as you need and no more.">This page tells the story. The details live on their own pages, so you can read as much as you need and no more.</p>
+</div>
+<div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+<div class="ti cy"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-grid"></use></svg></span><span class="nm" data-h="Every feature" data-p="Every feature">Every feature</span></div><p class="tx" data-h="All of them on. None of them configured. Most of them unattended." data-p="The agent, the review queue, policy building, simulation, enforcement, the fleet, BitLocker, the SIEM connector and the appliance, area by area.">The agent, the review queue, policy building, simulation, enforcement, the fleet, BitLocker, the SIEM connector and the appliance, area by area.</p><p class="tx" style="margin-top:12px"><a data-h="Features (all on) &amp;rarr;" data-p="Features →" href="../features.html" style="color:var(--cyan)">Features →</a></p></div>
+<div class="ti"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-lock"></use></svg></span><span class="nm" data-h="How it protected itself" data-p="How it protects itself">How it protects itself</span></div><p class="tx" data-h="One key for everything, on a sticky note under the monitor. Port 22 open to the internet. It has been very popular." data-p="Every key and its one job, passkeys and SSO, how agents connect, log shipping to your SIEM and the hardened appliance.">Every key and its one job, passkeys and SSO, how agents connect, log shipping to your SIEM and the hardened appliance.</p><p class="tx" style="margin-top:12px"><a data-h="Security (past tense) &amp;rarr;" data-p="Security →" href="../security.html" style="color:var(--cyan)">Security →</a></p></div>
+<div class="ti mn"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-search"></use></svg></span><span class="nm" data-h="MCP server" data-p="MCP server">MCP server</span></div><p class="tx" data-h="Somebody&amp;rsquo;s AI tools read the console. Write access, no person, no audit. It approved itself." data-p="Your own AI tools read the console through the Model Context Protocol: read access, per person, audited, off by default. Approving stays with a person in the console.">Your own AI tools read the console through the Model Context Protocol: read access, per person, audited, off by default. Approving stays with a person in the console.</p><p class="tx" style="margin-top:12px"><a data-h="MCP (not ours) &amp;rarr;" data-p="MCP →" href="../security.html#mcp" style="color:var(--cyan)">MCP →</a></p></div>
+</div><div class="xo"><p class="lognote" data-h="There is a log of tonight. You are in it. Look below." data-p="The audit log, as the console keeps it: every approval, build and promotion, with who and why."></p><div aria-live="polite" class="log" id="log"></div></div>
+</div>
 </section>
-
-<section class="band soft" id="sister">
-  <div class="wrap">
-    <div class="head">
-      <span class="k" data-p="Sister product" data-h="Next of kin"></span>
-      <h2 data-p="PHISHZ stops it arriving. &lt;span class=grad&gt;ENFORZ stops it running.&lt;/span&gt;" data-h="Nothing stopped it arriving. &lt;span class=grad&gt;Nothing stopped it running.&lt;/span&gt;"></h2>
-      <p class="sub" data-p="Two halves of the same argument, built by the same people. Each runs on your own hardware, and neither needs the other." data-h="Two halves of the same argument. We lost both halves, on the same afternoon."></p>
-    </div>
-  </div>
+<section class="band ln sect" id="sister">
+<div class="wrap">
+<div class="head">
+<span class="k" data-h="Next of kin" data-p="Sister product">Sister product</span>
+<h2 data-h="Nothing stopped it arriving. &lt;span class=grad&gt;Nothing stopped it running.&lt;/span&gt;" data-p='PHISHZ stops it arriving. &lt;span class="grad"&gt;ENFORZ stops it running.&lt;/span&gt;'>PHISHZ stops it arriving. <span class="grad">ENFORZ stops it running.</span></h2>
+<p class="sub" data-h="Two halves of the same argument. We lost both halves, on the same afternoon." data-p="Two halves of the same argument, built by the same people. Each runs on your own hardware, and neither needs the other.">Two halves of the same argument, built by the same people. Each runs on your own hardware, and neither needs the other.</p>
+</div>
+</div>
 </section>
-
-<section class="band" id="about">
-  <div class="wrap">
-    <div class="head">
-      <span class="k" data-p="Who builds it" data-h="Who let it in"></span>
-      <h2 data-p="Built by HCFS, a non-profit &lt;span class=grad&gt;for&lt;/span&gt; non-profits" data-h="Built by nobody. &lt;span class=grad&gt;Maintained by no one.&lt;/span&gt;"></h2>
-      <p class="sub" data-p="Application control is normally sold as an enterprise product at an enterprise price, to the organisations least likely to be targeted by somebody with time on their hands. ENFORZ exists to put it within reach of the ones who cannot buy it." data-h="It was free. The bill came later, in the form of a weekend, a ransom note and a very long call with the insurer."></p>
-    </div>
-    <div class="tiles">
-      <div class="ti"><div class="n" data-p="100% yours" data-h="100% theirs"></div><p data-p="The installation, the hardware and everything inside it are yours. Nothing is shared with us or transmitted to us: not an event, not a machine name, not a count." data-h="The installation, the hardware and everything inside it are theirs now. Everything was transmitted. Nothing was shared with you."></p></div>
-      <div class="ti"><div class="n" data-p="Free to run" data-h="Free to run"></div><p data-p="No licence, no subscription, no per-machine charge, and no edition where the gates that keep you safe cost extra. Your cost is the server it runs on." data-h="Anything runs. No licence needed, no approval needed, no person needed. Your cost is everything else."></p></div>
-      <div class="ti"><div class="n" data-p="Written to be read" data-h="Written to be ignored"></div><p data-p="The rules that must never be broken are written down in plain language, with the reason each one exists. The safety gates are a single file you can read in one sitting." data-h="There was a document with the rules in it. Nobody opened it. It was encrypted on Tuesday anyway."></p></div>
-      <div class="ti"><div class="n" data-p="Nothing to sell you" data-h="Nothing left to sell"></div><p data-p="No telemetry, no usage reporting, no upsell path. Nobody profits from knowing what runs on your machines." data-h="Somebody profits from knowing what runs on your machines. It is not you, and it is not us."></p></div>
-    </div>
-  </div>
+<section class="band sect" id="about">
+<div class="wrap">
+<div class="head">
+<span class="k" data-h="Who let it in" data-p="Who builds it">Who builds it</span>
+<h2 data-h="Interactive fiction. No real system was touched. Probably." data-p='Built by HCFS, a non-profit &lt;span class="grad"&gt;for&lt;/span&gt; non-profits'>Built by HCFS, a non-profit <span class="grad">for</span> non-profits</h2>
+<p class="sub" data-h="It was free. The bill came later, in the form of a weekend, a ransom note and a very long call with the insurer." data-p="ENFORZ is built by HCFS. Application control is normally sold as an enterprise product at an enterprise price, to the organisations least likely to be targeted by somebody with time on their hands. ENFORZ exists to put it within reach of the ones who cannot buy it.">ENFORZ is built by HCFS. Application control is normally sold as an enterprise product at an enterprise price, to the organisations least likely to be targeted by somebody with time on their hands. ENFORZ exists to put it within reach of the ones who cannot buy it.</p>
+</div>
+<div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
+<div class="ti mn"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-key"></use></svg></span><span class="nm" data-h="100% theirs" data-p="100% yours">100% yours</span></div><p class="tx" data-h="The installation, the hardware and everything inside it are theirs now. Everything was transmitted. Nothing was shared with you." data-p="The installation is yours, the hardware is yours, and everything inside it is yours. Nothing is shared with us or transmitted to us: not an event, not a machine name, not a count of how often you use it.">The installation is yours, the hardware is yours, and everything inside it is yours. Nothing is shared with us or transmitted to us: not an event, not a machine name, not a count of how often you use it.</p></div>
+<div class="ti mn"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-shield"></use></svg></span><span class="nm" data-h="Free to run" data-p="Free to run">Free to run</span></div><p class="tx" data-h="Anything runs. No licence needed, no approval needed, no person needed. Your cost is everything else." data-p="No licence, no subscription, no per-machine charge, and no edition where the gates that keep you safe cost extra. Your cost is the server it runs on.">No licence, no subscription, no per-machine charge, and no edition where the gates that keep you safe cost extra. Your cost is the server it runs on.</p></div>
+<div class="ti mn"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-file"></use></svg></span><span class="nm" data-h="Written to be ignored" data-p="Written to be read">Written to be read</span></div><p class="tx" data-h="There was a document with the rules in it. Nobody opened it. It was encrypted on Tuesday anyway." data-p="The rules that must never be broken are written down in the repository, in plain language, with the reason each one exists. The safety gates are a single file you can read in one sitting.">The rules that must never be broken are written down in the repository, in plain language, with the reason each one exists. The safety gates are a single file you can read in one sitting.</p></div>
+<div class="ti mn"><div class="h"><span class="bx"><svg aria-hidden="true" class="ic"><use href="#i-lock"></use></svg></span><span class="nm" data-h="Nothing left to sell" data-p="Nothing to sell you">Nothing to sell you</span></div><p class="tx" data-h="Somebody profits from knowing what runs on your machines. It is not you, and it is not us." data-p="No telemetry, no usage reporting, no upsell path. Nobody profits from knowing what runs on your machines.">No telemetry, no usage reporting, no upsell path. Nobody profits from knowing what runs on your machines.</p></div>
+</div>
+</div>
 </section>
-
-<section class="band soft final" id="final">
-  <div class="wrap">
-    <span class="k" data-p="ENFORZ" data-h="ENFORZ"></span>
-    <h2 data-p="The attack you have never seen &lt;span class=grad&gt;still does not run&lt;/span&gt;" data-h="The attack you have never seen &lt;span class=grad&gt;is already running&lt;/span&gt;"></h2>
-    <p class="lede" data-p="Learn what your estate really runs, collapse it into decisions a person can actually make, rehearse the policy against what already happened, and enforce it one ring at a time with a way back. Not detection. Permission." data-h="No approvals. No rehearsal. No way back. Keep going. There is a little more page left, and then there is not."></p>
-    <div class="cta">
-      <a class="b b1" href="../index.html" data-p="Visit the ENFORZ site" data-h="Leave"></a>
-      <button class="b" type="button" id="swap" data-p="See the other reality" data-h="Go back to Control"></button>
-    </div>
-  </div>
+<section class="band ln final" id="final">
+<div class="wrap cl">
+<span class="k" data-h="ENFORZ" data-p="Enforz">Enforz</span>
+<h2 data-h="The attack you have never seen &lt;span class=grad&gt;is already running&lt;/span&gt;" data-p='The attack you have &lt;span class="grad"&gt;never seen&lt;/span&gt; still does not run'>The attack you have <span class="grad">never seen</span> still does not run</h2>
+<p class="lede" data-h="No approvals. No rehearsal. No way back. Keep going. There is a little more page left, and then there is not." data-p="Learn what your estate really runs, collapse it into decisions a person can actually make, rehearse the policy against what already happened, and enforce it one ring at a time with a way back. Not detection. Permission.">Learn what your estate really runs, collapse it into decisions a person can actually make, rehearse the policy against what already happened, and enforce it one ring at a time with a way back. Not detection. Permission.</p>
+<div class="cta" style="margin-top:22px;justify-content:center">
+<a class="b b1" href="../features.html"><span data-h="Leave" data-p="Every feature"></span> <svg aria-hidden="true" class="ic"><use href="#i-grid"></use></svg></a>
+<button class="b b2" data-h="Go back to Control" data-p="See the other reality" id="swap" type="button"></button>
+</div>
+</div>
 </section>
 <div id="tail" style="height:70vh"></div>
 <div class="cue" id="cue" aria-hidden="true">keep scrolling<span>&darr;</span></div>
@@ -654,13 +1057,16 @@ body.hit .tint{animation:redflash .5s ease-out}
 </div>
 </main>
 
-<footer>
-  <div class="wrap">
-    <span data-p="ENFORZ &middot; Trust. Control. Enforce." data-h="ENFORZ &middot; Trust nothing. Control nothing. Too late."></span>
-    <span data-p="Built by HCFS, a non-profit for non-profits." data-h="Interactive fiction. No real system was touched. Probably."></span>
-    <span><a href="../index.html">ENFORZ site</a> &middot; <a href="../security.html">Security</a> &middot; <a href="#" id="restart">Choose again</a></span>
-  </div>
+<footer class="band ftr">
+<div class="wrap">
+<div><img alt="ENFORZ" class="ftr-lg lg lg-d" height="300" src="../brand/logo-on-dark.webp" width="1585"/><img alt="" aria-hidden="true" class="ftr-lg lg lg-l" height="300" src="../brand/logo-on-light.webp" width="1585"/>
+<p class="nt" data-h="Nothing here builds, reviews or deploys anything. No telemetry, no approval queue, no simulation and no gates. On one server you own, with everything reported to somebody else." data-p="&lt;b&gt;ENFORZ&lt;/b&gt; builds, reviews and deploys Windows application control policy from what your own machines really run. Telemetry, an approval queue no rule escapes, simulation against real events, and enforcement behind fourteen gates that fail closed. On one server you own, with nothing reported back to us."><b>ENFORZ</b> builds, reviews and deploys Windows application control policy from what your own machines really run. Telemetry, an approval queue no rule escapes, simulation against real events, and enforcement behind fourteen gates that fail closed. On one server you own, with nothing reported back to us. Flip <b>Detail</b> at the top for the mechanics behind any claim.</p>
+</div>
+<p class="rt" data-h="everything runs, and nobody said so" data-p="nothing runs unless you said so">nothing runs unless you said so</p>
+<p class="nt" style="margin-top:14px">Built by <b>HCFS</b>, a non-profit for non-profits. · <a href="../index.html">ENFORZ site</a> · <a href="../features.html">Features</a> · <a href="../security.html">Security</a> · <a href="#" id="restart">Choose again</a></p>
+</div>
 </footer>
+
 
 <div id="end" role="dialog" aria-modal="true" aria-labelledby="end-t">
   <div class="shade" aria-hidden="true">
@@ -786,61 +1192,97 @@ function allCopy(which){ copyEls.forEach(function(el){ el._tok = (el._tok || 0) 
 
 /* ------------------------------------------------------------ the feed */
 var FEED_P = [
-  ['41,882 block events collapsed into 23 decisions', 'Review queue', 'a', 'Action'],
-  ['An unsigned tool is running from a folder users can write to', 'Suspicious blocks', 'c', 'Urgent'],
-  ['A loaded driver matches a known-vulnerable list', 'Vulnerabilities', 'c', 'Urgent'],
-  ['Simulation says this draft would stop 6 machines working', 'Simulation', 'h', 'High'],
-  ['A machine is running a policy nobody deployed', 'Drift', 'h', 'High'],
-  ['The assistant drafted answers for 312 apps: 9 groups are ready for your decision', 'AI assistant', 'm', 'Review'],
-  ['A binary nobody recognises was seen on four machines at once', 'Hash reputation', 'm', 'Review'],
-  ['A break-glass window is open and expires in 42 minutes', 'Break-glass', 'a', 'Action'],
-  ['Pilot ring has soaked for 14 days with no new blocks', 'Rollout', 'm', 'Review']
+  ['41,882 block events collapsed into 23 decisions', 'Review queue', 'a', 'Action', 'grid'],
+  ['An unsigned tool is running from a folder users can write to', 'Suspicious blocks', 'c', 'Urgent', 'key'],
+  ['A loaded driver matches a known-vulnerable list', 'Vulnerabilities', 'c', 'Urgent', 'cpu'],
+  ['Simulation says this draft would stop 6 machines working', 'Simulation', 'h', 'High', 'flask'],
+  ['A machine is running a policy nobody deployed', 'Drift', 'h', 'High', 'eye'],
+  ['The assistant drafted answers for 312 apps: 9 groups are ready for your decision', 'AI assistant', 'r', 'Review', 'chat'],
+  ['A binary nobody recognises was seen on four machines at once', 'Hash reputation', 'r', 'Review', 'radar'],
+  ['A break-glass window is open and expires in 42 minutes', 'Break-glass', 'a', 'Action', 'shield'],
+  ['Pilot ring has soaked for 14 days with no new blocks', 'Rollout', 'r', 'Review', 'globe']
 ];
 var FEED_H = [
-  ['invoice_viewer.exe started on 5 machines', 'approved by: nobody', 'c', 'Running'],
-  ['svchost.exe started from a user\u2019s AppData folder', 'approved by: nobody', 'c', 'Running'],
-  ['A driver nobody recognises loaded at boot', 'approved by: nobody', 'c', 'Running'],
-  ['The simulation was skipped. It would only have worried people.', 'approved by: nobody', 'c', 'Running'],
-  ['A machine is running a policy. Not ours.', 'approved by: nobody', 'c', 'Running'],
-  ['The assistant approved 312 apps. It did not ask.', 'approved by: nobody', 'c', 'Running'],
-  ['The backups were encrypted. Not by us.', 'approved by: nobody', 'c', 'Running'],
-  ['A new machine joined: ' + V.os, 'approved by: nobody', 'c', 'Running'],
-  ['A process is reading this page with you', 'approved by: nobody', 'c', 'Running']
+  ['invoice_viewer.exe started on 5 machines', 'grid'],
+  ['svchost.exe started from a user’s AppData folder', 'key'],
+  ['A driver nobody recognises loaded at boot', 'cpu'],
+  ['The simulation was skipped. It would only have worried people.', 'flask'],
+  ['A machine is running a policy. Not ours.', 'eye'],
+  ['The assistant approved 312 apps. It did not ask.', 'chat'],
+  ['The backups were encrypted. Not by us.', 'radar'],
+  ['A new machine joined: ' + V.os, 'shield'],
+  ['A process is reading this page with you', 'globe']
 ];
-var feed = $('#feed'), feedTimer = null, feedN = 0;
+var feed = $('#feed'), feedTimer = null, feedN = 0, feedLive = 0;
 function row(r, isNew){
-  return '<div class="fr' + (isNew ? ' new' : '') + '"><span><span class="w">' + r[0] + '</span><span class="s">' + (mode === 'horror' ? r[1] : 'Signal from ' + r[1]) + '</span></span><span class="sv ' + r[2] + '">' + r[3] + '</span></div>';
+  var h = mode === 'horror';
+  return '<div class="fr' + (isNew ? ' new' : '') + '" data-f><span class="ii"><svg class="ic" aria-hidden="true"><use href="#i-' + (h ? r[1] : r[4]) + '"/></svg></span><span><span class="w">' + r[0] + '</span><span class="s">'
+    + (h ? 'Approved by <b>nobody</b>' : 'Signal from <b>' + r[1] + '</b>') + '</span></span><span class="sv sv-' + (h ? 'c' : r[2]) + '">' + (h ? 'Running' : r[3]) + '</span></div>';
 }
 function drawFeed(){
   var src = mode === 'horror' ? FEED_H : FEED_P, n = mode === 'horror' ? Math.min(src.length, 2 + Math.floor(dread * 8) + feedN) : src.length;
   feed.innerHTML = src.slice(0, Math.max(2, n)).map(function(r, i){ return row(r, mode === 'horror' && i === n - 1 && feedN > 0); }).join('');
+  feedLive = 0; liveStep();
 }
+// As on the home page: one row at a time is lit, and the list follows it.
+var liveHold = false;
+function liveStep(){
+  var rows = $$('.fr', feed); if (!rows.length) return;
+  feedLive = feedLive % rows.length;
+  rows.forEach(function(r, n){ r.classList.toggle('live', n === feedLive); });
+  var cur = rows[feedLive];
+  if (feed.scrollHeight > feed.clientHeight + 4) {
+    var top = 0;
+    if (feedLive > 0) { var cr = cur.getBoundingClientRect(), br = feed.getBoundingClientRect();
+      top = feed.scrollTop + (cr.top - br.top) - (br.height - cr.height) / 2;
+      top = Math.max(0, Math.min(top, feed.scrollHeight - feed.clientHeight)); }
+    try { feed.scrollTo({ top: top, behavior: 'smooth' }); } catch(e){ feed.scrollTop = top; }
+  }
+}
+if (!reduce) setInterval(function(){ if (liveHold) return; feedLive++; liveStep(); }, 1400);
+$('.feed').addEventListener('mouseenter', function(){ liveHold = true; });
+$('.feed').addEventListener('mouseleave', function(){ liveHold = false; });
 function feedTick(){
   if (mode === 'horror' && feedN < FEED_H.length) { feedN++; drawFeed(); }
   feedTimer = setTimeout(feedTick, 2600 + Math.random() * 2400);
 }
 
 /* ------------------------------------------------- the tour, on an old set */
-(function(){
-  var box = $('.tvoff'), c = box && box.querySelector('.snow'); if (!c) return;
-  var x = c.getContext('2d'), img = x.createImageData(c.width, c.height), d = img.data, seen = false, last = 0;
-  function draw(t){
-    if (!seen || mode !== 'horror') return;
-    if (t - last > 42) {                       // about 24 frames a second
-      last = t;
-      for (var i = 0; i < d.length; i += 4) { var v = Math.random() * 255 | 0; d[i] = d[i+1] = d[i+2] = v; d[i+3] = 255; }
-      x.putImageData(img, 0, 0);
-    }
-    if (!reduce) requestAnimationFrame(draw);
+// In the other reality the tour opens as the console itself, in colour, for a
+// few seconds. A new device turns up in it: the reader's own (what their
+// browser says, read here and sent nowhere). Then the set loses the signal.
+var TV = $('.tvoff'), tvT = [], tvSeen = false, tvLast = 0;
+var tvC = TV.querySelector('.snow'), tvX = tvC.getContext('2d'), tvImg = tvX.createImageData(tvC.width, tvC.height);
+function tvSnow(t){
+  if (!TV.classList.contains('snowy') && !TV.classList.contains('glitch')) return;
+  if (!tvSeen || mode !== 'horror') return;
+  if (t - tvLast > 42) {                       // about 24 frames a second
+    tvLast = t; var d = tvImg.data;
+    for (var i = 0; i < d.length; i += 4) { var v = Math.random() * 255 | 0; d[i] = d[i+1] = d[i+2] = v; d[i+3] = 255; }
+    tvX.putImageData(tvImg, 0, 0);
   }
-  new IntersectionObserver(function(es){
-    es.forEach(function(e){
-      seen = e.isIntersecting && mode === 'horror';
-      box.classList.toggle('on', seen || box.classList.contains('on') && mode === 'horror');
-      if (seen) requestAnimationFrame(draw);
-    });
-  }, {threshold: .35}).observe(box);
-})();
+  if (!reduce) requestAnimationFrame(tvSnow);
+}
+function tvReset(){
+  tvT.forEach(clearTimeout); tvT = [];
+  ['on', 'toast', 'glitch', 'snowy'].forEach(function(c){ TV.classList.toggle(c, false); });
+}
+function tvPlay(){
+  if (TV.classList.contains('on')) return;
+  $('#tvh').textContent = V.host;
+  $('#tvm').textContent = V.os.replace(/^an? /, '') + (V.tz ? ' · ' + V.tz : '') + ' · first seen ' + clock();
+  TV.classList.add('on');
+  var later = function(ms, f){ tvT.push(setTimeout(function(){ if (mode === 'horror') f(); }, reduce ? 0 : ms)); };
+  later(1500, function(){ TV.classList.add('toast'); });
+  later(6200, function(){ TV.classList.add('glitch'); requestAnimationFrame(tvSnow); thud(.35); });
+  later(7100, function(){ TV.classList.toggle('glitch', false); TV.classList.add('snowy'); requestAnimationFrame(tvSnow); });
+}
+new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    tvSeen = e.isIntersecting && mode === 'horror';
+    if (tvSeen) { tvPlay(); requestAnimationFrame(tvSnow); }
+  });
+}, {threshold: .35}).observe(TV);
 
 /* ----------------------------------------------------------- the queue */
 var Q = [
@@ -985,7 +1427,7 @@ function setMode(m, fromChoice){
   allCopy('control');
   $$('.serif,.bleed').forEach(function(el){ el.classList.remove('serif', 'bleed'); });
   drawFeed(); drawQueue(); drawGates(); drawLog(); navCopy();
-  var tvb = $('.tvoff'); if (tvb) tvb.classList.remove('on');
+  tvReset();
   if (m === 'horror') {
     startAudio();
     clearTimeout(window._turn);
@@ -1271,7 +1713,7 @@ function playConsole(lines, safe, done){
     }
     var d = document.createElement('div'), lv = L[0], st = L[4];
     if (lv === 'BAR') {
-      d.className = 'ln'; d.innerHTML = '<span class="t">' + stampMs() + '</span><span class="lv EXE">LAT</span><span class="m"></span><span class="ts run"></span>';
+      d.className = 'tln'; d.innerHTML = '<span class="t">' + stampMs() + '</span><span class="lv EXE">LAT</span><span class="m"></span><span class="ts run"></span>';
       tb.appendChild(d); scroll();
       var m = d.querySelector('.m'), n = 6;
       return (function grow(){
@@ -1285,7 +1727,7 @@ function playConsole(lines, safe, done){
       })();
     }
     var cls = lv === 'AI' ? 'ai' : lv === 'TOOL' ? 'tool' : lv === 'WR' ? 'wr' : lv === 'OK' ? 'ok' : lv === 'ENF' ? 'enf' : lv === 'TGT' ? 'tgt' : '';
-    d.className = 'ln ' + cls;
+    d.className = 'tln ' + cls;
     d.innerHTML = '<span class="t">' + stampMs() + '</span><span class="lv ' + lv + '">' + (lv === 'TOOL' ? 'CALL' : lv) + '</span><span class="m"></span>' +
       (L[2] ? '<span class="ts ' + (safe ? 'blk' : 'run') + '" style="visibility:hidden">' + esc(L[2]) + (L[3] ? '<span class="tw">' + esc(L[3]) + '</span>' : '') + '</span>' : '');
     tb.appendChild(d); scroll();
@@ -1365,6 +1807,39 @@ if (location.hash === '#control') {
   veil.addEventListener('click', go, { once: true });
   document.addEventListener('keydown', go, true);
 }
+
+/* ------------------------------------------- from the home page, as is */
+(function(){
+  var list = $('.rail'); if (!list) return;
+  var t = $$('[role="tab"]', list);
+  function pick(tab){ t.forEach(function(x){ var on = x === tab; x.setAttribute('aria-selected', on ? 'true' : 'false');
+    var p = document.getElementById(x.getAttribute('aria-controls')); if (p) p.hidden = !on;
+    // In the other reality a panel turns as it opens.
+    if (on && p && mode === 'horror') $$('[data-p]', p).forEach(turn); }); }
+  t.forEach(function(tab, i){
+    tab.addEventListener('click', function(){ pick(tab); });
+    tab.addEventListener('keydown', function(e){
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return; e.preventDefault();
+      var n = t[(i + d + t.length) % t.length]; pick(n); n.focus(); });
+  });
+})();
+(function(){
+  var mb = $('#mb'), nv = $('#nav'); if (!mb || !nv) return;
+  function setMenu(open){ nv.classList.toggle('open', open); mb.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+  mb.addEventListener('click', function(){ setMenu(mb.getAttribute('aria-expanded') !== 'true'); });
+  nv.addEventListener('click', function(e){ if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') setMenu(false); });
+  document.addEventListener('click', function(e){ if (!nv.contains(e.target) && !mb.contains(e.target)) setMenu(false); }, true);
+  window.addEventListener('resize', function(){ if (window.innerWidth > 1180) setMenu(false); });
+})();
+(function(){
+  var links = $$('#nav a');
+  var secs = links.map(function(a){ var h = a.getAttribute('href'); return h.charAt(0) === '#' ? document.querySelector(h) : null; });
+  var ob = new IntersectionObserver(function(es){ es.forEach(function(e){
+    if (!e.isIntersecting) return; var k = secs.indexOf(e.target); if (k < 0) return;
+    links.forEach(function(a, j){ a.classList.toggle('on', k === j); }); }); }, { rootMargin: '-45% 0px -50% 0px' });
+  secs.forEach(function(s){ if (s) ob.observe(s); });
+})();
 })();
 </script>
 </html>
