@@ -220,7 +220,8 @@ body.horror .st .n{text-shadow:0 0 15px rgba(255,0,31,calc(var(--hot)*.7));color
 body.horror .tint{background:rgba(120,6,14,calc(var(--hot)*.12 + var(--dread)*.18)),repeating-linear-gradient(to bottom,transparent 0 2px,rgba(255,25,55,calc(var(--hot)*.05)) 3px)}
 body.horror footer{background:#030102;color:#C68A92}
 body.horror .hero .aur{opacity:calc(1 - var(--dread)*1.6)}
-body.horror .brand img{filter:grayscale(calc(var(--dread)*1)) sepia(calc(var(--dread)*.6)) hue-rotate(calc(var(--dread)*-50deg)) saturate(calc(1 + var(--dread)*3))}
+body.horror .brand img{filter:grayscale(1) brightness(calc(.62 - var(--dread)*.12)) sepia(1) hue-rotate(-50deg) saturate(calc(5 + var(--dread)*3)) drop-shadow(0 0 calc(4px + var(--dread)*8px) rgba(255,20,40,.45))}
+body.horror.d4 .brand img{animation:vfl 4s steps(1) infinite}
 body.horror .fh .dot{background:#E0525A;box-shadow:0 0 0 4px rgba(224,82,90,.2)}
 body.horror.d3 h2,body.horror.d3 .hero h1{animation:glitch 3.4s infinite steps(1)}
 body.horror .head h2{position:relative}
