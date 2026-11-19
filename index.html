@@ -501,26 +501,6 @@ body.on .d{display:block}
   </div>
 </section>
 
-<section class="band soft sect" id="new">
-  <div class="wrap">
-    <div class="head">
-      <span class="k">What's new &middot; release 1.0.12 &middot; agent 1.0.177</span>
-      <h2>Two weeks of work, <span class="grad">all of it shipping</span></h2>
-      <p class="sub">Everything below is in the current appliance and agent. The <a href="features.html" style="color:var(--cyan)">full feature list</a> covers the rest, and <a href="security.html" style="color:var(--cyan)">Security</a> explains how the platform protects itself.</p>
-    </div>
-    <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Passkeys and authenticator codes</span></div><p class="tx">Every local account proves a second factor before anything else loads. Passkeys are preferred, authenticator codes are the fallback, and an administrator can require passkeys only.</p><div class="d">WebAuthn passkeys or TOTP. The TOTP secret is sealed at rest, a used code is refused if replayed, failures lock the account, and the QR code is drawn on the appliance, never by an outside service. SSO sign-ins follow the identity provider's own rules.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">BitLocker escrow and sealed keys</span></div><p class="tx">Every machine's BitLocker state and whether its current recovery key can actually be recovered, from AD, from Entra ID, or from a copy sealed to a key only you can open.</p><div class="d">Escrow is checked by protector ID with metadata-only rights: the console never reads a key from AD or Entra. The agent seals each recovery key to an RSA-4096 public key compiled into it; the private half is wrapped under a passphrase that is never stored.</div></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">SIEM connector</span></div><p class="tx">The console's own audit log, and alerts if you choose, sent to your SIEM as CEF, LEEF or JSON over syslog.</p><div class="d">RFC 5424 syslog over TLS (RFC 5425, the default), TCP or UDP, with a severity mapping per event type.</div></div>
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span><span class="nm">Firmware protection, opt-in</span></div><p class="tx">An enforced policy can be CI-signed and kept in the EFI partition, so not even a local administrator can remove it. Off unless the build, the machine and a person typing the signing password all say yes.</p><div class="d">Its own signing key, separate from the key agents trust. Never an unsigned policy in EFI, and a signed one comes off only through the signed removal sequence. Recommended only after enforcement has run well for a while.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg></span><span class="nm">Emergency delivery</span></div><p class="tx">If the appliance itself is down, each machine can still fetch its own current assignment from a cloud store you own, and break-glass still works.</p><div class="d">Each file is signed by the appliance before upload and verified by the agent against the key compiled into it. An unreachable appliance pauses telemetry. It never relaxes enforcement.</div></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><span class="nm">Block notices people understand</span></div><p class="tx">When something is blocked, the person in front of the machine sees why, in your words, with a way to ask for it.</p><div class="d">A corner pop-up, a Windows notification or both, shown in the user's session by the agent. Title, text and how long it stays are yours to set; Canary rings first.</div></div>
-      <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span><span class="nm">PDQ, Intune or Action1</span></div><p class="tx">The tool you already use installs the agent, updates it, pushes urgent policy and carries break-glass, with the same gates in front of every route.</p><div class="d">One deployment tool per organisation. Rapid push sends a supplemental, or tells machines to fetch their own assignment. Scripts handle machines in Constrained Language Mode.</div></div>
-      <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-cert"/></svg></span><span class="nm">Signed updates and OS patches</span></div><p class="tx">Appliance updates arrive as signed bundles and are verified before anything changes, with a one-step way back. Debian security patches install automatically.</p><div class="d">Release keys sign every bundle; a separate rotation key is kept offline. Both updates and patches run from the appliance console, menu U.</div></div>
-    </div>
-  </div>
-</section>
-
 <section class="band sect" id="why">
   <div class="wrap">
     <div class="head">
@@ -662,15 +642,15 @@ body.on .d{display:block}
 <section class="band sect" id="mcp">
   <div class="wrap">
     <div class="head">
-      <span class="k">On the roadmap &middot; not built yet</span>
+      <span class="k">MCP server</span>
       <h2>Your own AI tools, <span class="grad">reading the console</span></h2>
-      <p class="sub">We plan an MCP server for ENFORZ: the Model Context Protocol, the open standard AI assistants use to reach other systems. Claude, Copilot or your own agent could then answer "why was this blocked on the finance laptops?" from the real data. It is a plan, described here so you can tell us what you need from it. Nothing below exists in the product today.</p>
+      <p class="sub">ENFORZ includes an MCP server: the Model Context Protocol, the open standard AI assistants use to reach other systems. Claude, Copilot or your own agent can answer "why was this blocked on the finance laptops?" from the real data, inside the same boundaries as everything else.</p>
     </div>
     <div class="tiles" style="margin-top:clamp(24px,3.2vw,34px)">
       <div class="ti cy"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></span><span class="nm">Read, explain, find</span></div><p class="tx">Tools to search the queue, machines, policies, raw events, vulnerabilities and the audit log, and to explain what a policy allows and why.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Drafts, never decisions</span></div><p class="tx">An assistant could draft a proposal or a request. Approving, building and enforcing stay in the console, signed in, by a person, through every gate.</p></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg></span><span class="nm">Drafts, never decisions</span></div><p class="tx">An assistant can draft a proposal or a request. Approving, building and enforcing stay in the console, signed in, by a person, through every gate.</p></div>
       <div class="ti mn"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Scoped and audited</span></div><p class="tx">Per-person tokens limited to one organisation and to read access, revocable at any time, and every call written to the audit log like any other action.</p></div>
-      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Off until you turn it on</span></div><p class="tx">Like the built-in assistant: nothing listens until an administrator enables it, and it would sit on the management network, never on the agents' side.</p></div>
+      <div class="ti"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span><span class="nm">Off until you turn it on</span></div><p class="tx">Like the built-in assistant: nothing listens until an administrator enables it, and it sits on the management network, never on the agents' side.</p></div>
     </div>
   </div>
 </section>
@@ -773,7 +753,7 @@ body.on .d{display:block}
       <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></span><span class="nm">Sign-in and roles</span></div><p class="tx">OIDC single sign-on, passkeys or authenticator codes for local accounts, and four roles from Viewer to TenantAdmin.</p></div>
       <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg></span><span class="nm">SIEM and notifications</span></div><p class="tx">The audit log to your SIEM, and alerts by email, browser push or Teams, including alerts you build yourself.</p><p class="subs">CEF · LEEF · JSON · syslog over TLS</p></div>
       <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg></span><span class="nm">Appliance care</span></div><p class="tx">Encrypted backups, restore, signed updates, OS patches, redacted support bundles and a console menu for everything else.</p></div>
-      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><span class="nm">MCP server <i>(planned)</i></span></div><p class="tx">Read access for your own AI tools, scoped and audited. On the roadmap, not in the product yet.</p></div>
+      <div class="mc" data-c="sys"><div class="h"><span class="bx"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg></span><span class="nm">MCP server</span></div><p class="tx">Read access for your own AI tools through the Model Context Protocol, scoped per person and audited.</p></div>
     </div>
   </div>
 </section>
