@@ -343,6 +343,14 @@ body.horror.d4 #ghost{opacity:.55}
 #end .l3{margin-top:30px;font-family:var(--f-m);font-size:.72rem;letter-spacing:.04em;color:#9A7076;line-height:1.8;text-shadow:0 2px 8px #000}
 #end .l3 b{color:#D9B4B8;font-weight:500}
 .nag{display:none;position:fixed;left:0;right:0;bottom:9vh;z-index:40;pointer-events:none;text-align:center;font-family:var(--f-m);font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:#FF4358;text-shadow:0 0 18px #FF001F}
+.nag i{font-style:normal;display:inline-block;transition:opacity .35s}
+.nag i.out{opacity:0}
+#veil{position:fixed;inset:0;z-index:90;display:grid;place-items:center;cursor:pointer;text-align:center;
+  background:radial-gradient(ellipse at 50% 45%,rgba(90,0,14,.92),rgba(6,0,2,.97) 70%);color:#F4E9E9}
+#veil[hidden]{display:none}
+#veil .vk{font-family:var(--f-m);font-size:.74rem;letter-spacing:.32em;text-transform:uppercase;color:#FF4358}
+#veil #veil-t{font-size:clamp(2rem,5vw,3.6rem);margin:14px 0;text-shadow:0 0 24px rgba(255,25,60,.7)}
+#veil .vs{font-family:var(--f-m);font-size:.9rem;color:#D9B4B8;animation:nagp 1.6s ease-in-out infinite}
 .nag span{display:block;margin-top:10px;font-size:1.3rem;letter-spacing:0;animation:nagj .9s ease-in-out infinite}
 body.horror.nagging .nag{display:block;animation:nagp 1.6s ease-in-out infinite}
 @keyframes nagj{50%{transform:translateY(8px)}}
@@ -538,7 +546,10 @@ body.hit .tint{animation:redflash .5s ease-out}
   </div>
 </section>
 <div id="tail" style="height:70vh"></div>
-<div class="nag" id="nag" aria-hidden="true">keep scrolling<span>&darr;</span></div>
+<div class="nag" id="nag" aria-hidden="true"><i id="nag-t">want to see what is happening?</i><span>&darr;</span></div>
+<div id="veil" role="dialog" aria-modal="true" aria-labelledby="veil-t" hidden>
+  <div><p class="vk">enforz &middot; other reality</p><p id="veil-t">You came back.</p><p class="vs">Click anywhere. It has been waiting, and it brought sound.</p></div>
+</div>
 </main>
 
 <footer>
@@ -1162,10 +1173,36 @@ $('#end-s').addEventListener('click', function(){ endRun++; $('#end').className 
 
 /* deep links: #control or #other skip the splash; sound then starts at the first click or tap */
 document.addEventListener('pointerdown', function(){ if (mode === 'horror' && audioOn) startAudio(); }, { passive: true });
+document.addEventListener('keydown', function(){ if (mode === 'horror' && audioOn) startAudio(); });
+
+/* the nag under the last section: scary, a little funny, never the same twice in a row */
+var NAG = ['want to see what is happening?', 'it is already happening', 'nobody stopped it. why would you?',
+           'your files are fine. probably.', 'just a little further', 'it saved you a seat',
+           'scroll. it does not bite. it encrypts.', 'everyone else kept going'];
+var nagI = 0;
+setInterval(function(){
+  if (!body.classList.contains('nagging')) { nagI = 0; $('#nag-t').textContent = NAG[0]; return; }
+  var t = $('#nag-t'); t.classList.add('out');
+  setTimeout(function(){ nagI = (nagI + 1) % NAG.length; t.textContent = NAG[nagI]; t.classList.toggle('out', false); }, 350);
+}, 1900);
 allCopy('control'); drawFeed(); drawQueue(); drawGates(); drawLog();
 setTimeout(feedTick, 3000);
-if (location.hash === '#control' || location.hash === '#other') {
-  $('#splash').style.display = 'none'; setMode(location.hash === '#other' ? 'horror' : 'control');
+if (location.hash === '#control') {
+  $('#splash').style.display = 'none'; setMode('control');
+} else if (location.hash === '#other') {
+  // Browsers start sound only after a click, tap or key press; a refresh
+  // straight into the other reality would otherwise stay silent.
+  $('#splash').style.display = 'none';
+  var veil = $('#veil'); veil.hidden = false;
+  var go = function(e){
+    if (e && e.type === 'keydown' && /^(Tab|Shift|Control|Alt|Meta)$/.test(e.key)) return;
+    if (e) e.preventDefault();
+    veil.hidden = true;
+    document.removeEventListener('keydown', go, true);
+    setMode('horror'); if (audioOn) startAudio();
+  };
+  veil.addEventListener('click', go, { once: true });
+  document.addEventListener('keydown', go, true);
 }
 })();
 </script>
