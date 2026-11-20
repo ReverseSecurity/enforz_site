@@ -1063,7 +1063,7 @@ body.hit .tint{animation:redflash .5s ease-out}
 <p class="nt" data-h="Nothing here builds, reviews or deploys anything. No telemetry, no approval queue, no simulation and no gates. On one server you own, with everything reported to somebody else." data-p="&lt;b&gt;ENFORZ&lt;/b&gt; builds, reviews and deploys Windows application control policy from what your own machines really run. Telemetry, an approval queue no rule escapes, simulation against real events, and enforcement behind fourteen gates that fail closed. On one server you own, with nothing reported back to us."><b>ENFORZ</b> builds, reviews and deploys Windows application control policy from what your own machines really run. Telemetry, an approval queue no rule escapes, simulation against real events, and enforcement behind fourteen gates that fail closed. On one server you own, with nothing reported back to us. Flip <b>Detail</b> at the top for the mechanics behind any claim.</p>
 </div>
 <p class="rt" data-h="everything runs, and nobody said so" data-p="nothing runs unless you said so">nothing runs unless you said so</p>
-<p class="nt" style="margin-top:14px">Built by <b>HCFS</b>, a non-profit for non-profits. · <a href="../index.html">ENFORZ site</a> · <a href="../features.html">Features</a> · <a href="../security.html">Security</a> · <a href="#" id="restart">Choose again</a></p>
+<p class="nt" style="margin-top:14px"><span data-h="Built by &lt;b&gt;nobody&lt;/b&gt;. Maintained by no one." data-p="Built by &lt;b&gt;HCFS&lt;/b&gt;, a non-profit for non-profits." id="builtby">Built by <b>HCFS</b>, a non-profit for non-profits.</span> · <a href="../index.html">ENFORZ site</a> · <a href="../features.html">Features</a> · <a href="../security.html">Security</a> · <a href="#" id="restart">Choose again</a></p>
 </div>
 </footer>
 
@@ -1518,6 +1518,10 @@ var lineIo = new IntersectionObserver(function(es){
   es.forEach(function(e){ if (e.isIntersecting && mode === 'horror') turn(e.target); });
 }, { rootMargin: '0px 0px -60% 0px' });
 $$('main > section').forEach(function(s, i){ if (i > 0) $$('[data-p]', s).forEach(function(el){ lineIo.observe(el); }); });
+var footIo = new IntersectionObserver(function(es){
+  es.forEach(function(e){ if (e.isIntersecting && mode === 'horror') turn(e.target); });
+});
+$$('footer [data-p]').forEach(function(el){ footIo.observe(el); });
 
 function onScroll(){
   var max = document.documentElement.scrollHeight - innerHeight;
